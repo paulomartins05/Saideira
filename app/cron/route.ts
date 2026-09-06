@@ -3,6 +3,11 @@ import { prisma } from "@/lib/prisma";
 import { notificarConsumidorExpirando } from "@/lib/emails";
 
 export async function GET(request: Request) {
+    const authHeader = request.headers.get("authorization");
+    if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+        return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
+    }
+
     const agora = new Date()
     const amanha = new Date(agora.getTime() + 24 * 60 * 60 * 1000)
 
