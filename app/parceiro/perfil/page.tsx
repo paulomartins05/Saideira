@@ -61,7 +61,7 @@ export default async function Parceiro({
     },
 
     include: {
-      user: true,
+      user: { select: { name: true } },
       oferta: true
     },
     orderBy: { createdAt: "asc" }
