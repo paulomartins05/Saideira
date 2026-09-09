@@ -3,15 +3,8 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import ContatoForm from "./contato-form";
-export default async function Contato() {
-  const reqHeaders = await headers();
-  const session = await auth.api.getSession({
-    headers: reqHeaders
-  });
 
-  if (!session) {
-    redirect("/login");
-  }
+export default async function Contato() {
 
   return (
     <div className="bg-[#F6EFE5] min-h-screen flex flex-col">
