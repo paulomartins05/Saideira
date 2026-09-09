@@ -35,7 +35,7 @@ export default function Header() {
 
             <NavLink href="/resgates">Resgates do Dia</NavLink>
 
-            <NavLink href="/parceiro/novo-resgate">Cadastrar Resgate</NavLink>
+            {usuario?.role === "PARCEIRO" && <NavLink href="/parceiro/novo-resgate">Cadastrar Resgate</NavLink>}
             <NavLink href="/contato">Contato</NavLink>
           </nav>
 
