@@ -284,6 +284,59 @@ export default async function Parceiro({
                 </div>
               )}
 
+              {abaAtiva === "financeiro" && (
+                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col">
+                  <div className="mb-6">
+                    <h2 className="text-xl font-bold">Relatórios Financeiros</h2>
+                    <p className="text-sm opacity-70">Acompanhe seus ganhos e histórico de vendas.</p>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+                    <div className="bg-[#fdf3ef] p-6 rounded-xl border border-[#e8d5c4]">
+                      <p className="text-sm font-medium text-[#B87042] mb-1">Saldo Disponível</p>
+                      <p className="text-3xl font-bold text-background-secondary">
+                        R$ {saldo.toFixed(2).replace('.', ',')}
+                      </p>
+                    </div>
+                    
+                    <div className="bg-gray-50 p-6 rounded-xl border border-gray-100 flex flex-col justify-center items-start">
+                       <p className="text-sm font-medium opacity-80 mb-2">Deseja receber seu dinheiro?</p>
+                       <Button className="bg-[#D9774A] hover:bg-[#c4683e] text-white py-2 px-4 text-sm w-full sm:w-auto">
+                         💸 Solicitar Saque
+                       </Button>
+                    </div>
+                  </div>
+
+                  <h3 className="font-bold mb-4">Histórico de Transações</h3>
+                  
+                  <div className="flex flex-col gap-3">
+                    {resgatesConcluidos.length === 0 ? (
+                      <p className="text-sm text-center opacity-70 py-6 bg-gray-50 rounded-xl">Você ainda não possui transações finalizadas.</p>
+                    ) : (
+                      resgatesConcluidos
+                        .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
+                        .map(resgate => (
+                        <div key={resgate.id} className="flex items-center justify-between p-4 border border-gray-100 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600">
+                              💰
+                            </div>
+                            <div>
+                              <p className="font-bold text-sm">{resgate.oferta.titulo}</p>
+                              <p className="text-xs opacity-70">
+                                {resgate.updatedAt.toLocaleDateString('pt-BR')} às {resgate.updatedAt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                              </p>
+                            </div>
+                          </div>
+                          <p className="font-bold text-green-600">
+                            + R$ {Number(resgate.oferta.precoResgate).toFixed(2).replace('.', ',')}
+                          </p>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              )}
 
             </div>
           </div>

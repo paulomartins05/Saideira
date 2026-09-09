@@ -9,10 +9,10 @@ export default function MenuMobile() {
   const fecharMenu = () => setAberto(false);
 
   return (
-    <div className="md:hidden"> 
-      
-      <button 
-        onClick={() => setAberto(!aberto)} 
+    <div className="md:hidden">
+
+      <button
+        onClick={() => setAberto(!aberto)}
         className="flex items-center justify-center p-2 text-background-secondary focus:outline-none"
       >
         <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -22,19 +22,16 @@ export default function MenuMobile() {
 
       {aberto && (
         <div className="absolute top-20 left-0 w-full bg-background-primary shadow-xl flex flex-col py-6 px-8 gap-6 z-50 border-t border-laranja-destaque/20">
-          
+
           <NavLink href="/" onClick={fecharMenu}>
             Início
           </NavLink>
-          
+
           <NavLink href="/resgates" onClick={fecharMenu}>
             Resgates do Dia
           </NavLink>
-          
-          <NavLink href="/sobre" onClick={fecharMenu}>
-            Sobre nós
-          </NavLink>
-          
+
+
           <NavLink href="/contato" onClick={fecharMenu}>
             Contato
           </NavLink>

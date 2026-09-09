@@ -34,10 +34,22 @@ export default async function ExploreLanches() {
   return (
     <section className="py-12 bg-background-primary w-full overflow-hidden">
       <Container>
-        <div className="mb-8">
+        <div className="mb-8 flex flex-col md:flex-row justify-between md:items-end gap-4">
           <Text variant="playfair" as="h2" className="text-3xl md:text-4xl text-background-secondary font-bold">
             Explore os <span className="text-laranja-destaque">Lanches</span>
           </Text>
+
+          <form action="/resgates" method="GET" className="relative w-full md:w-80">
+            <input 
+              type="text" 
+              name="busca" 
+              placeholder="Buscar lanche, loja ou local..." 
+              className="w-full pl-4 pr-10 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#D9774A]/50 focus:border-[#D9774A] shadow-sm text-sm transition-all"
+            />
+            <button type="submit" className="absolute right-3 top-1/2 -translate-y-1/2 text-xl hover:scale-110 transition-transform">
+              🔍
+            </button>
+          </form>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 md:gap-6 pb-6 pt-2 w-full">

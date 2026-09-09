@@ -9,6 +9,7 @@ export interface ProdutoProps {
   preco: number;
   tempoPostagem: string;
   imagemUrl: string | string[];
+  distancia?: number;
 }
 
 export default function CardProduto({
@@ -17,7 +18,8 @@ export default function CardProduto({
   descricao,
   preco,
   tempoPostagem,
-  imagemUrl
+  imagemUrl,
+  distancia
 }: ProdutoProps) {
 
   const precoFormatado = new Intl.NumberFormat('pt-BR', {
@@ -43,6 +45,11 @@ export default function CardProduto({
           <div className="absolute top-3 right-3 bg-white px-3 py-1 rounded-full text-xs font-bold text-background-secondary shadow-sm flex items-center gap-1 z-10">
             📍 Postado há {tempoPostagem}
           </div>
+          {distancia !== undefined && (
+            <div className="absolute top-3 left-3 bg-white px-3 py-1 rounded-full text-xs font-bold text-[#D9774A] shadow-sm flex items-center gap-1 z-10">
+              {distancia < 1 ? `${(distancia * 1000).toFixed(0)} m` : `${distancia.toFixed(1)} km`}
+            </div>
+          )}
           <div className="relative w-full h-full">
             <Image
               src={imagemFinal}

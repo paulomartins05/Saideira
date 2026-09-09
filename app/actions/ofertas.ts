@@ -71,6 +71,27 @@ export async function criarOferta(formData: FormData) {
   if (arquivosValidos.length > 0) {
     urlsDasImagens = await uploadMultiplasImagens(arquivosValidos);
   }
+
+  let latitude = null;
+  let longitude = null;
+
+  try {
+    const urlBusca = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(validacao.data.localizacao)}`;
+    const resposta = await fetch(urlBusca);
+    const dados = await resposta.json();
+
+    if (dados && dados.length > 0) {
+      latitude = parseFloat(dados[0].lat);
+      longitude = parseFloat(dados[0].lon);
+    } else {
+      console.log("📍 API de Mapa não encontrou esse endereço:", validacao.data.localizacao);
+    }
+  } catch (err) {
+    console.error("📍 Erro ao buscar localização no Mapa:", err);
+  }
+
+
+
   try {
     const novaOferta = await prisma.oferta.create({
       data: {
@@ -84,6 +105,8 @@ export async function criarOferta(formData: FormData) {
         dataValidade: validacao.data.dataValidade,
         imagemUrl: urlsDasImagens,
         vendedorId: session.user.id,
+        latitude: latitude,
+        longitude: longitude,
       }
     })
 

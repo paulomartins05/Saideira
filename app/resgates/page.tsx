@@ -7,6 +7,7 @@ import Text from "../componentes/text";
 import CardProduto from "../componentes/CardProduto";
 import FiltroCategorias from "../componentes/FiltroCategorias";
 import Paginacao from "../componentes/Paginacao";
+import ListaResgatesClient from "../componentes/ListaResgatesClient";
 import { calcularTempoPostagem } from "@/lib/utils";
 import { prisma } from "@/lib/prisma"
 
@@ -16,18 +17,31 @@ import { prisma } from "@/lib/prisma"
 export default async function PaginaTodosResgates({
   searchParams,
 }: {
-  searchParams: Promise<{ categoria?: string; pagina?: string }>
+  searchParams: Promise<{ categoria?: string; pagina?: string; busca?: string }>
 }) {
 
   const params = await searchParams
   const categoriaAtiva = params.categoria || "Todos"
   const paginaAtual = Number(params.pagina) || 1
+  const textoDaBusca = params.busca || ""
   const itensPorPagina = 10
 
-  const filtroDoBanco = categoriaAtiva === "Todos" ? {
+  let filtroDoBanco: any = {
+    ativo: true, 
+    quantidade: { gt: 0 }, 
+    dataValidade: { gt: new Date() }
+  }
 
-  } : {
-    categoria: categoriaAtiva
+  if (categoriaAtiva !== "Todos") {
+    filtroDoBanco.categoria = categoriaAtiva
+  }
+
+  if (textoDaBusca) {
+    filtroDoBanco.OR = [
+      { titulo: { contains: textoDaBusca, mode: 'insensitive' } },
+      { localizacao: { contains: textoDaBusca, mode: 'insensitive' } },
+      { descricao: { contains: textoDaBusca, mode: 'insensitive' } }
+    ]
   }
 
   const totalDeItens = await prisma.oferta.count({
@@ -37,7 +51,7 @@ export default async function PaginaTodosResgates({
   const totalPaginas = Math.ceil(totalDeItens / itensPorPagina)
 
   const produtosDoBanco = await prisma.oferta.findMany({
-    where: { ...filtroDoBanco, ativo: true, quantidade: { gt: 0 }, dataValidade: { gt: new Date() } },
+    where: filtroDoBanco,
     skip: (paginaAtual - 1) * itensPorPagina,
     take: itensPorPagina,
     orderBy: { createdAt: "desc" }
@@ -51,6 +65,8 @@ export default async function PaginaTodosResgates({
     preco: Number(p.precoResgate),
     tempoPostagem: calcularTempoPostagem(p.createdAt),
     imagemUrl: p.imagemUrl?.[0] || "https://cdn-icons-png.flaticon.com/512/3225/3225091.png",
+    latitude: p.latitude,
+    longitude: p.longitude,
   }))
 
   return (
@@ -81,17 +97,7 @@ export default async function PaginaTodosResgates({
               categoriaAtiva={categoriaAtiva}
             />
 
-            {produtosFormatados.length === 0 ? (
-              <div className="py-12 text-center text-background-secondary font-inter">
-                Nenhum resgate disponível na categoria "{categoriaAtiva}" no momento.
-              </div>
-            ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
-                {produtosFormatados.map((produto) => (
-                  <CardProduto key={produto.id} {...produto} />
-                ))}
-              </div>
-            )}
+            <ListaResgatesClient produtos={produtosFormatados} />
 
             <Paginacao
               paginaAtual={paginaAtual}

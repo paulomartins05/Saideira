@@ -8,6 +8,7 @@ import { criarResgate } from "@/app/actions/resgate";
 interface DetalhesProps {
   nome: string;
   loja: string;
+  localizacao: string;
   descricao: string;
   precoOriginal: number;
   precoAtual: number;
@@ -20,6 +21,7 @@ interface DetalhesProps {
 export default function ProdutoDetalhes({
   nome,
   loja,
+  localizacao,
   descricao,
   precoOriginal,
   precoAtual,
@@ -69,6 +71,14 @@ export default function ProdutoDetalhes({
       <p className="font-inter text-sm text-background-secondary/70 mb-4">
         Do "{loja}"
       </p>
+
+      <div className="flex items-start gap-2 mb-6 p-3 bg-gray-50 rounded-xl border border-gray-100">
+        <span className="text-lg">📍</span>
+        <p className="font-inter text-sm text-background-secondary/80">
+          <strong>Endereço de Retirada:</strong> <br />
+          {localizacao}
+        </p>
+      </div>
 
       <p className="font-inter text-sm md:text-base text-background-secondary mb-8 leading-relaxed">
         {descricao}

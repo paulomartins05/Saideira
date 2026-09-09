@@ -4,6 +4,7 @@ import Header from "../../pages/header";
 import Container from "../../componentes/container";
 import ProdutoDetalhes from "../../componentes/ProdutoDetalhes";
 import GaleriaImagens from "../../componentes/GaleriaImagens";
+import MapaGeolocalizacao from "../../componentes/MapaGeolocalizacao";
 
 import { prisma } from "@/lib/prisma"
 import { notFound } from "next/navigation";
@@ -71,6 +72,7 @@ export default async function PaginaProdutoUnico({
               <ProdutoDetalhes
                 nome={produto.titulo}
                 loja={nomeDaLoja}
+                localizacao={produto.localizacao}
                 descricao={produto.descricao}
                 precoOriginal={Number(produto.precoOriginal)}
                 precoAtual={Number(produto.precoResgate)}
@@ -79,6 +81,13 @@ export default async function PaginaProdutoUnico({
                 usuarioId={usuario?.id}
                 estoqueDisponivel={produto.quantidade}
               />
+
+              {produto.latitude && produto.longitude && (
+                <div className="mt-8">
+                  <h3 className="font-bold text-lg mb-2">Local de Retirada</h3>
+                  <MapaGeolocalizacao latitude={produto.latitude} longitude={produto.longitude} />
+                </div>
+              )}
             </div>
 
           </div>
