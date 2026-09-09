@@ -7,7 +7,6 @@ import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { uploadImagemProduto, uploadMultiplasImagens } from "./upload";
-import { fallbackModeToFallbackField } from "next/dist/lib/fallback";
 
 const ofertaSchema = z.object({
   titulo: z.string().min(3, "Precisa de 3 caracteres"),
