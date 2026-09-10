@@ -79,9 +79,15 @@ export default async function EditarPerfilParceiro() {
                                 <label className="block text-sm font-medium mb-1">CNPJ</label>
                                 <input type="text" name="cnpj" defaultValue={usuarioDB.cnpj || ""} className="w-full px-3 py-2 border border-gray-300 rounded-lg" />
                             </div>
-                            <div>
-                                <label className="block text-sm font-medium mb-1">Endereço da Loja (Localização)</label>
-                                <input type="text" name="localizacao" defaultValue={usuarioDB.localizacao || ""} className="w-full px-3 py-2 border border-gray-300 rounded-lg" />
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium mb-1">Rua</label>
+                                    <input type="text" name="rua" defaultValue={usuarioDB.rua || ""} className="w-full px-3 py-2 border border-gray-300 rounded-lg" />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium mb-1">Número</label>
+                                    <input type="text" name="numero" defaultValue={usuarioDB.numero || ""} className="w-full px-3 py-2 border border-gray-300 rounded-lg" />
+                                </div>
                             </div>
                             <Button type="submit" className="mt-4 bg-[#D9774A] hover:bg-[#c4683e] text-white py-3 rounded-xl w-full font-bold">
                                 Salvar Alterações

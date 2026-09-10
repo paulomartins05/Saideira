@@ -116,6 +116,7 @@ export default async function Parceiro({
               <Link href="?aba=visao-geral" className={`block px-4 py-3 rounded-xl font-medium transition-colors ${abaAtiva === "visao-geral" ? "bg-[#e8d5c4] text-background-secondary" : "hover:bg-[#fdf3ef]"}`}>Visão Geral</Link>
               <Link href="?aba=produtos" className={`block px-4 py-3 rounded-xl font-medium transition-colors ${abaAtiva === "produtos" ? "bg-[#e8d5c4] text-background-secondary" : "hover:bg-[#fdf3ef]"}`}>Meus Produtos</Link>
               <Link href="?aba=financeiro" className={`block px-4 py-3 rounded-xl font-medium transition-colors ${abaAtiva === "financeiro" ? "bg-[#e8d5c4] text-background-secondary" : "hover:bg-[#fdf3ef]"}`}>Relatórios Financeiros</Link>
+              <Link href="/parceiro/assinatura" className={`block px-4 py-3 mt-2 rounded-xl font-medium transition-colors text-[#D9774A] border border-[#D9774A]/30 hover:bg-[#D9774A]/10`}>⭐ Assinatura Premium</Link>
             </aside>
 
             <div className="grow flex flex-col gap-6">

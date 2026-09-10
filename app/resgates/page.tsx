@@ -27,8 +27,8 @@ export default async function PaginaTodosResgates({
   const itensPorPagina = 10
 
   let filtroDoBanco: any = {
-    ativo: true, 
-    quantidade: { gt: 0 }, 
+    ativo: true,
+    quantidade: { gt: 0 },
     dataValidade: { gt: new Date() }
   }
 
@@ -45,19 +45,47 @@ export default async function PaginaTodosResgates({
   }
 
   const totalDeItens = await prisma.oferta.count({
-    where: filtroDoBanco
-  })
+    where: filtroDoBanco,
+  });
 
   const totalPaginas = Math.ceil(totalDeItens / itensPorPagina)
 
-  const produtosDoBanco = await prisma.oferta.findMany({
+  const todasOfertasDoBanco = await prisma.oferta.findMany({
     where: filtroDoBanco,
-    skip: (paginaAtual - 1) * itensPorPagina,
-    take: itensPorPagina,
-    orderBy: { createdAt: "desc" }
-  })
+    include: {
+      vendedor: {
+        select: { name: true, assinatura: { select: { status: true } } }
+      }
+    }
+  });
 
-  const produtosFormatados = produtosDoBanco.map((p) => ({
+  const agora = new Date().getTime();
+  const ofertasComFaixa = todasOfertasDoBanco.map(p => {
+    const isPremium = p.vendedor.assinatura?.status === "ATIVA";
+    const tempoRestanteHoras = (p.dataValidade.getTime() - agora) / (1000 * 60 * 60);
+
+    let faixaUrgencia = 3;
+    if (tempoRestanteHoras <= 2) faixaUrgencia = 0;
+    else if (tempoRestanteHoras <= 6) faixaUrgencia = 1;
+    else if (tempoRestanteHoras <= 12) faixaUrgencia = 2;
+
+    return { ...p, isPremium, faixaUrgencia, tempoRestanteHoras };
+  });
+
+  ofertasComFaixa.sort((a, b) => {
+    if (a.faixaUrgencia !== b.faixaUrgencia) {
+      return a.faixaUrgencia - b.faixaUrgencia;
+    }
+    if (a.isPremium && !b.isPremium) return -1;
+    if (!a.isPremium && b.isPremium) return 1;
+
+    return a.tempoRestanteHoras - b.tempoRestanteHoras;
+  });
+
+  const startIndex = (paginaAtual - 1) * itensPorPagina;
+  const produtosDoBancoPaginados = ofertasComFaixa.slice(startIndex, startIndex + itensPorPagina);
+
+  const produtosFormatados = produtosDoBancoPaginados.map((p) => ({
     id: p.id,
     nome: p.titulo,
     categoria: p.categoria,
@@ -67,6 +95,8 @@ export default async function PaginaTodosResgates({
     imagemUrl: p.imagemUrl?.[0] || "https://cdn-icons-png.flaticon.com/512/3225/3225091.png",
     latitude: p.latitude,
     longitude: p.longitude,
+    isPremium: p.isPremium,
+    faixaUrgencia: p.faixaUrgencia
   }))
 
   return (

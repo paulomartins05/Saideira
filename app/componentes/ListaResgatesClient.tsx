@@ -3,23 +3,26 @@ import { useState } from "react";
 import CardProduto, { ProdutoProps } from "./CardProduto";
 import Button from "./button";
 
-// Fórmula de Haversine
 function calcularDistancia(lat1: number, lon1: number, lat2: number, lon2: number) {
-  const R = 6371; // Raio da Terra em km
+  const R = 6371;
   const dLat = (lat2 - lat1) * (Math.PI / 180);
   const dLon = (lon2 - lon1) * (Math.PI / 180);
-  const a = 
+  const a =
     Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) * 
-    Math.sin(dLon / 2) * Math.sin(dLon / 2); 
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)); 
+    Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
 }
 
-export type ProdutoPropsComLocal = ProdutoProps & { latitude?: number | null, longitude?: number | null };
+export type ProdutoPropsComLocal = ProdutoProps & {
+  latitude?: number | null,
+  longitude?: number | null,
+  faixaUrgencia?: number
+};
 
 export default function ListaResgatesClient({ produtos }: { produtos: ProdutoPropsComLocal[] }) {
-  const [localizacaoUser, setLocalizacaoUser] = useState<{lat: number, lon: number} | null>(null);
+  const [localizacaoUser, setLocalizacaoUser] = useState<{ lat: number, lon: number } | null>(null);
   const [carregandoLocal, setCarregandoLocal] = useState(false);
 
   const pegarLocalizacao = () => {
@@ -55,6 +58,13 @@ export default function ListaResgatesClient({ produtos }: { produtos: ProdutoPro
 
   if (localizacaoUser) {
     produtosOrdenados.sort((a, b) => {
+      if (a.faixaUrgencia !== undefined && b.faixaUrgencia !== undefined && a.faixaUrgencia !== b.faixaUrgencia) {
+        return a.faixaUrgencia - b.faixaUrgencia;
+      }
+
+      if (a.isPremium && !b.isPremium) return -1;
+      if (!a.isPremium && b.isPremium) return 1;
+
       if (a.distancia !== undefined && b.distancia !== undefined) return a.distancia - b.distancia;
       return 0;
     });
@@ -63,8 +73,8 @@ export default function ListaResgatesClient({ produtos }: { produtos: ProdutoPro
   return (
     <>
       <div className="mb-6 flex justify-end">
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           className="border-[#D9774A] text-[#D9774A] hover:bg-[#D9774A] hover:text-white"
           onClick={pegarLocalizacao}
           disabled={carregandoLocal || !!localizacaoUser}

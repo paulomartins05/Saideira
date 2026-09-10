@@ -14,13 +14,34 @@ import Header from "../../pages/header";
 import InputForm from "../../componentes/InputForm";
 import { appToast } from "@/lib/toast";
 
-const categoriasDisponiveis = [
-  { id: "Salgados", label: "Salgados", icon: "🥟" },
-  { id: "Doces", label: "Doces", icon: "🍩" },
-  { id: "Assados", label: "Assados", icon: "🥐" },
-  { id: "Bolos", label: "Bolos", icon: "🍰" },
-  { id: "Outros", label: "Outros", icon: "🛒" },
-];
+const categoriasPorNegocio: Record<string, { id: string; label: string; icon: string }[]> = {
+  RESTAURANTE: [
+    { id: "Prato principal", label: "Prato Feito", icon: "🍛" },
+    { id: "Marmita", label: "Marmita", icon: "🍱" },
+    { id: "Sobremesa", label: "Sobremesa", icon: "🍮" },
+    { id: "Bebida", label: "Bebida", icon: "🥤" },
+  ],
+  PADARIA: [
+    { id: "Pães", label: "Pães", icon: "🥖" },
+    { id: "Salgados", label: "Salgados", icon: "🥟" },
+    { id: "Doces", label: "Doces", icon: "🍩" },
+    { id: "Bolos", label: "Bolos", icon: "🍰" },
+  ],
+  MERCADO: [
+    { id: "Hortifruti", label: "Hortifruti", icon: "🍎" },
+    { id: "Padaria própria", label: "Padaria", icon: "🥐" },
+    { id: "Açougue", label: "Açougue", icon: "🥩" },
+    { id: "Mercearia", label: "Mercearia", icon: "🛒" },
+  ],
+  DOCERIA: [
+    { id: "Bolos", label: "Bolos", icon: "🎂" },
+    { id: "Doces finos", label: "Doces Finos", icon: "🍬" },
+    { id: "Tortas", label: "Tortas", icon: "🥧" },
+  ],
+  OUTRO: [
+    { id: "Diversos", label: "Diversos", icon: "📦" },
+  ],
+};
 
 const formatCoinInput = (valorAtual: string): string => {
   const apenasNumeros = valorAtual.replace(/\D/g, "");
@@ -56,11 +77,15 @@ const produtoSchema = z.object({
 type ProdutoFormInputs = z.infer<typeof produtoSchema>;
 type UsuarioComLocalizacao = {
   localizacao?: string | null
+  tipoNegocio?: "RESTAURANTE" | "PADARIA" | "MERCADO" | "DOCERIA" | "OUTRO" | null
 }
 
 export default function CadastrarNovoResgate() {
   const router = useRouter();
   const { data: session } = authClient.useSession();
+
+  const tipoNegocioUsuario = (session?.user as UsuarioComLocalizacao)?.tipoNegocio || "OUTRO";
+  const categoriasDisponiveis = categoriasPorNegocio[tipoNegocioUsuario] || categoriasPorNegocio.OUTRO;
 
   const [imagemFiles, setImagemFiles] = useState<File[]>([]);
   const [imagemPreviews, setImagemPreviews] = useState<string[]>([]);
@@ -84,6 +109,7 @@ export default function CadastrarNovoResgate() {
   useEffect(() => {
     type UsuarioComLocalizacao = {
       localizacao?: string | null;
+      tipoNegocio?: "RESTAURANTE" | "PADARIA" | "MERCADO" | "DOCERIA" | "OUTRO" | null;
     };
     const enderecoDoUsuario = (session?.user as UsuarioComLocalizacao)?.localizacao;
     if (enderecoDoUsuario) {

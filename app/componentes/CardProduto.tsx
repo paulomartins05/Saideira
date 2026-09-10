@@ -10,6 +10,7 @@ export interface ProdutoProps {
   tempoPostagem: string;
   imagemUrl: string | string[];
   distancia?: number;
+  isPremium?: boolean;
 }
 
 export default function CardProduto({
@@ -19,7 +20,8 @@ export default function CardProduto({
   preco,
   tempoPostagem,
   imagemUrl,
-  distancia
+  distancia,
+  isPremium
 }: ProdutoProps) {
 
   const precoFormatado = new Intl.NumberFormat('pt-BR', {
@@ -38,8 +40,14 @@ export default function CardProduto({
 
 
   return (
-    <Link href={`/resgates/${id}`} className="block h-full cursor-pointer group">
-      <div className="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col h-full border border-gray-100 pb-2 group-hover:-translate-y-1">
+    <Link href={`/resgates/${id}`} className="block h-full cursor-pointer group relative mt-2">
+      <div className={`bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col h-full pb-2 group-hover:-translate-y-1 ${isPremium ? 'border-2 border-yellow-400 shadow-yellow-100' : 'border border-gray-100'}`}>
+        
+        {isPremium && (
+          <div className="absolute -top-2 left-1/2 -translate-x-1/2 bg-gradient-to-r from-yellow-400 to-yellow-600 text-white px-4 py-1 rounded-full text-xs font-bold shadow-md z-20 flex items-center gap-1 border border-yellow-200">
+            ⭐ Destaque
+          </div>
+        )}
 
         <div className="relative bg-[#F8F9FA] h-48 w-full flex items-center justify-center p-4">
           <div className="absolute top-3 right-3 bg-white px-3 py-1 rounded-full text-xs font-bold text-background-secondary shadow-sm flex items-center gap-1 z-10">

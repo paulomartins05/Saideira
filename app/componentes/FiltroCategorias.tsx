@@ -1,7 +1,7 @@
 import { cn } from "../../lib/utils";
 import Link from "next/link";
 
-const categorias = ["Todos", "Salgados", "Doces", "Assados", "Bolos", "Outros"];
+const categorias = ["Todos", "Restaurantes", "Padarias", "Mercados", "Docerias", "Outros"];
 
 interface FiltroProps {
   categoriaAtiva: string;

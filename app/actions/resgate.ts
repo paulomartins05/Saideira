@@ -127,38 +127,49 @@ export async function validarResgate(resgateId: string, pinDigitado: string) {
   }
 
 
-  if (resgate.tentativasPin >= 3) {
-    throw new Error("PIN bloqueado após 3 tentativas incorretas. Contate o suporte.")
+  if (resgate.bloqueadoAte && resgate.bloqueadoAte > new Date()) {
+    const minutosRestantes = Math.ceil((resgate.bloqueadoAte.getTime() - new Date().getTime()) / 60000);
+    throw new Error(`Este resgate foi bloqueado por segurança. Tente novamente em ${minutosRestantes} minutos. `)
   }
 
   if (resgate.codigoPin !== pinDigitado) {
-    await prisma.resgate.update({
-      where: {
-        id: resgateId
-      },
-      data: {
-        tentativasPin: { increment: 1 }
-      }
-    })
-    const tentativasRestantes = 2 - resgate.tentativasPin
+    const tempoBloqueioExpirou = resgate.bloqueadoAte && resgate.bloqueadoAte <= new Date()
+    const novasTentativas = tempoBloqueioExpirou ? 1 : resgate.tentativasPin + 1
 
-    if (tentativasRestantes > 0) {
-      throw new Error(`PIN Incorreto. Você tem mais ${tentativasRestantes} tentativa(s)`)
+    const maxTentativas = 3
+    const tempoBloqueioMinutos = 15
+
+    let updateData: any = {
+      tentativasPin: novasTentativas
+    }
+
+    if (novasTentativas >= maxTentativas) {
+      const dataDesbloqueio = new Date(Date.now() + tempoBloqueioMinutos * 60000)
+      updateData.bloqueadoAte = dataDesbloqueio
+    } else if (tempoBloqueioExpirou) {
+      updateData.bloqueadoAte = null;
+    }
+
+    await prisma.resgate.update({
+      where: { id: resgateId },
+      data: updateData
+    })
+
+    if (novasTentativas >= maxTentativas) {
+      throw new Error(`PIN incorreto. Resgate bloqueado por ${tempoBloqueioMinutos} minutos por excesso de tentativas.`);
     } else {
-      throw new Error("Pin incorreto. Resgate bloqueado por excesso de tentativas")
+      const tentativasRestantes = maxTentativas - novasTentativas;
+      throw new Error(`PIN Incorreto. Você tem mais ${tentativasRestantes} tentativa(s).`);
     }
   }
-
-
-
   await prisma.resgate.update({
     where: { id: resgateId },
     data: {
       status: "RETIRADO",
-      tentativasPin: 0
+      tentativasPin: 0,
+      bloqueadoAte: null
     }
   })
-
   revalidatePath("/parceiro/perfil")
   return {
     success: true

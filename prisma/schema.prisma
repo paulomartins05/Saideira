@@ -21,6 +21,22 @@ enum StatusResgate {
   EXPIRADO
 }
 
+enum TipoNegocio {
+  RESTAURANTE
+  PADARIA
+  MERCADO
+  DOCERIA
+  OUTRO
+}
+
+enum StatusAssinatura {
+  ATIVA
+  CANCELADA
+  INADIMPLENTE
+  EXPIRADA
+}
+
+
 model User {
   id            String    @id @default(cuid())
   name          String
@@ -32,13 +48,33 @@ model User {
   role          RoleUsuario    @default(CONSUMIDOR)
   telefone      String?
   cnpj          String?   
-  localizacao   String?   
+  cep           String? 
+  rua           String?
+  numero        String?
+  bairro        String?
+  cidade        String?
+  estado        String? 
   latitude      Float?
   longitude     Float?
   sessions      Session[]
   accounts      Account[]
   ofertas       Oferta[]
-  resgates    Resgate[]
+  resgates      Resgate[]
+  tipoNegocio   TipoNegocio @default(RESTAURANTE)
+  assinatura    Assinatura?
+}
+
+model Assinatura {
+  id                    String   @id @default(cuid())
+  parceiroId            String   @unique
+  parceiro              User     @relation(fields: [parceiroId], references: [id], onDelete: Cascade)
+  status                StatusAssinatura @default(EXPIRADA)
+  provedorPagamentoId   String?
+  inicioEm              DateTime?
+  renovaEm              DateTime?
+  canceladaEm           DateTime?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
 }
 
 model Session {
