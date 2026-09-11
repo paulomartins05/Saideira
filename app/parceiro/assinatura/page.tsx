@@ -71,11 +71,31 @@ export default async function AssinaturaPage() {
                   </form>
                 </div>
               ) : (
-                <form action="/api/assinatura" method="POST">
-                  <Button type="submit" variant="primary" className="w-full py-4 text-lg">
-                    Assinar com Mercado Pago
-                  </Button>
-                </form>
+                <div className="flex flex-col gap-4">
+                  {assinatura?.status === "CANCELADA" && (
+                    <div className="bg-yellow-50 text-yellow-800 p-4 rounded-xl border border-yellow-200">
+                      <h3 className="font-bold mb-1">⚠️ Assinatura Cancelada</h3>
+                      <p className="text-sm">Sua assinatura foi cancelada. Assine novamente para voltar ao topo das buscas.</p>
+                    </div>
+                  )}
+                  {assinatura?.status === "INADIMPLENTE" && (
+                    <div className="bg-red-50 text-red-700 p-4 rounded-xl border border-red-200">
+                      <h3 className="font-bold mb-1">💳 Problema no Pagamento</h3>
+                      <p className="text-sm">Não conseguimos processar o pagamento da sua assinatura. Assine novamente para regularizar e não perder o destaque.</p>
+                    </div>
+                  )}
+                  {assinatura?.status === "EXPIRADA" && (
+                    <div className="bg-gray-50 text-gray-700 p-4 rounded-xl border border-gray-200">
+                      <h3 className="font-bold mb-1">⏱️ Assinatura Expirada</h3>
+                      <p className="text-sm">Sua assinatura expirou. Assine novamente para recuperar seus benefícios.</p>
+                    </div>
+                  )}
+                  <form action="/api/assinatura" method="POST">
+                    <Button type="submit" variant="primary" className="w-full py-4 text-lg">
+                      Assinar com Mercado Pago
+                    </Button>
+                  </form>
+                </div>
               )}
             </div>
           </div>

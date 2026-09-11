@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma"
 import { MercadoPagoConfig, PreApproval } from "mercadopago"
 import crypto from "crypto"
+import { StatusAssinatura } from "@/generated/prisma/client"
 
 export async function POST(req: NextRequest) {
 
@@ -43,7 +44,11 @@ export async function POST(req: NextRequest) {
         }
 
 
-        if (body.type === "subscription_created") {
+        if (
+            body.type === "subscription_created" ||
+            body.type === "subscription_preapproval" ||
+            body.action === "update"
+        ) {
             const client = new MercadoPagoConfig({ accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN || '' })
             const preApproval = new PreApproval(client)
 
@@ -52,16 +57,34 @@ export async function POST(req: NextRequest) {
             const parceiroId = assinaturaMP.external_reference
             const statusMP = assinaturaMP.status
 
+            let statusInterno: StatusAssinatura = StatusAssinatura.CANCELADA;
+            switch (statusMP) {
+                case 'authorized':
+                    statusInterno = StatusAssinatura.ATIVA;
+                    break;
+                case 'paused':
+                    statusInterno = StatusAssinatura.INADIMPLENTE;
+                    break;
+                case 'cancelled':
+                    statusInterno = StatusAssinatura.CANCELADA;
+                    break;
+                case 'expired':
+                    statusInterno = StatusAssinatura.EXPIRADA;
+                    break;
+                default:
+                    statusInterno = StatusAssinatura.CANCELADA;
+            }
+
             if (parceiroId) {
                 await prisma.assinatura.upsert({
                     where: { parceiroId: parceiroId },
                     update: {
-                        status: statusMP === 'authorized' ? 'ATIVA' : 'CANCELADA',
+                        status: statusInterno,
                         provedorPagamentoId: assinaturaMP.id,
                     },
                     create: {
                         parceiroId: parceiroId,
-                        status: statusMP === 'authorized' ? 'ATIVA' : 'CANCELADA',
+                        status: statusInterno,
                         provedorPagamentoId: assinaturaMP.id,
                     }
                 });
