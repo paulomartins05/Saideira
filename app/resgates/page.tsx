@@ -9,6 +9,7 @@ import FiltroCategorias from "../componentes/FiltroCategorias";
 import Paginacao from "../componentes/Paginacao";
 import ListaResgatesClient from "../componentes/ListaResgatesClient";
 import { calcularTempoPostagem } from "@/lib/utils";
+import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma"
 
 
@@ -26,78 +27,81 @@ export default async function PaginaTodosResgates({
   const textoDaBusca = params.busca || ""
   const itensPorPagina = 10
 
-  let filtroDoBanco: any = {
-    ativo: true,
-    quantidade: { gt: 0 },
-    dataValidade: { gt: new Date() }
-  }
+  const categoriaFilter = categoriaAtiva !== "Todos"
+    ? Prisma.sql`AND o.categoria = ${categoriaAtiva}`
+    : Prisma.empty;
 
-  if (categoriaAtiva !== "Todos") {
-    filtroDoBanco.categoria = categoriaAtiva
-  }
+  const searchFilter = textoDaBusca
+    ? Prisma.sql`AND (o.titulo ILIKE ${'%' + textoDaBusca + '%'} OR o.localizacao ILIKE ${'%' + textoDaBusca + '%'} OR o.descricao ILIKE ${'%' + textoDaBusca + '%'})`
+    : Prisma.empty;
 
-  if (textoDaBusca) {
-    filtroDoBanco.OR = [
-      { titulo: { contains: textoDaBusca, mode: 'insensitive' } },
-      { localizacao: { contains: textoDaBusca, mode: 'insensitive' } },
-      { descricao: { contains: textoDaBusca, mode: 'insensitive' } }
-    ]
-  }
+  const countRaw: any = await prisma.$queryRaw`
+    SELECT COUNT(o.id) as count
+    FROM "Oferta" o
+    WHERE o.ativo = true 
+      AND o.quantidade > 0 
+      AND o."dataValidade" > NOW()
+      ${categoriaFilter}
+      ${searchFilter}
+  `;
+  const totalDeItens = Number(countRaw[0].count);
+  const totalPaginas = Math.ceil(totalDeItens / itensPorPagina);
 
-  const totalDeItens = await prisma.oferta.count({
-    where: filtroDoBanco,
-  });
+  const limit = itensPorPagina;
+  const offset = (paginaAtual - 1) * itensPorPagina;
 
-  const totalPaginas = Math.ceil(totalDeItens / itensPorPagina)
-
-  const todasOfertasDoBanco = await prisma.oferta.findMany({
-    where: filtroDoBanco,
-    include: {
-      vendedor: {
-        select: { name: true, assinatura: { select: { status: true } } }
-      }
-    }
-  });
+  const produtosDoBancoPaginados: any[] = await prisma.$queryRaw`
+    SELECT 
+      o.*,
+      a.status as "assinaturaStatus"
+    FROM "Oferta" o
+    JOIN "User" u ON o."vendedorId" = u.id
+    LEFT JOIN "Assinatura" a ON u.id = a."parceiroId"
+    WHERE o.ativo = true 
+      AND o.quantidade > 0 
+      AND o."dataValidade" > NOW()
+      ${categoriaFilter}
+      ${searchFilter}
+    ORDER BY
+      CASE 
+        WHEN o."dataValidade" <= NOW() + INTERVAL '2 hours' THEN 0
+        WHEN o."dataValidade" <= NOW() + INTERVAL '6 hours' THEN 1
+        WHEN o."dataValidade" <= NOW() + INTERVAL '12 hours' THEN 2
+        ELSE 3
+      END ASC,
+      CASE 
+        WHEN a.status = 'ATIVA' THEN 0
+        ELSE 1
+      END ASC,
+      o."dataValidade" ASC
+    LIMIT ${limit} OFFSET ${offset}
+  `;
 
   const agora = new Date().getTime();
-  const ofertasComFaixa = todasOfertasDoBanco.map(p => {
-    const isPremium = p.vendedor.assinatura?.status === "ATIVA";
-    const tempoRestanteHoras = (p.dataValidade.getTime() - agora) / (1000 * 60 * 60);
+
+  const produtosFormatados = produtosDoBancoPaginados.map((p) => {
+    const isPremium = p.assinaturaStatus === "ATIVA";
+    const tempoRestanteHoras = (new Date(p.dataValidade).getTime() - agora) / (1000 * 60 * 60);
 
     let faixaUrgencia = 3;
     if (tempoRestanteHoras <= 2) faixaUrgencia = 0;
     else if (tempoRestanteHoras <= 6) faixaUrgencia = 1;
     else if (tempoRestanteHoras <= 12) faixaUrgencia = 2;
 
-    return { ...p, isPremium, faixaUrgencia, tempoRestanteHoras };
-  });
-
-  ofertasComFaixa.sort((a, b) => {
-    if (a.faixaUrgencia !== b.faixaUrgencia) {
-      return a.faixaUrgencia - b.faixaUrgencia;
+    return {
+      id: p.id,
+      nome: p.titulo,
+      categoria: p.categoria,
+      descricao: p.descricao,
+      preco: Number(p.precoResgate),
+      tempoPostagem: calcularTempoPostagem(new Date(p.createdAt)),
+      imagemUrl: p.imagemUrl?.[0] || "https://cdn-icons-png.flaticon.com/512/3225/3225091.png",
+      latitude: p.latitude,
+      longitude: p.longitude,
+      isPremium,
+      faixaUrgencia
     }
-    if (a.isPremium && !b.isPremium) return -1;
-    if (!a.isPremium && b.isPremium) return 1;
-
-    return a.tempoRestanteHoras - b.tempoRestanteHoras;
-  });
-
-  const startIndex = (paginaAtual - 1) * itensPorPagina;
-  const produtosDoBancoPaginados = ofertasComFaixa.slice(startIndex, startIndex + itensPorPagina);
-
-  const produtosFormatados = produtosDoBancoPaginados.map((p) => ({
-    id: p.id,
-    nome: p.titulo,
-    categoria: p.categoria,
-    descricao: p.descricao,
-    preco: Number(p.precoResgate),
-    tempoPostagem: calcularTempoPostagem(p.createdAt),
-    imagemUrl: p.imagemUrl?.[0] || "https://cdn-icons-png.flaticon.com/512/3225/3225091.png",
-    latitude: p.latitude,
-    longitude: p.longitude,
-    isPremium: p.isPremium,
-    faixaUrgencia: p.faixaUrgencia
-  }))
+  })
 
   return (
     <div className="bg-[#F6EFE5] min-h-screen flex flex-col">
