@@ -21,6 +21,7 @@ import DeleteIcon from "../assets/icon/delete-photo-profile.svg";
 
 
 const cadastroSchema = z.object({
+  tipoConta: z.enum(["consumidor", "parceiro"]),
   nome: z.string().min(3, "O nome deve ter pelo menos 3 caracteres"),
   email: z.string().min(1, "O e-mail é obrigatório.").email("Digite um e-mail válido."),
   senha: z.string().min(6, "A senha deve possuir 6 caracteres"),
@@ -35,9 +36,31 @@ const cadastroSchema = z.object({
   bairro: z.string().min(1, "Bairro é obrigatório"),
   cidade: z.string().min(1, "Cidade é obrigatória"),
   estado: z.string().min(2, "Estado é obrigatório"),
-}).refine((data) => data.senha === data.confirmarSenha, {
-  message: "As senhas não coincidem",
-  path: ["confirmarSenha"],
+}).superRefine((data, ctx) => {
+  if (data.senha !== data.confirmarSenha) {
+    ctx.addIssue({
+      code: "custom",
+      message: "As senhas não coincidem",
+      path: ["confirmarSenha"],
+    });
+  }
+
+  if (data.tipoConta === "parceiro") {
+    if (!data.cnpj || data.cnpj.trim() === "") {
+      ctx.addIssue({
+        code: "custom",
+        message: "CNPJ é obrigatório para parceiros",
+        path: ["cnpj"],
+      });
+    }
+    if (!data.tipoNegocio || data.tipoNegocio.trim() === "") {
+      ctx.addIssue({
+        code: "custom",
+        message: "Selecione o tipo do seu negócio",
+        path: ["tipoNegocio"],
+      });
+    }
+  }
 })
 
 type CadastroFormInputs = z.infer<typeof cadastroSchema>
@@ -45,7 +68,6 @@ type CadastroFormInputs = z.infer<typeof cadastroSchema>
 
 export default function CadastroPage() {
   const router = useRouter();
-  const [tipoConta, setTipoConta] = useState<"consumidor" | "parceiro">("consumidor");
 
   const [mostrarSenha, setMostrarSenha] = useState(false);
   const [mostrarConfirmarSenha, setMostrarConfirmarSenha] = useState(false);
@@ -56,10 +78,17 @@ export default function CadastroPage() {
   const {
     register,
     handleSubmit,
+    setValue,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<CadastroFormInputs>({
     resolver: zodResolver(cadastroSchema),
+    defaultValues: {
+      tipoConta: "consumidor",
+    }
   })
+
+  const tipoConta = watch("tipoConta");
 
   const handleRemoverFoto = () => {
     setFotoPerfil(null);
@@ -154,7 +183,7 @@ export default function CadastroPage() {
               ? "text-gray-900 border-b-2 border-[#D9774A]"
               : "text-gray-500 hover:text-gray-700"
               }`}
-            onClick={() => setTipoConta("consumidor")}
+            onClick={() => setValue("tipoConta", "consumidor")}
           >
             Consumidor
           </button>
@@ -165,7 +194,7 @@ export default function CadastroPage() {
               ? "text-gray-900 border-b-2 border-[#D9774A]"
               : "text-gray-500 hover:text-gray-700"
               }`}
-            onClick={() => setTipoConta("parceiro")}
+            onClick={() => setValue("tipoConta", "parceiro")}
           >
             Parceiro
           </button>
