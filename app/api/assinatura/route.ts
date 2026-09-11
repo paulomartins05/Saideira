@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
+import { NextRequest, NextResponse } from "next/server"
+import { auth } from "@/lib/auth"
+import { headers } from "next/headers"
 import { MercadoPagoConfig, PreApproval } from "mercadopago"
+import { PRECO_ASSINATURA_DESTAQUE } from "@/lib/planos"
 
 export async function POST(req: NextRequest) {
     const reqHeaders = await headers()
@@ -22,11 +23,11 @@ export async function POST(req: NextRequest) {
     try {
         const resposta = await preApproval.create({
             body: {
-                reason: "Assinatura Salgado Salvo",
+                reason: "Assinatura Saideira",
                 auto_recurring: {
                     frequency: 1,
                     frequency_type: "months",
-                    transaction_amount: 19.90,
+                    transaction_amount: PRECO_ASSINATURA_DESTAQUE,
                     currency_id: "BRL"
                 },
                 back_url: process.env.NEXT_PUBLIC_SITE_URL,

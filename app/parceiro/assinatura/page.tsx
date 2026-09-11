@@ -6,6 +6,8 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
+import { PRECO_ASSINATURA_DESTAQUE, formatarPreco } from "@/lib/planos";
+
 export default async function AssinaturaPage() {
   const reqHeaders = await headers();
   const session = await auth.api.getSession({ headers: reqHeaders });
@@ -39,7 +41,9 @@ export default async function AssinaturaPage() {
               <div>
                 <h2 className="text-2xl font-bold mb-2">Plano Destaque</h2>
                 <div className="flex items-baseline gap-1 mb-4">
-                  <span className="text-3xl font-black text-[#D9774A]">R$ 49</span>
+                  <span className="text-3xl font-black text-[#D9774A]">
+                    {formatarPreco(PRECO_ASSINATURA_DESTAQUE)}
+                  </span>
                   <span className="text-gray-500 font-medium">/mês</span>
                 </div>
                 <ul className="flex flex-col gap-3 mb-6">
