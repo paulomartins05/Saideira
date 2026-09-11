@@ -41,7 +41,7 @@ export default async function AssinaturaPage(props: Props) {
               Destaque sua loja
             </h1>
             <p className="text-lg opacity-80 max-w-2xl">
-              Ative a assinatura premium para aparecer no topo das buscas e aumentar suas vendas.
+              Ative a assinatura premium para ter prioridade nas buscas e aumentar suas vendas.
             </p>
           </div>
           <div className="bg-white rounded-3xl p-8 border border-[#e8dfd5] shadow-sm max-w-xl">
@@ -68,7 +68,7 @@ export default async function AssinaturaPage(props: Props) {
                 </div>
                 <ul className="flex flex-col gap-3 mb-6">
                   <li className="flex items-center gap-2">
-                    <span className="text-green-500">✅</span> Suas ofertas sempre no topo
+                    <span className="text-green-500">✅</span> Prioridade nas buscas
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="text-green-500">✅</span> Selo de Destaque Exclusivo
@@ -95,7 +95,7 @@ export default async function AssinaturaPage(props: Props) {
                   {assinatura?.status === "CANCELADA" && (
                     <div className="bg-yellow-50 text-yellow-800 p-4 rounded-xl border border-yellow-200">
                       <h3 className="font-bold mb-1">⚠️ Assinatura Cancelada</h3>
-                      <p className="text-sm">Sua assinatura foi cancelada. Assine novamente para voltar ao topo das buscas.</p>
+                      <p className="text-sm">Sua assinatura foi cancelada. Assine novamente para voltar a ter prioridade nas buscas.</p>
                     </div>
                   )}
                   {assinatura?.status === "INADIMPLENTE" && (
