@@ -8,7 +8,15 @@ import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { PRECO_ASSINATURA_DESTAQUE, formatarPreco } from "@/lib/planos";
 
-export default async function AssinaturaPage() {
+type Props = {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}
+
+export default async function AssinaturaPage(props: Props) {
+  const resolvedSearchParams = await props.searchParams;
+  const erroCancelamento = resolvedSearchParams?.erro === 'cancelamento';
+  const sucessoCancelamento = resolvedSearchParams?.sucesso === 'cancelado';
+
   const reqHeaders = await headers();
   const session = await auth.api.getSession({ headers: reqHeaders });
   if (!session?.user || session.user.role !== "PARCEIRO") {
@@ -37,6 +45,18 @@ export default async function AssinaturaPage() {
             </p>
           </div>
           <div className="bg-white rounded-3xl p-8 border border-[#e8dfd5] shadow-sm max-w-xl">
+            {sucessoCancelamento && (
+              <div className="mb-6 bg-green-50 text-green-700 p-4 rounded-xl border border-green-200">
+                <h3 className="font-bold mb-1">✅ Cancelamento Realizado</h3>
+                <p className="text-sm">Sua assinatura foi cancelada com sucesso no Mercado Pago e você não será mais cobrado.</p>
+              </div>
+            )}
+            {erroCancelamento && (
+              <div className="mb-6 bg-red-50 text-red-700 p-4 rounded-xl border border-red-200">
+                <h3 className="font-bold mb-1">❌ Erro no Cancelamento</h3>
+                <p className="text-sm">Tivemos uma instabilidade de conexão com o Mercado Pago. Por favor, tente cancelar novamente em alguns minutos ou cancele direto pelo seu app.</p>
+              </div>
+            )}
             <div className="flex flex-col gap-6">
               <div>
                 <h2 className="text-2xl font-bold mb-2">Plano Destaque</h2>

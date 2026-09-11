@@ -35,13 +35,15 @@ export async function POST(req: NextRequest) {
             }
         })
 
-        await prisma.assinatura.update({
-            where: { parceiroId: session.user.id },
-            data: { status: "CANCELADA", canceladaEm: new Date() }
-        })
     } catch (error) {
         console.error("Erro ao cancelar no MP:", error);
+        return NextResponse.redirect(new URL("/parceiro/assinatura?erro=cancelamento", req.url));
     }
 
-    return NextResponse.redirect(new URL("/parceiro/assinatura", req.url));
+    await prisma.assinatura.update({
+        where: { parceiroId: session.user.id },
+        data: { status: "CANCELADA", canceladaEm: new Date() }
+    })
+
+    return NextResponse.redirect(new URL("/parceiro/assinatura?sucesso=cancelado", req.url));
 }
