@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
     try {
         const resposta = await preApproval.create({
             body: {
-                reason: "Assinatura Saideira",
+                reason: "Assinatura Saidera",
                 auto_recurring: {
                     frequency: 1,
                     frequency_type: "months",
