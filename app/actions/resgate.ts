@@ -127,33 +127,39 @@ export async function validarResgate(resgateId: string, pinDigitado: string) {
   }
 
 
-  if (resgate.bloqueadoAte && resgate.bloqueadoAte > new Date()) {
-    const minutosRestantes = Math.ceil((resgate.bloqueadoAte.getTime() - new Date().getTime()) / 60000);
+  const agora = new Date();
+
+  // 1. Trava de tempo: Se está bloqueado e a data de bloqueio AINDA NÃO passou
+  if (resgate.bloqueadoAte && resgate.bloqueadoAte > agora) {
+    const minutosRestantes = Math.ceil((resgate.bloqueadoAte.getTime() - agora.getTime()) / 60000);
     throw new Error(`Este resgate foi bloqueado por segurança. Tente novamente em ${minutosRestantes} minutos. `)
   }
 
   if (resgate.codigoPin !== pinDigitado) {
-    const tempoBloqueioExpirou = resgate.bloqueadoAte && resgate.bloqueadoAte <= new Date()
-    const novasTentativas = tempoBloqueioExpirou ? 1 : resgate.tentativasPin + 1
+    // 2. O tempo expirou? Se sim, ele ganha uma nova chance (reseta pra 1)
+    const tempoBloqueioExpirou = resgate.bloqueadoAte !== null && resgate.bloqueadoAte <= agora;
+    const novasTentativas = tempoBloqueioExpirou ? 1 : resgate.tentativasPin + 1;
 
-    const maxTentativas = 3
-    const tempoBloqueioMinutos = 15
+    const maxTentativas = 3;
+    const tempoBloqueioMinutos = 15;
 
     let updateData: any = {
       tentativasPin: novasTentativas
-    }
+    };
 
+    // 3. Aplica o castigo novamente se estourar as 3 tentativas
     if (novasTentativas >= maxTentativas) {
-      const dataDesbloqueio = new Date(Date.now() + tempoBloqueioMinutos * 60000)
-      updateData.bloqueadoAte = dataDesbloqueio
+      const dataDesbloqueio = new Date(agora.getTime() + tempoBloqueioMinutos * 60000);
+      updateData.bloqueadoAte = dataDesbloqueio;
     } else if (tempoBloqueioExpirou) {
+      // Libera o bloqueio antigo do banco para não dar conflito futuro
       updateData.bloqueadoAte = null;
     }
 
     await prisma.resgate.update({
       where: { id: resgateId },
       data: updateData
-    })
+    });
 
     if (novasTentativas >= maxTentativas) {
       throw new Error(`PIN incorreto. Resgate bloqueado por ${tempoBloqueioMinutos} minutos por excesso de tentativas.`);

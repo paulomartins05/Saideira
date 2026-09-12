@@ -159,26 +159,32 @@ export default async function Parceiro({
                                 </p>
                               </div>
 
-                              <form action={async (formData) => {
-                                "use server"
-                                const resgateId = formData.get("resgateId") as string
-                                const pin = formData.get("pin") as string
+                              {pedido.bloqueadoAte && pedido.bloqueadoAte > new Date() ? (
+                                <div className="bg-red-50 text-red-600 px-3 py-1.5 rounded-lg border border-red-200 text-xs font-bold text-center">
+                                  Bloqueado.<br/>Tente em {Math.ceil((pedido.bloqueadoAte.getTime() - new Date().getTime()) / 60000)} min.
+                                </div>
+                              ) : (
+                                <form action={async (formData) => {
+                                  "use server"
+                                  const resgateId = formData.get("resgateId") as string
+                                  const pin = formData.get("pin") as string
 
-                                await validarResgate(resgateId, pin)
-                              }} className="flex items-center gap-2">
-                                <input type="hidden" name="resgateId" value={pedido.id} />
-                                <input
-                                  type="text"
-                                  name="pin"
-                                  placeholder="PIN"
-                                  maxLength={4}
-                                  required
-                                  className="w-16 px-2 py-1.5 text-center border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-laranja-destaque"
-                                />
-                                <Button type="submit" className="bg-[#D9774A] hover:bg-[#c4683e] text-white py-1.5 px-3 text-xs h-auto">
-                                  VALIDAR
-                                </Button>
-                              </form>
+                                  await validarResgate(resgateId, pin)
+                                }} className="flex items-center gap-2">
+                                  <input type="hidden" name="resgateId" value={pedido.id} />
+                                  <input
+                                    type="text"
+                                    name="pin"
+                                    placeholder="PIN"
+                                    maxLength={4}
+                                    required
+                                    className="w-16 px-2 py-1.5 text-center border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-laranja-destaque"
+                                  />
+                                  <Button type="submit" className="bg-[#D9774A] hover:bg-[#c4683e] text-white py-1.5 px-3 text-xs h-auto">
+                                    VALIDAR
+                                  </Button>
+                                </form>
+                              )}
 
                             </div>
                           ))
