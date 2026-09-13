@@ -1,15 +1,10 @@
 import type { Metadata } from "next";
-import { Playfair_Display, Lora, Inter } from "next/font/google";
+import { Space_Grotesk, Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/app/componentes/ui/sonner";
 
-const playfair = Playfair_Display({
-  variable: "--font-playfair",
-  subsets: ["latin"],
-});
-
-const lora = Lora({
-  variable: "--font-lora",
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-space-grotesk",
   subsets: ["latin"],
 });
 
@@ -29,7 +24,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
-      <body className={`${playfair.variable} ${lora.variable} ${inter.variable}`}>
+      <body className={`${spaceGrotesk.variable} ${inter.variable} font-body bg-[#E9E6DE] text-night antialiased`}>
         {children}
         <Toaster />
       </body>
