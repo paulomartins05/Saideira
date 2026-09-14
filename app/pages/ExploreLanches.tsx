@@ -1,82 +1,75 @@
-import Container from "../componentes/container";
-import Text from "../componentes/text";
-import { cn } from "../../lib/utils";
-import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-
-
-const categoriasLanches = [
-  { id: 1, nome: "Salgados", icone: "🥟" },
-  { id: 2, nome: "Doces", icone: "🍩" },
-  { id: 3, nome: "Assados", icone: "🥐" },
-  { id: 4, nome: "Bolos", icone: "🍰" },
-  { id: 5, nome: "Outros", icone: "🛒" },
-];
+import Link from "next/link";
+import { Utensils, Wheat, ShoppingBasket, Cake } from "lucide-react";
 
 export default async function ExploreLanches() {
-
-  const contagemCategorias = await prisma.oferta.groupBy({
-    by: ["categoria"],
-    _count: { id: true },
+  const ofertas = await prisma.oferta.findMany({
     where: {
-      quantidade: { gt: 0 }
-    }
-  })
-
-  const categoriasLanche = categoriasLanches.map(categoria => {
-    const itemNoBanco = contagemCategorias.find(c => c.categoria === categoria.nome)
-    return {
-      ...categoria,
-      itens: itemNoBanco ? itemNoBanco._count.id : 0
+      quantidade: { gt: 0 },
+      ativo: true,
+      dataValidade: { gt: new Date() }
+    },
+    select: {
+      id: true,
+      vendedor: {
+        select: {
+          tipoNegocio: true
+        }
+      }
     }
   });
 
+  const totalGeral = ofertas.length;
+
+  const contagem = {
+    RESTAURANTE: 0,
+    PADARIA: 0,
+    MERCADO: 0,
+    DOCERIA: 0,
+  };
+
+  ofertas.forEach(oferta => {
+    const tipo = oferta.vendedor?.tipoNegocio;
+    if (tipo && contagem[tipo as keyof typeof contagem] !== undefined) {
+      contagem[tipo as keyof typeof contagem]++;
+    }
+  });
+
+  const categorias = [
+    { id: "RESTAURANTE", nome: "Restaurantes", count: contagem.RESTAURANTE, icone: <Utensils className="w-[14px] h-[14px]" /> },
+    { id: "PADARIA", nome: "Padarias", count: contagem.PADARIA, icone: <Wheat className="w-[14px] h-[14px]" /> },
+    { id: "MERCADO", nome: "Mercados", count: contagem.MERCADO, icone: <ShoppingBasket className="w-[14px] h-[14px]" /> },
+    { id: "DOCERIA", nome: "Docerias", count: contagem.DOCERIA, icone: <Cake className="w-[14px] h-[14px]" /> },
+  ];
+
   return (
-    <section className="py-12 bg-background-primary w-full overflow-hidden">
-      <Container>
-        <div className="mb-8 flex flex-col md:flex-row justify-between md:items-end gap-4">
-          <Text variant="playfair" as="h2" className="text-3xl md:text-4xl text-background-secondary font-bold">
-            Explore os <span className="text-laranja-destaque">Lanches</span>
-          </Text>
+    <section className="pt-6 pb-2">
+      <div className="max-w-[1160px] mx-auto px-7">
+        <div className="flex gap-0.5 border-b-[1.5px] border-line overflow-x-auto mb-6 scrollbar-hide">
 
-          <form action="/resgates" method="GET" className="relative w-full md:w-80">
-            <input 
-              type="text" 
-              name="busca" 
-              placeholder="Buscar lanche, loja ou local..." 
-              className="w-full pl-4 pr-10 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#D9774A]/50 focus:border-[#D9774A] shadow-sm text-sm transition-all"
-            />
-            <button type="submit" className="absolute right-3 top-1/2 -translate-y-1/2 text-xl hover:scale-110 transition-transform">
-              🔍
-            </button>
-          </form>
-        </div>
+          <Link href="/resgates" className="flex items-center gap-1.5 py-2.5 px-4 text-[13px] font-bold text-night border-b-[2.5px] border-amber -mb-[1.5px] whitespace-nowrap">
+            Todos
+            <span className="bg-amber text-night text-[10px] font-bold px-[7px] py-[1px] rounded-[10px]">
+              {totalGeral}
+            </span>
+          </Link>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 md:gap-6 pb-6 pt-2 w-full">
-
-          {categoriasLanche.map((categoria) => (
+          {categorias.map((categoria) => (
             <Link
-              href={`/resgates?categoria=${categoria.nome}`}
               key={categoria.id}
-              className={cn(
-                "flex flex-col items-center justify-center w-full h-37.5 rounded-3xl cursor-pointer transition-all duration-300 shadow-sm hover:-translate-y-1 hover:shadow-md hover:bg-[#8C6C3D] hover:text-white bg-background-secondary text-white group"
-              )}
+              href={`/resgates?tipoNegocio=${categoria.id}`}
+              className="flex items-center gap-1.5 py-2.5 px-4 text-[13px] font-bold text-muted border-b-[2.5px] border-transparent hover:text-night -mb-[1.5px] whitespace-nowrap transition-colors"
             >
-              <div className="text-5xl mb-3 drop-shadow-md group-hover:scale-110 transition-transform">
-                {categoria.icone}
-              </div>
-
-              <h3 className="font-inter font-semibold text-sm mb-0.5 text-center">
-                {categoria.nome}
-              </h3>
-              <p className="font-inter text-xs opacity-70">
-                Ver opções
-              </p>
+              {categoria.icone}
+              {categoria.nome}
+              <span className="bg-line text-night text-[10px] font-bold px-[7px] py-[1px] rounded-[10px]">
+                {categoria.count}
+              </span>
             </Link>
           ))}
 
         </div>
-      </Container>
+      </div>
     </section>
   );
 }

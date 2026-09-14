@@ -1,77 +1,63 @@
-import Container from "../componentes/container";
-import Text from "../componentes/text";
 import Link from "next/link";
-import CardProduto, { ProdutoProps } from "../componentes/CardProduto";
+import { OfertaCard } from "../componentes/ui/OfertaCard";
 import { calcularTempoPostagem } from "../../lib/utils";
 import { prisma } from "@/lib/prisma"
 
-
 export default async function ResgatesDisponiveis() {
-
   const ofertas = await prisma.oferta.findMany({
-    take: 4,
+    take: 8,
     orderBy: {
-      createdAt: "desc"
+      dataValidade: "asc"
     },
     where: {
-      dataValidade: {
-        gt: new Date()
-      },
-
-      quantidade: {
-        gt: 0
-      },
+      dataValidade: { gt: new Date() },
+      quantidade: { gt: 0 },
       ativo: true,
     }
-  })
+  });
 
   return (
-    <section className="py-12 bg-background-primary w-full">
-      <Container>
-
-        <div className="flex items-end justify-between mb-8">
-          <Text variant="playfair" as="h2" className="text-3xl md:text-4xl text-background-secondary font-bold">
-            Resgates <span className="text-laranja-destaque">Disponíveis</span> Agora
-          </Text>
-
-          <Link
-            href="/resgates"
-            className="text-sm font-bold text-background-secondary uppercase border-b-2 border-background-secondary pb-0.5 transition-colors hover:text-laranja-destaque hover:border-laranja-destaque shrink-0 hidden md:block"
-          >
-            Ver todos os resgates
-          </Link>
-        </div>
+    <section className="pb-10">
+      <div className="max-w-[1160px] mx-auto px-7">
+        
+        <h2 className="font-display text-[21px] font-extrabold m-0 tracking-[-0.01em] flex items-center gap-2">
+          Fechando <span className="text-amber-dark">agora</span>
+        </h2>
+        <p className="text-[13px] text-muted mb-4 mt-1">
+          Ordenado por quem vence primeiro — não por quem paga mais
+        </p>
 
         {ofertas.length === 0 ? (
-          <div className="text-center py-10">
-            <p className="text-gray-500">Nenhum resgate disponível no momento. Volte mais tarde!</p>
+          <div className="text-center py-10 bg-card border border-line rounded-xl mt-4">
+            <p className="text-muted font-semibold text-sm">Nenhum resgate disponível no momento. Volte mais tarde!</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {ofertas.map((oferta) => (
-              <CardProduto
-                key={oferta.id}
-                id={oferta.id}
-                nome={oferta.titulo}
-                descricao={oferta.descricao}
-                preco={oferta.precoResgate}
-                tempoPostagem={calcularTempoPostagem(oferta.createdAt)}
-                imagemUrl={oferta.imagemUrl?.[0] || "https://cdn-icons-png.flaticon.com/512/3225/3225091.png"}
-              />
-            ))}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
+            {ofertas.map((oferta) => {
+              // Calculando o tempo restante em minutos/horas para mostrar de forma amigável
+              const diffMs = new Date(oferta.dataValidade).getTime() - new Date().getTime();
+              const diffMins = Math.max(1, Math.floor(diffMs / 60000));
+              const tempoFormatado = diffMins > 60 
+                ? `${Math.floor(diffMins / 60)}h ${diffMins % 60}m` 
+                : `${diffMins} min`;
+
+              return (
+                <Link href={`/resgates/${oferta.id}`} key={oferta.id}>
+                  <OfertaCard
+                    loja={oferta.localizacao || "Loja Parceira"}
+                    titulo={oferta.titulo}
+                    precoAntigo={`R$ ${(oferta.precoResgate * 2).toFixed(2).replace('.', ',')}`} // Simulação de preço antigo caso não exista
+                    precoNovo={`R$ ${oferta.precoResgate.toFixed(2).replace('.', ',')}`}
+                    tempoRestante={tempoFormatado}
+                    isPremium={diffMins < 30} // Destaque para ofertas que fecham em menos de 30 min
+                  />
+                </Link>
+              );
+            })}
           </div>
         )}
 
-        <div className="mt-8 flex justify-center md:hidden">
-          <Link
-            href="/resgates"
-            className="text-sm font-bold text-background-secondary uppercase border-b-2 border-background-secondary pb-0.5"
-          >
-            Ver todos os resgates
-          </Link>
-        </div>
-
-      </Container>
+      </div>
     </section>
   );
 }

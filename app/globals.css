@@ -23,11 +23,24 @@
 
   --font-display: var(--font-space-grotesk);
   --font-body: var(--font-inter);
+
+  --animate-marquee: marquee 26s linear infinite;
+
 }
 
 @layer base {
   body {
     background-color: #E9E6DE;
     color: var(--color-night);
+  }
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
   }
 }

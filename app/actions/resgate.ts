@@ -182,3 +182,20 @@ export async function validarResgate(resgateId: string, pinDigitado: string) {
   }
 }
 
+export async function getCartCount() {
+  const reqHeaders = await headers()
+  const session = await auth.api.getSession({
+    headers: reqHeaders
+  })
+  
+  if (!session?.user) return 0;
+
+  const count = await prisma.resgate.count({
+    where: {
+      userId: session.user.id,
+      status: "PENDENTE"
+    }
+  });
+  
+  return count;
+}

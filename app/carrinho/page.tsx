@@ -1,10 +1,11 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import Container from "../componentes/container";
-import Header from "../pages/header";
-import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { headers } from "next/headers";
+import { prisma } from "@/lib/prisma";
+import Header from "../pages/header";
+import { Ticket } from "../componentes/ui/Ticket";
+import { ChevronRight, ShoppingBag } from "lucide-react";
 
 export default async function carrinhoPage() {
 
@@ -23,7 +24,9 @@ export default async function carrinhoPage() {
             status: "PENDENTE"
         },
         include: {
-            oferta: true
+            oferta: {
+                include: { vendedor: true }
+            }
         },
         orderBy: {
             createdAt: "desc",
@@ -31,54 +34,47 @@ export default async function carrinhoPage() {
     })
 
     return (
-        <div className="bg-[#F6EFE5] min-h-screen flex flex-col font-inter text-background-secondary">
+        <div className="bg-paper min-h-screen flex flex-col font-inter text-night">
             <Header />
-            <hr className="opacity-10 border-background-secondary" />
-            <main className="py-8 grow">
-                <Container>
-                    <div className="max-w-4xl mx-auto">
-                        <h1 className="text-3xl font-playfair font-bold mb-8">Meus Resgates</h1>
-                        {meusResgates.length === 0 ? (
-                            <div className="bg-white p-12 rounded-2xl shadow-sm text-center">
-                                <span className="text-4xl mb-4 block">🛒</span>
-                                <h2 className="text-xl font-bold mb-2">Seu carrinho está vazio</h2>
-                                <p className="text-gray-500 mb-6">Você ainda não reservou nenhum produto.</p>
-                                <Link href="/resgates" className="text-[#D9774A] font-bold hover:underline">
-                                    Ver ofertas disponíveis
-                                </Link>
-                            </div>
-                        ) : (
-                            <div className="flex flex-col gap-4">
-                                {meusResgates.map((resgate) => (
-                                    <div key={resgate.id} className="bg-white p-4 sm:p-6 rounded-2xl shadow-sm flex flex-col sm:flex-row items-center gap-6 border border-gray-100">
-
-                                        <img
-                                            src={resgate.oferta.imagemUrl?.[0] || "https://cdn-icons-png.flaticon.com/512/3225/3225091.png"}
-                                            alt={resgate.oferta.titulo}
-                                            className="w-24 h-24 object-cover rounded-xl"
-                                        />
-                                        <div className="flex-1 text-center sm:text-left">
-                                            <h3 className="font-bold text-lg">{resgate.oferta.titulo}</h3>
-                                            <p className="text-sm text-gray-500 mb-1">Status: <strong className={resgate.status === "PENDENTE" ? "text-orange-500" : "text-green-600"}>{resgate.status}</strong></p>
-                                            <p className="font-semibold text-[#6B705C]">
-                                                Valor: R$ {Number(resgate.oferta.precoResgate).toFixed(2).replace('.', ',')}
-                                            </p>
-                                        </div>
-                                        <div className="bg-gray-50 border border-gray-200 p-4 rounded-xl text-center min-w-[150px]">
-                                            <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Seu Código PIN</p>
-                                            {resgate.status === "PENDENTE" ? (
-                                                <p className="text-2xl font-black text-[#D9774A] tracking-widest">{resgate.codigoPin}</p>
-                                            ) : (
-                                                <p className="text-lg font-bold text-gray-400 line-through">{resgate.codigoPin}</p>
-                                            )}
-                                        </div>
-
-                                    </div>
-                                ))}
-                            </div>
-                        )}
+            
+            <main className="pb-10">
+                <div className="max-w-[800px] mx-auto px-7 pt-7">
+                    
+                    <div className="flex items-center gap-1.5 text-[12.5px] text-muted mb-6 flex-wrap font-medium">
+                        <Link href="/" className="hover:text-night transition-colors">Início</Link>
+                        <ChevronRight className="w-3.5 h-3.5" />
+                        <span className="text-night font-bold">Meus Resgates</span>
                     </div>
-                </Container>
+
+                    <h1 className="font-display font-extrabold text-[28px] mb-2 tracking-[-0.01em]">Meus Resgates</h1>
+                    <p className="text-[13.5px] text-muted mb-8">Apresente o código no estabelecimento para retirar.</p>
+
+                    {meusResgates.length === 0 ? (
+                        <div className="bg-card border border-line p-10 rounded-[20px] text-center flex flex-col items-center justify-center">
+                            <div className="w-16 h-16 bg-line rounded-full flex items-center justify-center text-muted mb-4">
+                                <ShoppingBag className="w-8 h-8" />
+                            </div>
+                            <h2 className="text-lg font-bold mb-2">Seu carrinho está vazio</h2>
+                            <p className="text-sm text-muted mb-6">Você ainda não reservou nenhum produto.</p>
+                            <Link href="/resgates" className="bg-night text-amber font-bold text-[13px] px-6 py-2.5 rounded-lg hover:bg-night-3 transition-colors">
+                                Ver ofertas disponíveis
+                            </Link>
+                        </div>
+                    ) : (
+                        <div className="flex flex-col">
+                            {meusResgates.map((resgate) => (
+                                <Ticket 
+                                    key={resgate.id}
+                                    titulo={resgate.oferta.titulo}
+                                    loja={resgate.oferta.vendedor?.name || "Loja Parceira"}
+                                    codigoPin={resgate.codigoPin}
+                                    status={resgate.status}
+                                    imageUrl={resgate.oferta.imagemUrl?.[0]}
+                                />
+                            ))}
+                        </div>
+                    )}
+                </div>
             </main>
         </div>
     );

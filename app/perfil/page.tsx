@@ -1,141 +1,119 @@
-import Link from "next/link"
-import Header from "../pages/header"
-import Container from "../componentes/container"
-import Text from "../componentes/text"
-import Button from "../componentes/button"
-import InputForm from "../componentes/InputForm"
-import { authClient } from "@/lib/auth-client"
-import { prisma } from "@/lib/prisma"
-import { auth } from "@/lib/auth"
-import { headers } from "next/headers"
-import { redirect } from "next/navigation"
+import Link from "next/link";
+import Header from "../pages/header";
+import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+import { ChevronRight, Edit2, History, TrendingDown, PackageCheck } from "lucide-react";
 
 export default async function PerfilPage() {
-
-
-  const reqHeaders = await headers()
-  const session = await auth.api.getSession({
-    headers: reqHeaders
-  })
-
-  const usuario = session?.user
+  const reqHeaders = await headers();
+  const session = await auth.api.getSession({ headers: reqHeaders });
+  const usuario = session?.user;
 
   if (!usuario) {
-    redirect("/login")
+    redirect("/login");
   }
-
 
   const historicoPedidos = await prisma.resgate.findMany({
     where: { userId: usuario.id },
     include: {
       oferta: {
-        include: {
-          vendedor: true
-        }
+        include: { vendedor: true }
       }
     },
-    orderBy: {
-      createdAt: "desc"
-    }
-  })
+    orderBy: { createdAt: "desc" }
+  });
 
-  const totalResgates = historicoPedidos.length
+  const totalResgates = historicoPedidos.length;
   const valorEconomizado = historicoPedidos.reduce((total, resgate) => {
-    const economia = Number(resgate.oferta.precoOriginal) - Number(resgate.oferta.precoResgate)
-    return total + (isNaN(economia) ? 0 : economia)
-  }, 0)
+    const economia = Number(resgate.oferta.precoOriginal) - Number(resgate.oferta.precoResgate);
+    return total + (isNaN(economia) ? 0 : economia);
+  }, 0);
 
   return (
-    <div className="bg-[#F6EFE5] min-h-screen flex flex-col font-inter text-background-secondary">
+    <div className="bg-paper min-h-screen flex flex-col font-inter text-night">
       <Header />
-      <hr className="opacity-10 border-background-secondary" />
 
-      <main className="py-8 grow">
-        <Container>
+      <main className="pb-10">
+        <div className="max-w-[800px] mx-auto px-7 pt-7">
 
-          <div className="text-sm text-[#B87042] mb-6 flex items-center gap-2">
-            <Link href="/" className="hover:underline">Início</Link>
-            <span>{'>'}</span>
-            <span className="font-medium">Minha conta</span>
+          <div className="flex items-center gap-1.5 text-[12.5px] text-muted mb-6 flex-wrap font-medium">
+            <Link href="/" className="hover:text-night transition-colors">Início</Link>
+            <ChevronRight className="w-3.5 h-3.5" />
+            <span className="text-night font-bold">Minha Conta</span>
           </div>
 
-          <div className="bg-[#fdf3ef] border border-[#e8dfd5] shadow-sm rounded-3xl p-6 md:p-10 flex flex-col gap-10">
-
-            <div className="flex flex-col md:flex-row items-center gap-6">
-              <div className="w-24 h-24 rounded-full border-2 border-background-secondary flex items-center justify-center bg-white overflow-hidden shrink-0">
-                {usuario.image ? (
-                  <img src={usuario.image} alt={usuario.name} className="w-full h-full object-cover" />
-                ) : (
-                  <span className="font-bold uppercase text-4xl text-background-secondary">
-                    {usuario.name ? usuario.name.charAt(0) : "👤"}
-                  </span>
-                )}
-              </div>
-
-              <div className="text-center md:text-left grow">
-                <Text variant="playfair" as="h1" className="text-3xl md:text-4xl font-bold mb-1">
-                  {usuario.name || "Usuário Salgado Salvo"}
-                </Text>
-                <p className="text-sm opacity-80">{usuario.email}</p>
-              </div>
+          <div className="bg-card border border-line rounded-[20px] p-6 md:p-8 flex flex-col md:flex-row items-center gap-6 mb-6">
+            <div className="w-[88px] h-[88px] rounded-full bg-night text-amber font-display font-extrabold text-[32px] flex items-center justify-center shrink-0 overflow-hidden border-[3px] border-amber">
+              {usuario.image ? (
+                <img src={usuario.image} alt={usuario.name} className="w-full h-full object-cover" />
+              ) : (
+                usuario.name ? usuario.name.charAt(0) : "S"
+              )}
             </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-
-              <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm flex flex-col items-center justify-center text-center">
-                <span className="font-bold text-5xl mb-1 text-laranja-destaque">{totalResgates}</span>
-                <span className="text-xs uppercase font-medium tracking-wider opacity-70">RESGATES</span>
-              </div>
-
-              <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm flex flex-col items-center justify-center text-center">
-                <span className="font-bold text-5xl mb-1 text-background-secondary">
-                  <span className="text-2xl font-semibold">R$</span> {valorEconomizado.toFixed(2).replace('.', ',')}
-                </span>
-                <span className="text-xs uppercase font-medium tracking-wider opacity-70">ECONOMIZADO</span>
-              </div>
-
+            <div className="text-center md:text-left grow">
+              <h1 className="font-display font-extrabold text-[28px] mb-1 tracking-[-0.01em]">
+                {usuario.name || "Usuário Salgado Salvo"}
+              </h1>
+              <p className="text-[14px] text-muted">{usuario.email}</p>
             </div>
+            <Link href="/perfil/editar" className="shrink-0 bg-line text-night font-bold text-[13px] px-5 py-2.5 rounded-lg hover:bg-line/70 transition-colors flex items-center gap-2">
+              <Edit2 className="w-4 h-4" />
+              Editar
+            </Link>
+          </div>
 
-            <div>
-              <h2 className="text-xl font-bold text-laranja-destaque mb-5">HISTÓRICO RECENTE</h2>
-              <div className="flex flex-col gap-4">
-                {historicoPedidos.length === 0 ? (
-                  <p className="text-sm opacity-70">Você ainda não realizou nenhum resgate.</p>
-                ) : (
-                  historicoPedidos.map((resgate) => (
-                    <div key={resgate.id} className="flex justify-between p-3 border-b border-gray-100">
-                      <div>
-                        <p className="font-bold text-sm">{resgate.oferta.titulo}</p>
-                        <p className="text-xs opacity-70">
-                          {resgate.oferta.vendedor?.name || "Loja Parceira"}
-                        </p>
-                      </div>
+          <div className="grid grid-cols-2 gap-4 mb-8">
+            <div className="bg-night text-paper rounded-[20px] p-6 flex flex-col items-center justify-center text-center relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-amber/10 blur-[30px] rounded-full"></div>
+              <PackageCheck className="w-6 h-6 text-amber mb-3" />
+              <span className="font-display font-extrabold text-[32px] mb-1 leading-none">{totalResgates}</span>
+              <span className="text-[10px] uppercase tracking-widest text-muted font-bold">Resgates Feitos</span>
+            </div>
+            
+            <div className="bg-amber text-night rounded-[20px] p-6 flex flex-col items-center justify-center text-center">
+              <TrendingDown className="w-6 h-6 text-night/50 mb-3" />
+              <span className="font-display font-extrabold text-[32px] mb-1 leading-none">
+                <span className="text-xl">R$</span> {valorEconomizado.toFixed(2).replace('.', ',')}
+              </span>
+              <span className="text-[10px] uppercase tracking-widest text-night/70 font-bold">Economizado</span>
+            </div>
+          </div>
 
-                      <div className="text-right">
-                        <p className="text-sm font-semibold text-laranja-destaque">{resgate.status}</p>
-                        <p className="text-xs opacity-70">
-                          {resgate.createdAt.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}
-                        </p>
-                      </div>
+          <div className="bg-card border border-line rounded-[20px] p-6 md:p-8">
+            <div className="flex items-center gap-2 mb-6 border-b border-line pb-4">
+              <History className="w-5 h-5 text-muted" />
+              <h2 className="font-display font-extrabold text-lg">Histórico Recente</h2>
+            </div>
+            
+            <div className="flex flex-col">
+              {historicoPedidos.length === 0 ? (
+                <p className="text-[13.5px] text-muted text-center py-6">Você ainda não realizou nenhum resgate.</p>
+              ) : (
+                historicoPedidos.map((resgate) => (
+                  <div key={resgate.id} className="flex justify-between items-center py-4 border-b border-line last:border-0 last:pb-0">
+                    <div>
+                      <p className="font-bold text-[14px] text-night mb-0.5">{resgate.oferta.titulo}</p>
+                      <p className="text-[12px] text-muted">
+                        {resgate.oferta.vendedor?.name || "Loja Parceira"}
+                      </p>
                     </div>
-                  ))
-                )}
-              </div>
+                    <div className="text-right">
+                      <p className={`text-[12px] font-bold uppercase tracking-wide mb-0.5 ${resgate.status === "PENDENTE" ? "text-amber-dark" : "text-green-600"}`}>
+                        {resgate.status}
+                      </p>
+                      <p className="text-[11px] text-muted font-medium">
+                        {resgate.createdAt.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+                      </p>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
-
-            <div className="pt-8 border-t border-gray-200 mt-4 relative">
-              <h2 className="text-lg font-bold text-laranja-destaque mb-6">EDITAR PERFIL</h2>
-              <div className="mt-6">
-                <Link href="/perfil/editar">
-                  <Button className="bg-gray-100 text-gray-700 hover:bg-gray-200 w-full py-2 rounded-xl font-medium border border-gray-300 shadow-sm">
-                    ✏️ Editar Perfil
-                  </Button>
-                </Link>
-              </div>
-            </div>
-
           </div>
-        </Container>
+
+        </div>
       </main>
     </div>
   )

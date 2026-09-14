@@ -1,7 +1,23 @@
 "use client";
 import { useState } from "react";
-import CardProduto, { ProdutoProps } from "./CardProduto";
-import Button from "./button";
+import { OfertaCard } from "./ui/OfertaCard";
+import Link from "next/link";
+import { ViewToggle } from "./ui/ViewToggle";
+
+export type ProdutoPropsComLocal = {
+  id: string,
+  nome: string,
+  categoria?: string,
+  descricao: string,
+  preco: number,
+  tempoPostagem: string,
+  imagemUrl: string,
+  latitude?: number | null,
+  longitude?: number | null,
+  isPremium?: boolean,
+  faixaUrgencia?: number,
+  tempoRestanteFormatado: string,
+};
 
 function calcularDistancia(lat1: number, lon1: number, lat2: number, lon2: number) {
   const R = 6371;
@@ -15,38 +31,11 @@ function calcularDistancia(lat1: number, lon1: number, lat2: number, lon2: numbe
   return R * c;
 }
 
-export type ProdutoPropsComLocal = ProdutoProps & {
-  latitude?: number | null,
-  longitude?: number | null,
-  faixaUrgencia?: number
-};
-
 export default function ListaResgatesClient({ produtos }: { produtos: ProdutoPropsComLocal[] }) {
-  const [localizacaoUser, setLocalizacaoUser] = useState<{ lat: number, lon: number } | null>(null);
-  const [carregandoLocal, setCarregandoLocal] = useState(false);
+  const [view, setView] = useState<'lista' | 'mapa'>('lista');
 
-  const pegarLocalizacao = () => {
-    setCarregandoLocal(true);
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (posicao) => {
-          setLocalizacaoUser({
-            lat: posicao.coords.latitude,
-            lon: posicao.coords.longitude
-          });
-          setCarregandoLocal(false);
-        },
-        (erro) => {
-          console.error(erro);
-          alert("Não conseguimos acessar sua localização.");
-          setCarregandoLocal(false);
-        }
-      );
-    } else {
-      alert("Navegador não suporta geolocalização.");
-      setCarregandoLocal(false);
-    }
-  };
+  // Mantemos a lógica de localização para uso futuro no mapa
+  const [localizacaoUser, setLocalizacaoUser] = useState<{ lat: number, lon: number } | null>(null);
 
   const produtosOrdenados = [...produtos].map(p => {
     if (localizacaoUser && p.latitude && p.longitude) {
@@ -56,44 +45,42 @@ export default function ListaResgatesClient({ produtos }: { produtos: ProdutoPro
     return p;
   });
 
-  if (localizacaoUser) {
-    produtosOrdenados.sort((a, b) => {
-      if (a.faixaUrgencia !== undefined && b.faixaUrgencia !== undefined && a.faixaUrgencia !== b.faixaUrgencia) {
-        return a.faixaUrgencia - b.faixaUrgencia;
-      }
-
-      if (a.isPremium && !b.isPremium) return -1;
-      if (!a.isPremium && b.isPremium) return 1;
-
-      if (a.distancia !== undefined && b.distancia !== undefined) return a.distancia - b.distancia;
-      return 0;
-    });
-  }
-
   return (
     <>
-      <div className="mb-6 flex justify-end">
-        <Button
-          variant="outline"
-          className="border-[#D9774A] text-[#D9774A] hover:bg-[#D9774A] hover:text-white"
-          onClick={pegarLocalizacao}
-          disabled={carregandoLocal || !!localizacaoUser}
-        >
-          {localizacaoUser ? "📍 Localização Ativada" : carregandoLocal ? "Buscando..." : "📍 Usar Minha Localização"}
-        </Button>
+      <div className="flex justify-between items-end gap-4 flex-wrap mb-5">
+        <div>
+          <h1 className="font-display text-[25px] font-extrabold m-0 mb-1.5 tracking-[-0.01em]">Ofertas perto de você</h1>
+          <p className="text-[13.5px] text-muted m-0 max-w-[520px]">{produtos.length} ofertas ativas agora</p>
+        </div>
+        <ViewToggle view={view} onChange={setView} />
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
-        {produtosOrdenados.length === 0 ? (
-          <div className="col-span-full py-12 text-center text-background-secondary font-inter">
-            Nenhum resgate disponível.
-          </div>
-        ) : (
-          produtosOrdenados.map((produto) => (
-            <CardProduto key={produto.id} {...produto} />
-          ))
-        )}
-      </div>
+      {view === 'mapa' ? (
+        <div className="bg-[#EDE7D6] rounded-xl relative border border-line overflow-hidden w-full aspect-[16/10] md:aspect-[21/9] flex items-center justify-center">
+          <p className="text-muted font-bold text-sm bg-white/80 px-4 py-2 rounded-lg">Mapa interativo será renderizado aqui</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-2">
+          {produtosOrdenados.length === 0 ? (
+            <div className="col-span-full py-12 text-center text-muted font-semibold text-sm bg-card border border-line rounded-xl">
+              Nenhum resgate disponível nessa categoria.
+            </div>
+          ) : (
+            produtosOrdenados.map((produto) => (
+              <Link href={`/resgates/${produto.id}`} key={produto.id}>
+                <OfertaCard 
+                  loja="Loja Parceira" 
+                  titulo={produto.nome}
+                  precoAntigo={`R$ ${(produto.preco * 2).toFixed(2).replace('.', ',')}`}
+                  precoNovo={`R$ ${produto.preco.toFixed(2).replace('.', ',')}`}
+                  tempoRestante={produto.tempoRestanteFormatado}
+                  isPremium={produto.isPremium}
+                />
+              </Link>
+            ))
+          )}
+        </div>
+      )}
     </>
   );
 }

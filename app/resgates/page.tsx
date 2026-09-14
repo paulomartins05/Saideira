@@ -1,19 +1,14 @@
-
 import { Suspense } from "react";
 import Container from "../componentes/container";
 import Link from "next/link";
 import Header from "../pages/header";
-import Text from "../componentes/text";
-import CardProduto from "../componentes/CardProduto";
 import FiltroCategorias from "../componentes/FiltroCategorias";
 import Paginacao from "../componentes/Paginacao";
 import ListaResgatesClient from "../componentes/ListaResgatesClient";
 import { calcularTempoPostagem } from "@/lib/utils";
 import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma"
-
-
-
+import { ChevronRight } from "lucide-react";
 
 export default async function PaginaTodosResgates({
   searchParams,
@@ -88,6 +83,12 @@ export default async function PaginaTodosResgates({
     else if (tempoRestanteHoras <= 6) faixaUrgencia = 1;
     else if (tempoRestanteHoras <= 12) faixaUrgencia = 2;
 
+    const diffMs = new Date(p.dataValidade).getTime() - agora;
+    const diffMins = Math.max(1, Math.floor(diffMs / 60000));
+    const tempoRestanteFormatado = diffMins > 60 
+      ? `${Math.floor(diffMins / 60)}h ${diffMins % 60}m` 
+      : `${diffMins} min`;
+
     return {
       id: p.id,
       nome: p.titulo,
@@ -99,33 +100,25 @@ export default async function PaginaTodosResgates({
       latitude: p.latitude,
       longitude: p.longitude,
       isPremium,
-      faixaUrgencia
+      faixaUrgencia,
+      tempoRestanteFormatado
     }
   })
 
   return (
-    <div className="bg-[#F6EFE5] min-h-screen flex flex-col">
+    <>
       <Header />
-      <hr className="opacity-10 border-background-secondary" />
 
-      <main className="py-8 grow">
-        <Container>
-          <div className="text-sm font-inter text-[#B87042] mb-6 flex items-center gap-2">
-            <Link href="/" className="hover:underline cursor-pointer">Início</Link>
-            <span>{'>'}</span>
-            <span className="text-background-secondary font-medium">Todos os Resgates</span>
+      <main className="pb-10">
+        <div className="max-w-[1160px] mx-auto px-7 pt-7">
+          
+          <div className="flex items-center gap-1.5 text-[12.5px] text-muted mb-3.5 flex-wrap font-medium">
+            <Link href="/" className="hover:text-night transition-colors">Início</Link>
+            <ChevronRight className="w-3.5 h-3.5" />
+            <span className="text-night font-bold">Ofertas</span>
           </div>
 
-          <div className="mb-8">
-            <Text variant="playfair" as="h1" className="text-4xl md:text-5xl text-background-secondary font-bold mb-3">
-              Todos os Resgates Disponíveis
-            </Text>
-            <p className="font-inter text-background-secondary opacity-90 text-sm md:text-base max-w-3xl">
-              Lanches fresquinhos prontos para serem salvos.
-            </p>
-          </div>
-
-          <Suspense fallback={<div className="py-12 text-center">Carregando resgates quentinhos...</div>}>
+          <Suspense fallback={<div className="py-12 text-center text-sm font-semibold text-muted">Carregando ofertas quentinhas...</div>}>
 
             <FiltroCategorias
               categoriaAtiva={categoriaAtiva}
@@ -133,15 +126,17 @@ export default async function PaginaTodosResgates({
 
             <ListaResgatesClient produtos={produtosFormatados} />
 
-            <Paginacao
-              paginaAtual={paginaAtual}
-              totalPaginas={totalPaginas}
-            />
+            <div className="mt-8">
+              <Paginacao
+                paginaAtual={paginaAtual}
+                totalPaginas={totalPaginas}
+              />
+            </div>
 
           </Suspense>
 
-        </Container>
+        </div>
       </main>
-    </div>
+    </>
   );
 }

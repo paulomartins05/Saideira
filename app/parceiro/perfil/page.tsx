@@ -1,166 +1,172 @@
-
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import Header from "@/app/pages/header";
-import Container from "@/app/componentes/container";
-import Button from "@/app/componentes/button";
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/lib/auth"
 import { revalidatePath } from "next/cache";
 import { validarResgate } from "@/app/actions/resgate";
 import { alterarStatusOferta } from "@/app/actions/ofertas";
-
-
+import { ChevronRight, Edit2, Wallet, PackageCheck, TrendingDown, Star, Leaf, QrCode, Tag, Plus, CheckCircle2, History } from "lucide-react";
 
 export default async function Parceiro({
   searchParams
 }: {
   searchParams: Promise<{ aba?: string }>
 }) {
-  const params = await searchParams
-  const abaAtiva = params.aba || "visao-geral"
+  const params = await searchParams;
+  const abaAtiva = params.aba || "visao-geral";
 
-  const reqHeaders = await headers()
-  const session = await auth.api.getSession({
-    headers: reqHeaders
-  })
+  const reqHeaders = await headers();
+  const session = await auth.api.getSession({ headers: reqHeaders });
 
   if (!session?.user || session.user.role != "PARCEIRO") {
-    redirect("/")
+    redirect("/");
   }
 
-  const usuario = session.user
+  const usuario = session.user;
   const ofertasDoBanco = await prisma.oferta.findMany({
     where: {
       vendedorId: usuario.id,
       quantidade: { gt: 0 },
       dataValidade: { gt: new Date() }
     },
-
-    orderBy: {
-      createdAt: "desc"
-    }
-  })
+    orderBy: { createdAt: "desc" }
+  });
 
   const todasAsOfertas = await prisma.oferta.findMany({
-    where: {
-      vendedorId: usuario.id,
-    },
-    orderBy: {
-      createdAt: "desc"
-    }
-  })
+    where: { vendedorId: usuario.id },
+    orderBy: { createdAt: "desc" }
+  });
 
   const pedidosPendentes = await prisma.resgate.findMany({
     where: {
-      oferta: {
-        vendedorId: usuario.id
-      },
+      oferta: { vendedorId: usuario.id },
       status: "PENDENTE"
     },
-
     include: {
       user: { select: { name: true } },
       oferta: true
     },
     orderBy: { createdAt: "asc" }
-  })
+  });
 
   const resgatesConcluidos = await prisma.resgate.findMany({
     where: {
-      oferta: {
-        vendedorId: usuario.id
-      },
+      oferta: { vendedorId: usuario.id },
       status: "RETIRADO"
     },
-    include: {
-      oferta: true
-    }
-  })
+    include: { oferta: true }
+  });
 
-  const saldo = resgatesConcluidos.reduce((total, resgate) => total + Number(resgate.oferta.precoResgate), 0)
+  const saldo = resgatesConcluidos.reduce((total, resgate) => total + Number(resgate.oferta.precoResgate), 0);
 
-  const hoje = new Date().toLocaleDateString("pt-BR")
-  const resgatesHoje = resgatesConcluidos.filter(r => r.updatedAt.toLocaleDateString("pt-BR") === hoje).length
-  const impactoKg = (resgatesConcluidos.length * 0.3).toFixed(1)
+  const hoje = new Date().toLocaleDateString("pt-BR");
+  const resgatesHoje = resgatesConcluidos.filter(r => r.updatedAt.toLocaleDateString("pt-BR") === hoje).length;
+  const impactoKg = (resgatesConcluidos.length * 0.3).toFixed(1);
+
   return (
-    <div className="bg-[#F6EFE5] min-h-screen flex flex-col font-inter text-background-secondary">
+    <div className="bg-paper min-h-screen flex flex-col font-inter text-night">
       <Header />
-      <hr className="opacity-10 border-background-secondary" />
 
-      <main className="py-8 grow">
-        <Container>
-
+      <main className="pb-10">
+        <div className="max-w-[1000px] mx-auto px-7 pt-7">
+          
           <div className="mb-8">
-            <div className="text-sm text-[#B87042] mb-4 flex items-center gap-2">
-              <Link href="/" className="hover:underline">Início</Link>
-              <span>{'>'}</span>
-              <span className="font-medium">Área do Parceiro</span>
+            <div className="flex items-center gap-1.5 text-[12.5px] text-muted mb-4 flex-wrap font-medium">
+              <Link href="/" className="hover:text-night transition-colors">Início</Link>
+              <ChevronRight className="w-3.5 h-3.5" />
+              <span className="text-night font-bold">Painel do Parceiro</span>
             </div>
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <h1 className="text-3xl md:text-4xl font-playfair font-bold">
-                Painel do Parceiro: {usuario.name || "Minha Loja"}
-              </h1>
-              <Link href="/parceiro/editar">
-                <Button variant="outline" className="border-[#D9774A] text-[#D9774A] hover:bg-[#D9774A] hover:text-white">
-                  ✏️ Editar Perfil da Loja
-                </Button>
+            
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-card border border-line p-6 rounded-[20px]">
+              <div className="flex items-center gap-4">
+                 <div className="w-14 h-14 rounded-full bg-night text-amber font-display font-extrabold text-xl flex items-center justify-center border-2 border-amber">
+                    {usuario.name ? usuario.name.charAt(0).toUpperCase() : "L"}
+                 </div>
+                 <div>
+                    <h1 className="text-[22px] font-display font-extrabold tracking-[-0.01em]">
+                      {usuario.name || "Minha Loja"}
+                    </h1>
+                    <p className="text-[13px] text-muted">Gerencie suas ofertas e resgates</p>
+                 </div>
+              </div>
+              <Link href="/parceiro/editar" className="shrink-0 bg-line text-night font-bold text-[13px] px-5 py-2.5 rounded-lg hover:bg-line/70 transition-colors flex items-center gap-2 justify-center">
+                <Edit2 className="w-4 h-4" />
+                Editar Perfil
               </Link>
             </div>
           </div>
 
-          <div className="flex flex-col md:flex-row gap-8">
-
-            <aside className="w-full md:w-64 shrink-0 flex flex-col gap-2">
-              <Link href="?aba=visao-geral" className={`block px-4 py-3 rounded-xl font-medium transition-colors ${abaAtiva === "visao-geral" ? "bg-[#e8d5c4] text-background-secondary" : "hover:bg-[#fdf3ef]"}`}>Visão Geral</Link>
-              <Link href="?aba=produtos" className={`block px-4 py-3 rounded-xl font-medium transition-colors ${abaAtiva === "produtos" ? "bg-[#e8d5c4] text-background-secondary" : "hover:bg-[#fdf3ef]"}`}>Meus Produtos</Link>
-              <Link href="?aba=financeiro" className={`block px-4 py-3 rounded-xl font-medium transition-colors ${abaAtiva === "financeiro" ? "bg-[#e8d5c4] text-background-secondary" : "hover:bg-[#fdf3ef]"}`}>Relatórios Financeiros</Link>
-              <Link href="/parceiro/assinatura" className={`block px-4 py-3 mt-2 rounded-xl font-medium transition-colors text-[#D9774A] border border-[#D9774A]/30 hover:bg-[#D9774A]/10`}>⭐ Assinatura Premium</Link>
+          <div className="flex flex-col md:flex-row gap-6">
+            
+            {/* Sidebar Navigation */}
+            <aside className="w-full md:w-64 shrink-0 flex flex-col gap-1.5">
+              <Link href="?aba=visao-geral" className={`flex items-center gap-2.5 px-4 py-3.5 rounded-xl font-bold text-[13.5px] transition-colors ${abaAtiva === "visao-geral" ? "bg-night text-amber" : "text-muted hover:bg-line/50 hover:text-night"}`}>
+                <PackageCheck className="w-4 h-4" /> Visão Geral
+              </Link>
+              <Link href="?aba=produtos" className={`flex items-center gap-2.5 px-4 py-3.5 rounded-xl font-bold text-[13.5px] transition-colors ${abaAtiva === "produtos" ? "bg-night text-amber" : "text-muted hover:bg-line/50 hover:text-night"}`}>
+                <Tag className="w-4 h-4" /> Meus Produtos
+              </Link>
+              <Link href="?aba=financeiro" className={`flex items-center gap-2.5 px-4 py-3.5 rounded-xl font-bold text-[13.5px] transition-colors ${abaAtiva === "financeiro" ? "bg-night text-amber" : "text-muted hover:bg-line/50 hover:text-night"}`}>
+                <Wallet className="w-4 h-4" /> Relatórios Financeiros
+              </Link>
+              <Link href="/parceiro/assinatura" className="flex items-center gap-2.5 px-4 py-3.5 mt-2 rounded-xl font-bold text-[13.5px] transition-colors text-amber-dark bg-amber/10 border border-amber/30 hover:bg-amber/20">
+                <Star className="w-4 h-4" /> Assinatura Premium
+              </Link>
             </aside>
 
+            {/* Main Content Area */}
             <div className="grow flex flex-col gap-6">
 
               {abaAtiva === "visao-geral" && (
                 <>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                      <p className="text-sm font-medium opacity-80 mb-2">Saldo a Receber</p>
-                      <p className="text-3xl font-bold text-[#6B705C]">R$ {saldo.toFixed(2).replace('.', ',')}</p>
+                    <div className="bg-card p-6 rounded-[20px] border border-line flex flex-col">
+                      <p className="text-[12.5px] font-bold uppercase tracking-widest text-muted mb-2">Saldo a Receber</p>
+                      <p className="font-display font-extrabold text-[28px] text-night mt-auto">R$ {saldo.toFixed(2).replace('.', ',')}</p>
                     </div>
-                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                      <p className="text-sm font-medium opacity-80 mb-2">Resgates Hoje</p>
-                      <p className="text-3xl font-bold text-laranja-destaque">{resgatesHoje}</p>
+                    <div className="bg-night text-amber p-6 rounded-[20px] flex flex-col relative overflow-hidden">
+                      <div className="absolute -right-4 -bottom-4 w-20 h-20 bg-amber/20 blur-[20px] rounded-full"></div>
+                      <p className="text-[12.5px] font-bold uppercase tracking-widest opacity-80 mb-2">Resgates Hoje</p>
+                      <p className="font-display font-extrabold text-[32px] mt-auto relative z-10">{resgatesHoje}</p>
                     </div>
-                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                      <p className="text-sm font-medium opacity-80 mb-2 flex items-center justify-between">
-                        Alimento Salvo (Kg) <span className="text-[#6B705C]">🌱</span>
+                    <div className="bg-card p-6 rounded-[20px] border border-line flex flex-col">
+                      <p className="text-[12.5px] font-bold uppercase tracking-widest text-muted mb-2 flex items-center justify-between">
+                        Desperdício Evitado <Leaf className="w-4 h-4 text-green-600" />
                       </p>
-                      <p className="text-3xl font-bold text-[#6B705C]">{impactoKg} kg</p>
+                      <p className="font-display font-extrabold text-[28px] text-night mt-auto">{impactoKg} <span className="text-lg">kg</span></p>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-4">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-2">
+                    
+                    {/* Validador */}
+                    <div className="bg-card p-6 rounded-[20px] border border-line flex flex-col">
+                      <div className="flex items-center gap-2 mb-1">
+                        <QrCode className="w-5 h-5 text-night" />
+                        <h2 className="font-display font-extrabold text-[20px]">Validar Resgates</h2>
+                      </div>
+                      <p className="text-[13px] text-muted mb-6">Clientes aguardando retirada hoje.</p>
 
-                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col">
-                      <h2 className="text-xl font-bold mb-1">Validar Resgates Pendentes</h2>
-                      <p className="text-sm opacity-70 mb-6">Clientes aguardando retirada hoje.</p>
-
-                      <div className="flex flex-col gap-4">
+                      <div className="flex flex-col gap-3">
                         {pedidosPendentes.length === 0 ? (
-                          <p className="text-sm text-center opacity-70 py-4">Nenhum cliente na fila.</p>
+                          <div className="text-center py-8 bg-paper rounded-xl border border-line border-dashed">
+                             <CheckCircle2 className="w-8 h-8 text-muted mx-auto mb-2" />
+                             <p className="text-[13px] text-muted font-medium">Nenhum cliente na fila.</p>
+                          </div>
                         ) : (
                           pedidosPendentes.map(pedido => (
-                            <div key={pedido.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100">
+                            <div key={pedido.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-paper rounded-xl border border-line">
                               <div>
-                                <p className="font-bold text-sm">{pedido.user.name}</p>
-                                <p className="text-xs opacity-80">
+                                <p className="font-bold text-[14px]">{pedido.user.name}</p>
+                                <p className="text-[12px] text-muted font-medium">
                                   {pedido.oferta.titulo} • {pedido.createdAt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                                 </p>
                               </div>
 
                               {pedido.bloqueadoAte && pedido.bloqueadoAte > new Date() ? (
-                                <div className="bg-red-50 text-red-600 px-3 py-1.5 rounded-lg border border-red-200 text-xs font-bold text-center">
+                                <div className="bg-coral/10 text-coral px-3 py-1.5 rounded-lg border border-coral/20 text-[11px] font-bold text-center">
                                   Bloqueado.<br/>Tente em {Math.ceil((pedido.bloqueadoAte.getTime() - new Date().getTime()) / 60000)} min.
                                 </div>
                               ) : (
@@ -168,7 +174,6 @@ export default async function Parceiro({
                                   "use server"
                                   const resgateId = formData.get("resgateId") as string
                                   const pin = formData.get("pin") as string
-
                                   await validarResgate(resgateId, pin)
                                 }} className="flex items-center gap-2">
                                   <input type="hidden" name="resgateId" value={pedido.id} />
@@ -178,43 +183,46 @@ export default async function Parceiro({
                                     placeholder="PIN"
                                     maxLength={4}
                                     required
-                                    className="w-16 px-2 py-1.5 text-center border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-laranja-destaque"
+                                    className="w-16 px-2 py-2 text-center border border-line rounded-lg text-sm font-bold focus:outline-none focus:border-night bg-white"
                                   />
-                                  <Button type="submit" className="bg-[#D9774A] hover:bg-[#c4683e] text-white py-1.5 px-3 text-xs h-auto">
+                                  <button type="submit" className="bg-night hover:bg-night-3 text-amber font-bold py-2 px-3 rounded-lg text-[12px] transition-colors">
                                     VALIDAR
-                                  </Button>
+                                  </button>
                                 </form>
                               )}
-
                             </div>
                           ))
                         )}
                       </div>
                     </div>
 
-                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col">
+                    {/* Ofertas Ativas */}
+                    <div className="bg-card p-6 rounded-[20px] border border-line flex flex-col">
                       <div className="flex items-center justify-between mb-1">
-                        <h2 className="text-xl font-bold">Ofertas Ativas</h2>
-                        <Link href="/parceiro/novo-resgate">
-                          <Button className="bg-[#D9774A] hover:bg-[#c4683e] text-white py-1 px-3 text-xs h-auto">
-                            + Novo
-                          </Button>
+                        <div className="flex items-center gap-2">
+                          <Tag className="w-5 h-5 text-night" />
+                          <h2 className="font-display font-extrabold text-[20px]">Ofertas Ativas</h2>
+                        </div>
+                        <Link href="/parceiro/novo-resgate" className="bg-night hover:bg-night-3 text-amber py-1.5 px-3 rounded-lg text-[12px] font-bold transition-colors flex items-center gap-1">
+                          <Plus className="w-3.5 h-3.5" /> Novo
                         </Link>
                       </div>
-                      <p className="text-sm opacity-70 mb-6">Controle em tempo real de estoque.</p>
+                      <p className="text-[13px] text-muted mb-6">Controle em tempo real do seu estoque.</p>
 
-                      <div className="flex flex-col gap-4 max-h-75 overflow-y-auto pr-2">
+                      <div className="flex flex-col gap-3 overflow-y-auto max-h-[400px] pr-1">
                         {ofertasDoBanco.length === 0 ? (
-                          <p className="text-sm text-center opacity-70 py-4">Nenhuma oferta ativa no momento.</p>
+                          <div className="text-center py-8 bg-paper rounded-xl border border-line border-dashed">
+                             <p className="text-[13px] text-muted font-medium">Nenhuma oferta ativa no momento.</p>
+                          </div>
                         ) : (
                           ofertasDoBanco.map(oferta => (
-                            <div key={oferta.id} className="flex items-center justify-between p-3 border-b border-gray-100 last:border-0">
+                            <div key={oferta.id} className="flex items-center justify-between p-3.5 bg-paper border border-line rounded-xl">
                               <div>
-                                <p className="font-bold text-sm">
+                                <p className="font-bold text-[13.5px] text-night">
                                   {oferta.titulo}
-                                  {!oferta.ativo && <span className="ml-2 text-xs text-red-500 font-normal">(Inativo)</span>}
+                                  {!oferta.ativo && <span className="ml-2 text-[10px] text-coral uppercase tracking-widest font-bold">Inativo</span>}
                                 </p>
-                                <p className="text-xs text-[#6B705C] font-semibold">
+                                <p className="text-[12px] text-night font-bold mt-0.5">
                                   R$ {Number(oferta.precoResgate).toFixed(2).replace('.', ',')}
                                 </p>
                               </div>
@@ -222,16 +230,15 @@ export default async function Parceiro({
                                 "use server";
                                 await alterarStatusOferta(oferta.id, !oferta.ativo);
                               }}>
-                                <Button
+                                <button
                                   type="submit"
-                                  variant="outline"
-                                  className={`py-1 px-3 text-xs h-auto border ${oferta.ativo
-                                    ? "border-laranja-destaque text-laranja-destaque hover:bg-laranja-destaque hover:text-white"
+                                  className={`py-1.5 px-3 text-[11px] font-bold uppercase tracking-wider rounded-lg border transition-colors ${oferta.ativo
+                                    ? "border-night text-night hover:bg-night hover:text-paper"
                                     : "border-green-600 text-green-600 hover:bg-green-600 hover:text-white"
                                     }`}
                                 >
-                                  {oferta.ativo ? "INATIVAR" : "ATIVAR"}
-                                </Button>
+                                  {oferta.ativo ? "Inativar" : "Ativar"}
+                                </button>
                               </form>
                             </div>
                           ))
@@ -244,45 +251,39 @@ export default async function Parceiro({
               )}
 
               {abaAtiva === "produtos" && (
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col">
-                  <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl font-bold">Todos os Meus Produtos</h2>
-                    <Link href="/parceiro/novo-resgate">
-                      <Button className="bg-[#D9774A] hover:bg-[#c4683e] text-white py-1 px-3 text-xs h-auto">
-                        + Novo Produto
-                      </Button>
+                <div className="bg-card p-6 md:p-8 rounded-[20px] border border-line flex flex-col">
+                  <div className="flex items-center justify-between mb-8">
+                    <h2 className="font-display font-extrabold text-[22px]">Meus Produtos</h2>
+                    <Link href="/parceiro/novo-resgate" className="bg-night hover:bg-night-3 text-amber py-2 px-4 rounded-lg text-[13px] font-bold transition-colors flex items-center gap-1.5">
+                      <Plus className="w-4 h-4" /> Novo Produto
                     </Link>
                   </div>
 
                   <div className="flex flex-col gap-4">
                     {todasAsOfertas.length === 0 ? (
-                      <p className="text-sm text-center opacity-70 py-4">Você ainda não cadastrou produtos.</p>
+                      <p className="text-[13.5px] text-center text-muted py-8">Você ainda não cadastrou produtos.</p>
                     ) : (
                       todasAsOfertas.map(oferta => (
-                        <div key={oferta.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border border-gray-100 rounded-xl bg-gray-50">
+                        <div key={oferta.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-5 border border-line rounded-[16px] bg-paper">
                           <div>
-                            <p className="font-bold text-base">
+                            <p className="font-bold text-[15px] mb-1">
                               {oferta.titulo}
-                              {!oferta.ativo && <span className="ml-2 text-xs text-red-500 font-normal">(Inativo)</span>}
-                              {oferta.quantidade === 0 && <span className="ml-2 text-xs text-gray-500 font-normal">(Esgotado)</span>}
-
+                              {!oferta.ativo && <span className="ml-2 px-2 py-0.5 rounded-full bg-coral/10 text-coral text-[10px] uppercase tracking-widest font-bold">Inativo</span>}
+                              {oferta.quantidade === 0 && <span className="ml-2 px-2 py-0.5 rounded-full bg-line text-muted text-[10px] uppercase tracking-widest font-bold">Esgotado</span>}
                               {new Date() > new Date(oferta.dataValidade) && (
-                                <span className="ml-2 text-xs text-red-500 font-normal">(EXPIRADO)</span>
-                              )
-
-                              }
-
+                                <span className="ml-2 px-2 py-0.5 rounded-full bg-red-100 text-red-600 text-[10px] uppercase tracking-widest font-bold">Expirado</span>
+                              )}
                             </p>
-                            <p className="text-sm opacity-70 mb-1">{oferta.categoria}</p>
-                            <p className="text-sm text-[#6B705C] font-semibold">
-                              R$ {Number(oferta.precoResgate).toFixed(2).replace('.', ',')} • {oferta.quantidade} disponíveis
+                            <p className="text-[12.5px] text-muted mb-2 font-medium">{oferta.categoria}</p>
+                            <p className="text-[13px] text-night font-bold">
+                              R$ {Number(oferta.precoResgate).toFixed(2).replace('.', ',')} • <span className="text-muted font-medium">{oferta.quantidade} disponíveis</span>
                             </p>
                           </div>
 
-                          <Link href={`/parceiro/editar-produto/${oferta.id}`} className="mt-3 sm:mt-0">
-                            <Button variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white py-1.5 px-4 text-xs h-auto w-full sm:w-auto">
-                              ✏️ EDITAR
-                            </Button>
+                          <Link href={`/parceiro/editar-produto/${oferta.id}`} className="mt-4 sm:mt-0">
+                            <button className="border border-line bg-white text-night hover:bg-line/50 font-bold py-2 px-5 text-[12.5px] rounded-lg w-full sm:w-auto transition-colors flex items-center justify-center gap-2">
+                              <Edit2 className="w-3.5 h-3.5" /> Editar
+                            </button>
                           </Link>
                         </div>
                       ))
@@ -292,50 +293,53 @@ export default async function Parceiro({
               )}
 
               {abaAtiva === "financeiro" && (
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col">
-                  <div className="mb-6">
-                    <h2 className="text-xl font-bold">Relatórios Financeiros</h2>
-                    <p className="text-sm opacity-70">Acompanhe seus ganhos e histórico de vendas.</p>
+                <div className="bg-card p-6 md:p-8 rounded-[20px] border border-line flex flex-col">
+                  <div className="mb-8">
+                    <h2 className="font-display font-extrabold text-[22px] mb-1">Relatórios Financeiros</h2>
+                    <p className="text-[13.5px] text-muted">Acompanhe seus ganhos e histórico de vendas.</p>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-                    <div className="bg-[#fdf3ef] p-6 rounded-xl border border-[#e8d5c4]">
-                      <p className="text-sm font-medium text-[#B87042] mb-1">Saldo Disponível</p>
-                      <p className="text-3xl font-bold text-background-secondary">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
+                    <div className="bg-amber/10 p-6 rounded-[16px] border border-amber/30">
+                      <p className="text-[12px] uppercase tracking-widest font-bold text-amber-dark mb-1">Saldo Disponível</p>
+                      <p className="font-display font-extrabold text-[32px] text-night">
                         R$ {saldo.toFixed(2).replace('.', ',')}
                       </p>
                     </div>
                     
-                    <div className="bg-gray-50 p-6 rounded-xl border border-gray-100 flex flex-col justify-center items-start">
-                       <p className="text-sm font-medium opacity-80 mb-2">Deseja receber seu dinheiro?</p>
-                       <Button className="bg-[#D9774A] hover:bg-[#c4683e] text-white py-2 px-4 text-sm w-full sm:w-auto">
-                         💸 Solicitar Saque
-                       </Button>
+                    <div className="bg-paper p-6 rounded-[16px] border border-line flex flex-col justify-center items-start">
+                       <p className="text-[13px] font-bold text-night mb-3">Deseja receber seu dinheiro?</p>
+                       <button className="bg-night hover:bg-night-3 text-amber font-bold py-2.5 px-5 text-[13px] rounded-lg w-full sm:w-auto transition-colors">
+                         Solicitar Saque
+                       </button>
                     </div>
                   </div>
 
-                  <h3 className="font-bold mb-4">Histórico de Transações</h3>
+                  <div className="flex items-center gap-2 mb-4 border-b border-line pb-3">
+                    <History className="w-5 h-5 text-muted" />
+                    <h3 className="font-display font-extrabold text-lg">Histórico de Transações</h3>
+                  </div>
                   
                   <div className="flex flex-col gap-3">
                     {resgatesConcluidos.length === 0 ? (
-                      <p className="text-sm text-center opacity-70 py-6 bg-gray-50 rounded-xl">Você ainda não possui transações finalizadas.</p>
+                      <p className="text-[13.5px] text-center text-muted py-8">Você ainda não possui transações finalizadas.</p>
                     ) : (
                       resgatesConcluidos
                         .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
                         .map(resgate => (
-                        <div key={resgate.id} className="flex items-center justify-between p-4 border border-gray-100 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors">
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600">
-                              💰
+                        <div key={resgate.id} className="flex items-center justify-between p-4 border border-line rounded-[12px] bg-paper">
+                          <div className="flex items-center gap-3.5">
+                            <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 shrink-0">
+                              <Wallet className="w-4 h-4" />
                             </div>
                             <div>
-                              <p className="font-bold text-sm">{resgate.oferta.titulo}</p>
-                              <p className="text-xs opacity-70">
+                              <p className="font-bold text-[13.5px] text-night">{resgate.oferta.titulo}</p>
+                              <p className="text-[11.5px] text-muted font-medium mt-0.5">
                                 {resgate.updatedAt.toLocaleDateString('pt-BR')} às {resgate.updatedAt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                               </p>
                             </div>
                           </div>
-                          <p className="font-bold text-green-600">
+                          <p className="font-bold text-green-600 text-[14px]">
                             + R$ {Number(resgate.oferta.precoResgate).toFixed(2).replace('.', ',')}
                           </p>
                         </div>
@@ -347,7 +351,7 @@ export default async function Parceiro({
 
             </div>
           </div>
-        </Container>
+        </div>
       </main>
     </div>
   );
