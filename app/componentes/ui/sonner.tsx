@@ -13,30 +13,22 @@ const Toaster = ({ ...props }: ToasterProps) => {
       className="toaster group"
       toastOptions={{
         classNames: {
-          // Base do Toast (Igual ao HTML: fundo escuro, borda lateral)
-          toast: "group toast group-[.toaster]:bg-night group-[.toaster]:text-white group-[.toaster]:border-y-0 group-[.toaster]:border-r-0 group-[.toaster]:border-l-[3px] group-[.toaster]:border-l-muted group-[.toaster]:rounded-xl group-[.toaster]:shadow-[0_14px_30px_-12px_rgba(0,0,0,0.45)] group-[.toaster]:p-3.5 group-[.toaster]:pl-3",
-          description: "group-[.toast]:text-[#9CA1AE] group-[.toast]:text-xs group-[.toast]:mt-1",
-          title: "group-[.toast]:text-[13px] group-[.toast]:font-bold group-[.toast]:text-white",
-
-          // Estilo base do ícone bolinha
-          icon: "group-[.toast]:w-[26px] group-[.toast]:h-[26px] group-[.toast]:rounded-full group-[.toast]:flex group-[.toast]:items-center group-[.toast]:justify-center group-[.toast]:bg-night-3 group-[.toast]:text-[#C6CAD3]",
-
-          // Botão de fechar
-          closeButton: "group-[.toast]:bg-transparent group-[.toast]:text-[#6B7080] group-[.toast]:hover:text-white group-[.toast]:border-0",
-
-          // Variações de Cor e Ícone dependendo do Tipo (Sucesso, Erro, etc)
+          toast: "group toast group-[.toaster]:bg-night group-[.toaster]:text-white group-[.toaster]:border-y-0 group-[.toaster]:border-r-0 group-[.toaster]:border-l-[4px] group-[.toaster]:border-l-muted group-[.toaster]:rounded-xl group-[.toaster]:shadow-2xl group-[.toaster]:p-4 group-[.toaster]:flex group-[.toaster]:items-start group-[.toaster]:gap-3.5 group-[.toaster]:font-inter",
+          description: "group-[.toast]:text-muted group-[.toast]:text-[13px] group-[.toast]:mt-1.5",
+          title: "group-[.toast]:text-[14px] group-[.toast]:font-bold group-[.toast]:text-white group-[.toast]:font-display",
+          icon: "group-[.toast]:w-8 group-[.toast]:h-8 group-[.toast]:rounded-full group-[.toast]:flex group-[.toast]:items-center group-[.toast]:justify-center group-[.toast]:bg-night-3 group-[.toast]:text-muted group-[.toast]:shrink-0",
           success: "group-[.toaster]:border-l-success group-[.toast]:[&_[data-icon]]:bg-success-bg group-[.toast]:[&_[data-icon]]:text-success",
           error: "group-[.toaster]:border-l-coral group-[.toast]:[&_[data-icon]]:bg-[#FBE4E0] group-[.toast]:[&_[data-icon]]:text-coral",
-          warning: "group-[.toaster]:border-l-amber group-[.toast]:[&_[data-icon]]:bg-[#FBF0DA] group-[.toast]:[&_[data-icon]]:text-[#D68F1F]",
+          warning: "group-[.toaster]:border-l-amber group-[.toast]:[&_[data-icon]]:bg-[#FBF0DA] group-[.toast]:[&_[data-icon]]:text-amber-dark",
           info: "group-[.toaster]:border-l-info group-[.toast]:[&_[data-icon]]:bg-info-bg group-[.toast]:[&_[data-icon]]:text-info",
         },
       }}
       icons={{
-        success: <Check className="w-3.5 h-3.5" />,
-        info: <Info className="w-3.5 h-3.5" />,
-        warning: <AlertTriangle className="w-3.5 h-3.5" />,
-        error: <XCircle className="w-3.5 h-3.5" />,
-        loading: <Loader2 className="w-3.5 h-3.5 animate-spin text-amber-dark" />,
+        success: <Check className="w-4 h-4 stroke-[3]" />,
+        info: <Info className="w-4 h-4 stroke-[3]" />,
+        warning: <AlertTriangle className="w-4 h-4 stroke-[3]" />,
+        error: <XCircle className="w-4 h-4 stroke-[3]" />,
+        loading: <Loader2 className="w-4 h-4 animate-spin text-amber stroke-[3]" />,
       }}
       {...props}
     />

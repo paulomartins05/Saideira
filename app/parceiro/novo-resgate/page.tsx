@@ -156,28 +156,28 @@ export default function CadastrarNovoResgate() {
   };
 
   return (
-    <div className="bg-[#F6EFE5] min-h-screen flex flex-col font-inter">
+    <div className="min-h-screen flex flex-col font-inter text-night">
       <Header />
-      <hr className="opacity-10 border-background-secondary" />
+      <hr className="border-line" />
 
       <main className="py-10 grow">
         <Container>
 
           <div className="mb-8 text-center md:text-left">
-            <div className="text-sm text-[#B87042] mb-3">
-              Dashboard {'>'} Resgates {'>'} <span className="font-semibold text-background-secondary">Novo Cadastro</span>
+            <div className="text-sm text-amber-dark mb-3">
+              Dashboard {'>'} Resgates {'>'} <span className="font-semibold text-night">Novo Cadastro</span>
             </div>
-            <h1 className="font-playfair text-4xl md:text-5xl font-bold text-background-secondary">
+            <h1 className="font-display text-4xl md:text-5xl font-bold text-night">
               Cadastrar Novo Lanche para Resgate
             </h1>
           </div>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="bg-[#fcfaf8] border border-[#e8dfd5] shadow-sm rounded-3xl p-6 md:p-10 max-w-5xl mx-auto flex flex-col gap-8 relative overflow-hidden">
+          <form onSubmit={handleSubmit(onSubmit)} className="bg-card border border-line shadow-sm rounded-[2rem] p-6 md:p-10 max-w-5xl mx-auto flex flex-col gap-8 relative overflow-hidden">
 
-            <div className="absolute top-0 right-0 w-64 h-64 bg-[#D9774A] rounded-full mix-blend-multiply filter blur-[100px] opacity-5 pointer-events-none"></div>
+            <div className="absolute top-0 right-0 w-64 h-64 bg-amber rounded-full mix-blend-multiply filter blur-[100px] opacity-10 pointer-events-none"></div>
 
             <div className="relative z-10">
-              <h2 className="text-lg font-bold text-background-secondary mb-4">Informações do Lanche</h2>
+              <h2 className="text-lg font-bold text-night mb-4">Informações do Lanche</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
 
                 <InputForm
@@ -190,9 +190,13 @@ export default function CadastrarNovoResgate() {
                   error={errors.nome?.message}
                 />
 
-                <div className="flex flex-col gap-2">
-                  <label className="text-sm text-background-secondary/80 font-medium">Adicionar Foto</label>
-                  <label className="w-full h-12.5 border-2 border-dashed border-[#D9774A]/50 text-[#D9774A] rounded-xl flex items-center justify-center gap-2 hover:bg-[#D9774A]/10 transition-colors bg-white cursor-pointer relative overflow-hidden">
+                <div className="flex flex-col gap-3">
+                  <div className="flex justify-between items-end">
+                    <label className="text-sm font-bold text-night">Fotos da Oferta</label>
+                    <span className="text-xs text-muted font-medium">{imagemFiles.length}/3 fotos</span>
+                  </div>
+                  
+                  <label className="group relative cursor-pointer block">
                     <input
                       type="file"
                       accept="image/*"
@@ -207,13 +211,27 @@ export default function CadastrarNovoResgate() {
                         }
                       }}
                     />
-                    {imagemPreviews.length > 0 ? (
-                      <span className="font-semibold truncate px-4 text-green-600 text-xs">
-                        ✅ {imagemFiles.length} foto(s) adicionada(s)
-                      </span>
-                    ) : (
-                      <>📷 <span>Fazer Upload (Até 3)</span></>
-                    )}
+                    
+                    <div className="grid grid-cols-3 gap-3">
+                      {[0, 1, 2].map((index) => (
+                        <div key={index} className={`aspect-square rounded-2xl border-2 flex flex-col items-center justify-center transition-all overflow-hidden relative pointer-events-none
+                          ${imagemPreviews[index] ? "border-line shadow-sm" : "border-dashed border-line bg-paper group-hover:bg-line/30 group-hover:border-amber"}
+                        `}>
+                           {imagemPreviews[index] ? (
+                               <img src={imagemPreviews[index]} className="w-full h-full object-cover" />
+                           ) : (
+                               <>
+                                 <span className="text-2xl mb-1 opacity-50 group-hover:opacity-100 group-hover:text-amber transition-all">
+                                   {index === 0 ? "📷" : "➕"}
+                                 </span>
+                                 <span className="text-[10px] font-semibold text-muted text-center leading-tight px-1">
+                                   {index === 0 ? "Foto Principal" : `Slot ${index + 1}`}
+                                 </span>
+                               </>
+                           )}
+                        </div>
+                      ))}
+                    </div>
                   </label>
                 </div>
 
@@ -235,9 +253,9 @@ export default function CadastrarNovoResgate() {
             </div>
 
             <div className="relative z-10">
-              <h2 className="text-lg font-bold text-background-secondary mb-4">
+              <h2 className="text-lg font-bold text-night mb-4">
                 Tipo de Produto
-                {errors.categoria && <span className="ml-3 text-sm text-red-500 font-normal">*{errors.categoria.message}</span>}
+                {errors.categoria && <span className="ml-3 text-sm text-coral font-normal">*{errors.categoria.message}</span>}
               </h2>
               <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                 {categoriasDisponiveis.map((cat) => (
@@ -245,8 +263,8 @@ export default function CadastrarNovoResgate() {
                     key={cat.id}
                     onClick={() => setValue("categoria", cat.id, { shouldValidate: true })}
                     className={`cursor-pointer flex flex-col items-center justify-center py-4 px-2 rounded-2xl border-2 transition-all duration-300 ${categoriaSelecionada === cat.id
-                      ? "bg-[#D9774A] border-[#D9774A] text-white shadow-md transform scale-[1.02]"
-                      : "bg-white border-gray-200 text-background-secondary hover:border-[#D9774A]/40 hover:shadow-sm"
+                      ? "bg-amber border-amber text-night shadow-md transform scale-[1.02]"
+                      : "bg-paper border-line text-night hover:border-amber/40 hover:shadow-sm"
                       }`}
                   >
                     <div className="w-full flex justify-start px-3 mb-1">
@@ -384,8 +402,8 @@ export default function CadastrarNovoResgate() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className={`w-full bg-[#D9774A] hover:bg-[#c4683e] text-white font-bold text-lg py-4 rounded-xl shadow-[0_4px_14px_0_rgba(217,119,74,0.39)] hover:shadow-[0_6px_20px_rgba(217,119,74,0.23)] transform transition-all duration-200
-                ${isSubmitting ? "bg-gray-400 text-gray-200 cursor-not-allowed transform-none" : ""}
+                className={`w-full bg-amber hover:bg-amber-dark text-night font-bold text-lg py-4 rounded-2xl shadow-lg shadow-amber/20 transform transition-all duration-200
+                ${isSubmitting ? "bg-muted text-paper cursor-not-allowed transform-none" : ""}
                 `}
               >
                 {isSubmitting ? "ENVIANDO AO SERVIDOR..." : "PUBLICAR NOVO RESGATE "}

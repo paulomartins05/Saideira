@@ -12,7 +12,6 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { calcularTempoPostagem } from "@/lib/utils";
 
-
 export default async function PaginaProdutoUnico({
   params
 }: {
@@ -26,46 +25,45 @@ export default async function PaginaProdutoUnico({
 
   const idResolvido = (await params).id;
   const produto = await prisma.oferta.findUnique({
-    where: {
-      id: idResolvido,
-    },
-
-    include: {
-      vendedor: true,
-    },
-
-
+    where: { id: idResolvido },
+    include: { vendedor: true },
   })
 
-  if (!produto) {
-    notFound()
-  }
-
-  const imagemOficial = produto.imagemUrl?.[0] || "https://cdn-icons-png.flaticon.com/512/3225/3225091.png"
+  if (!produto) notFound();
 
   const nomeDaLoja = produto.vendedor.name || "Parceiro Salgado Salvo";
 
-
   return (
-    <div className="bg-[#F6EFE5] min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col">
       <Header />
-      <hr className="opacity-10 border-background-secondary" />
+      <hr className="border-line" />
+
+      <div className="bg-night w-full py-4 shadow-inner">
+        <Container>
+          <div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-6">
+            <div className="font-display text-4xl md:text-5xl font-bold tracking-tighter text-amber drop-shadow-md">
+              02:15:30
+            </div>
+            <div className="font-body text-sm md:text-base text-paper/80 uppercase tracking-widest font-semibold">
+              Para encerrar resgates do dia
+            </div>
+          </div>
+        </Container>
+      </div>
 
       <main className="py-8 grow">
         <Container>
-
-          <div className="text-sm font-inter text-[#B87042] mb-6 flex items-center gap-2">
+          <div className="text-sm font-body text-amber-dark mb-6 flex items-center gap-2">
             <Link href="/" className="hover:underline">Início</Link>
-            <span>{'>'}</span>
+            <span className="text-muted">{'>'}</span>
             <Link href="/resgates" className="hover:underline">Resgates</Link>
-            <span>{'>'}</span>
-            <span className="text-background-secondary font-medium truncate">
+            <span className="text-muted">{'>'}</span>
+            <span className="text-night font-medium truncate">
               {produto.titulo}
             </span>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
-
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-12">
             <GaleriaImagens imagens={produto.imagemUrl || []} titulo={produto.titulo} />
 
             <div>
@@ -84,14 +82,14 @@ export default async function PaginaProdutoUnico({
 
               {produto.latitude && produto.longitude && (
                 <div className="mt-8">
-                  <h3 className="font-bold text-lg mb-2">Local de Retirada</h3>
-                  <MapaGeolocalizacao latitude={produto.latitude} longitude={produto.longitude} />
+                  <h3 className="font-display font-bold text-xl mb-3 text-night">Local de Retirada</h3>
+                  <div className="rounded-[2rem] overflow-hidden border border-line">
+                    <MapaGeolocalizacao latitude={produto.latitude} longitude={produto.longitude} />
+                  </div>
                 </div>
               )}
             </div>
-
           </div>
-
         </Container>
       </main>
     </div>
