@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma"
 import { MercadoPagoConfig, PreApproval } from "mercadopago"
 import crypto from "crypto"
 import { StatusAssinatura } from "@/generated/prisma/client"
+import { verificarAssinaturaMercadoPago } from "@/lib/mercadopago-signature"
 
 export async function POST(req: NextRequest) {
 
@@ -15,17 +16,10 @@ export async function POST(req: NextRequest) {
 
         const xSignature = req.headers.get("x-signature");
         const xRequestId = req.headers.get("x-request-id");
+        
         if (!xSignature || !xRequestId) {
             return NextResponse.json({ error: "Assinatura ausente" }, { status: 400 });
         }
-        const parts = xSignature.split(',');
-        let ts = "", v1 = "";
-        parts.forEach(part => {
-            const [key, value] = part.split('=');
-            if (key === 'ts') ts = value;
-            if (key === 'v1') v1 = value;
-        });
-
 
         const body = await req.json();
         const dataId = req.nextUrl.searchParams.get("data.id") || body?.data?.id;
@@ -33,12 +27,15 @@ export async function POST(req: NextRequest) {
         if (!dataId) {
             return NextResponse.json({ error: "ID não encontrado" }, { status: 400 });
         }
-        const manifest = `id:${dataId};request-id:${xRequestId};ts:${ts};`;
 
-        const hmac = crypto.createHmac("sha256", secret);
-        hmac.update(manifest);
-        const calculatedSignature = hmac.digest("hex");
-        if (calculatedSignature !== v1) {
+        const isValid = verificarAssinaturaMercadoPago({
+            dataId,
+            xRequestId,
+            xSignature,
+            secret
+        });
+
+        if (!isValid) {
             console.error("Assinatura do Mercado Pago inválida. Tentativa de fraude?");
             return NextResponse.json({ error: "Assinatura inválida" }, { status: 403 });
         }

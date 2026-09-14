@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { deveDestacarOferta } from "@/lib/planos";
 
 
 export interface ProdutoProps {
@@ -11,6 +12,7 @@ export interface ProdutoProps {
   imagemUrl: string | string[];
   distancia?: number;
   isPremium?: boolean;
+  planoParceiro?: string;
 }
 
 export default function CardProduto({
@@ -21,13 +23,16 @@ export default function CardProduto({
   tempoPostagem,
   imagemUrl,
   distancia,
-  isPremium
+  isPremium,
+  planoParceiro
 }: ProdutoProps) {
 
   const precoFormatado = new Intl.NumberFormat('pt-BR', {
     style: 'currency',
     currency: 'BRL'
   }).format(preco);
+
+  const temDestaque = isPremium || (planoParceiro ? deveDestacarOferta(planoParceiro) : false);
 
   const IMAGEM_PADRAO = "https://placehold.co/400x400/eeeeee/999999?text=Sem+Imagem";
   let imagemFinal = IMAGEM_PADRAO;
@@ -41,9 +46,9 @@ export default function CardProduto({
 
   return (
     <Link href={`/resgates/${id}`} className="block h-full cursor-pointer group relative mt-2">
-      <div className={`bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col h-full pb-2 group-hover:-translate-y-1 ${isPremium ? 'border-2 border-yellow-400 shadow-yellow-100' : 'border border-gray-100'}`}>
-        
-        {isPremium && (
+      <div className={`bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col h-full pb-2 group-hover:-translate-y-1 ${temDestaque ? 'border-2 border-yellow-400 shadow-yellow-100' : 'border border-gray-100'}`}>
+
+        {temDestaque && (
           <div className="absolute -top-2 left-1/2 -translate-x-1/2 bg-gradient-to-r from-yellow-400 to-yellow-600 text-white px-4 py-1 rounded-full text-xs font-bold shadow-md z-20 flex items-center gap-1 border border-yellow-200">
             ⭐ Destaque
           </div>

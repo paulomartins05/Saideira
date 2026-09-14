@@ -6,3 +6,7 @@ export function formatarPreco(valor: number): string {
         currency: 'BRL',
     });
 }
+
+export function deveDestacarOferta(plano: string): boolean {
+    return plano.toUpperCase() === 'PREMIUM'
+}
