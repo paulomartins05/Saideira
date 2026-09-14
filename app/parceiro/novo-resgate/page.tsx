@@ -236,18 +236,18 @@ export default function CadastrarNovoResgate() {
                 </div>
 
                 <div className="flex flex-col gap-1">
-                  <label className="text-sm text-background-secondary/80 font-medium">Descrição detalhada</label>
+                  <label className="text-sm text-night font-medium">Descrição detalhada</label>
                   <div className="relative">
-                    <span className="absolute top-3 left-3 flex items-center text-gray-400">📝</span>
+                    <span className="absolute top-3 left-3 flex items-center text-muted">📝</span>
                     <textarea
                       placeholder="Ingredientes, etc..."
                       className={`w-full pl-10 pr-4 py-3 rounded-xl border focus:outline-none transition-all resize-none h-12.5
-                        ${errors.descricao ? "border-red-500 focus:ring-red-500" : "border-gray-200 focus:ring-[#D9774A] bg-white"}
+                        ${errors.descricao ? "border-coral focus:ring-coral" : "border-line focus:ring-amber focus:border-amber bg-white"}
                       `}
                       {...register("descricao")}
                     />
                   </div>
-                  {errors.descricao && <span className="text-xs text-red-500 font-medium">{errors.descricao.message}</span>}
+                  {errors.descricao && <span className="text-xs text-coral font-medium">{errors.descricao.message}</span>}
                 </div>
               </div>
             </div>
@@ -280,7 +280,7 @@ export default function CadastrarNovoResgate() {
             </div>
 
             <div className="relative z-10">
-              <h2 className="text-lg font-bold text-background-secondary mb-4">Preços e Descontos</h2>
+              <h2 className="text-lg font-bold text-night mb-4">Preços e Descontos</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
 
                 <InputForm
@@ -288,8 +288,8 @@ export default function CadastrarNovoResgate() {
                   type="text"
                   inputMode="numeric"
                   placeholder="6,00"
-                  icon={<span className="text-gray-400 font-medium">R$</span>}
-                  className="bg-gray-50/50 text-gray-500 line-through"
+                  icon={<span className="text-muted font-medium">R$</span>}
+                  className="bg-paper text-muted line-through border-line"
                   {...register("precoOriginal", {
                     onChange: (e) => {
                       e.target.value = formatCoinInput(e.target.value);
@@ -303,8 +303,8 @@ export default function CadastrarNovoResgate() {
                   type="text"
                   inputMode="numeric"
                   placeholder="3,90"
-                  icon={<span className="text-[#2E7D32] font-bold">R$</span>}
-                  className="border-2 border-[#4CAF50]/40 bg-[#E8F5E9] font-bold text-background-secondary"
+                  icon={<span className="text-success font-bold">R$</span>}
+                  className="border-success bg-success-bg font-bold text-night"
                   {...register("precoResgate", {
                     onChange: (e) => {
                       e.target.value = formatCoinInput(e.target.value);
@@ -317,17 +317,17 @@ export default function CadastrarNovoResgate() {
             </div>
 
             <div className="relative z-10">
-              <h2 className="text-lg font-bold text-background-secondary mb-4">Inventário e Localização</h2>
+              <h2 className="text-lg font-bold text-night mb-4">Inventário e Localização</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
 
                 <div className="md:col-span-2">
                   <div className="flex justify-between items-end mb-1">
-                    <label className="text-sm text-background-secondary/80 font-medium opacity-0">Espaçador</label>
+                    <label className="text-sm text-night font-medium opacity-0">Espaçador</label>
                     {(session?.user as UsuarioComLocalizacao)?.localizacao && (
                       <button
                         type="button"
                         onClick={() => setValue("localizacao", (session?.user as UsuarioComLocalizacao).localizacao as string, { shouldValidate: true })}
-                        className="text-xs text-[#D9774A] hover:text-[#c4683e] font-semibold flex items-center gap-1 transition-colors bg-[#D9774A]/10 px-2 py-1 rounded-md"
+                        className="text-xs text-amber-dark hover:text-amber font-semibold flex items-center gap-1 transition-colors bg-amber/10 px-2 py-1 rounded-md"
                       >
                         🏠 Meu endereço
                       </button>
@@ -365,8 +365,8 @@ export default function CadastrarNovoResgate() {
                   min="1"
                   placeholder="Ex: 3"
                   icon={<span className="text-lg">⏱️</span>}
-                  rightElement={<span className="text-[#E65100] font-bold text-sm pointer-events-none">Horas</span>}
-                  className="bg-[#FFF3E0] font-medium text-[#E65100]"
+                  rightElement={<span className="text-coral font-bold text-sm pointer-events-none">Horas</span>}
+                  className="bg-[#FFF5F5] font-medium text-coral border-coral/30"
                   {...register("validade", { valueAsNumber: true })}
                   error={errors.validade?.message}
                 />
@@ -379,24 +379,24 @@ export default function CadastrarNovoResgate() {
                 <label className="flex items-start gap-3 cursor-pointer group">
                   <input
                     type="checkbox"
-                    className="w-5 h-5 mt-0.5 rounded border-gray-300 text-[#D9774A] focus:ring-[#D9774A] cursor-pointer"
+                    className="w-5 h-5 mt-0.5 rounded border-line text-amber focus:ring-amber cursor-pointer"
                     {...register("termosAceitos")}
                   />
-                  <span className="text-sm text-background-secondary font-medium leading-relaxed">
+                  <span className="text-sm text-night font-medium leading-relaxed">
                     Li e concordo com os{" "}
                     <a
                       href="/documentos/termos-contrato.pdf"
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={(e) => e.stopPropagation()}
-                      className="text-[#D9774A] font-bold underline decoration-[#D9774A]/30 hover:decoration-[#D9774A] underline-offset-2 transition-all"
+                      className="text-amber-dark font-bold underline decoration-amber-dark/30 hover:decoration-amber-dark underline-offset-2 transition-all"
                     >
                       Termos de Uso e o Contrato de Serviço
                     </a>
                     {" "}da Plataforma Salgado Salvo.
                   </span>
                 </label>
-                {errors.termosAceitos && <span className="text-xs text-red-500 ml-8 font-medium">{errors.termosAceitos.message}</span>}
+                {errors.termosAceitos && <span className="text-xs text-coral ml-8 font-medium">{errors.termosAceitos.message}</span>}
               </div>
 
               <button

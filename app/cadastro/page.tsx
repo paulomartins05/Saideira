@@ -77,7 +77,7 @@ export default function CadastroPage() {
 
       const { error } = await authClient.signUp.email(payload);
       if (error) { appToast.cadastroError(error.message); return; }
-      
+
       appToast.cadastroSuccess();
       router.push("/");
     } catch (error) {
@@ -85,17 +85,16 @@ export default function CadastroPage() {
     }
   };
 
-  const inputClass = "w-full bg-white border border-line rounded-lg px-4 py-3 text-[13.5px] text-night focus:outline-none focus:border-night transition-colors placeholder:text-muted";
+  const inputClass = "w-full bg-paper border border-line rounded-lg px-4 py-3 text-[13.5px] text-night focus:outline-none focus:border-night transition-colors placeholder:text-muted";
   const labelClass = "block text-[13px] font-bold text-night mb-1.5";
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-paper font-inter p-6">
-      
-      {/* Formulário Centralizado */}
-      <div className="w-full max-w-[480px] bg-white rounded-2xl shadow-sm border border-line p-6 md:p-10 my-10">
-        
+
+      <div className="w-full max-w-[480px] bg-card rounded-2xl shadow-sm border border-line p-6 md:p-10 my-10">
+
         <div className="w-full pb-2">
-          
+
           <Link href="/" className="inline-flex items-center gap-2 font-display font-extrabold text-[22px] text-night mb-8">
             <span className="w-8 h-8 rounded-lg bg-amber text-night flex items-center justify-center font-display font-extrabold text-base">S</span>
             Saidera
@@ -114,7 +113,7 @@ export default function CadastroPage() {
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
-            
+
             <div>
               <label className={labelClass}>Nome Completo</label>
               <input type="text" placeholder="Seu nome" className={inputClass} {...register("nome")} />

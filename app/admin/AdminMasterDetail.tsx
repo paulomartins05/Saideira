@@ -45,7 +45,7 @@ export default function AdminMasterDetail({ parceiros }: { parceiros: any[] }) {
 
     return (
         <div className="flex-1 flex overflow-hidden">
-            <div className="w-full md:w-1/3 max-w-[350px] border-r border-line bg-card flex flex-col h-full">
+            <div className={`w-full md:w-1/3 md:max-w-[350px] border-r border-line bg-card flex-col h-full ${selectedId ? 'hidden md:flex' : 'flex'}`}>
                 <div className="p-5 border-b border-line shrink-0">
                     <h2 className="font-display font-bold text-lg text-night">Fila de Aprovação</h2>
                     <p className="text-xs text-muted mt-1">{parceiros.length} parceiros pendentes</p>
@@ -65,10 +65,18 @@ export default function AdminMasterDetail({ parceiros }: { parceiros: any[] }) {
                 </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto bg-paper p-6 md:p-10">
+            <div className={`flex-1 overflow-y-auto bg-paper p-4 md:p-10 ${!selectedId ? 'hidden md:block' : 'block'}`}>
                 {selectedUser ? (
                     <div className="max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
-                        <div className="bg-card rounded-[2rem] border border-line p-8 shadow-sm">
+                        <button 
+                            onClick={() => setSelectedId(null)} 
+                            className="md:hidden flex items-center gap-2 text-muted font-bold text-sm mb-6 hover:text-night transition-colors"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                            Voltar para a Fila
+                        </button>
+
+                        <div className="bg-card rounded-[2rem] border border-line p-6 md:p-8 shadow-sm">
                             <div className="flex items-center gap-4 mb-8">
                                 <div className="w-16 h-16 bg-night text-paper rounded-2xl flex items-center justify-center shrink-0">
                                     <Store className="w-8 h-8" />
@@ -103,7 +111,7 @@ export default function AdminMasterDetail({ parceiros }: { parceiros: any[] }) {
                                 </div>
                             </div>
 
-                            <div className="flex gap-4 pt-6 border-t border-line">
+                            <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-line">
                                 <Button
                                     variant="primary"
                                     className="flex-1 bg-success hover:bg-[#438a5f] text-white rounded-xl py-3.5 shadow-lg shadow-success/20 transition-all font-bold flex justify-center items-center gap-2"
