@@ -196,13 +196,13 @@ export default function CadastroPage() {
                 <h3 className="font-bold text-night mb-4">Dados da Loja</h3>
                 <div className="grid grid-cols-1 gap-4">
                   <div>
-                    <label className={labelClass}>CNPJ</label>
-                    <input type="text" placeholder="00.000.000/0000-00" className={inputClass} {...register("cnpj")} />
+                    <label htmlFor="cnpj" className={labelClass}>CNPJ</label>
+                    <input id="cnpj" type="text" placeholder="00.000.000/0000-00" className={inputClass} {...register("cnpj")} />
                     {errors.cnpj && <span className="text-coral text-xs mt-1 block">{errors.cnpj.message}</span>}
                   </div>
                   <div>
-                    <label className={labelClass}>Tipo de Negócio</label>
-                    <select className={inputClass} {...register("tipoNegocio")}>
+                    <label htmlFor="tipoNegocio" className={labelClass}>Tipo de Negócio</label>
+                    <select id="tipoNegocio" className={inputClass} {...register("tipoNegocio")}>
                       <option value="">Selecione o tipo do seu negócio</option>
                       <option value="RESTAURANTE">Restaurante</option>
                       <option value="PADARIA">Padaria</option>
