@@ -10,7 +10,8 @@ export const buttonVarians = cva(
       variant: {
         primary: "bg-laranja-destaque text-white hover:opacity-90",
         outline: "bg-transparent border-2 border-background-secondary text-background-secondary hover:bg-gray-100 shadow-none ",
-        ghost: "bg-transparent shadow-none hover:bg-gray-200 text-background-secondary"
+        ghost: "bg-transparent shadow-none hover:bg-gray-200 text-background-secondary",
+        destructive: "bg-red-600 text-white hover:bg-red-700 shadow-none"
       },
       size: {
         sm: "px-3 py-1.5 text-sm rounded-2xl",

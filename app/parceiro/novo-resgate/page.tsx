@@ -8,6 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { novoResgateSchema, type NovoResgateFormInputs } from "@/lib/schemas/novo-resgates";
 import { juntarEndereco } from "@/lib/utils";
+import { formatCoinInput } from "@/lib/formatacao";
 
 import Container from "../../componentes/container";
 import { criarOferta } from "@/app/actions/ofertas";
@@ -45,15 +46,7 @@ const categoriasPorNegocio: Record<string, { id: string; label: string; icon: st
   ],
 };
 
-const formatCoinInput = (valorAtual: string): string => {
-  const apenasNumeros = valorAtual.replace(/\D/g, "");
-  if (!apenasNumeros) return "";
-  const centavos = Number(apenasNumeros) / 100;
-  return centavos.toLocaleString("PT-BR", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
-};
+
 
 
 type UsuarioComLocalizacao = {

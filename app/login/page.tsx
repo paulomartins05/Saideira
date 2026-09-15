@@ -9,30 +9,25 @@ import { Eye, EyeOff, Lock } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { appToast } from "@/lib/toast";
 
-const loginSchema = z.object({
-  email: z.string().min(1, "O Email é obrigatório").email("Digite um email válido"),
-  senha: z.string().min(6, "A senha deve ter no mínimo 6 caracteres"),
-  lembrarMe: z.boolean().optional(),
-});
-type loginFormInputs = z.infer<typeof loginSchema>;
+import { loginSchema, type LoginFormInputs } from "@/lib/validations/login";
 
 export default function LoginPage() {
   const [mostrarSenha, setMostrarSenha] = useState(false);
 
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<loginFormInputs>({
+  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginFormInputs>({
     resolver: zodResolver(loginSchema),
     defaultValues: { lembrarMe: false }
   });
 
-  const onSubmit = async (data: loginFormInputs) => {
+  const onSubmit = async (data: LoginFormInputs) => {
     await authClient.signIn.email({
       email: data.email,
       password: data.senha,
       rememberMe: data.lembrarMe,
       callbackURL: "/"
     }, {
-      onSuccess: () => appToast.loginSuccess(),
-      onError: (ctx) => appToast.loginError(ctx.error.message)
+      onSuccess: () => { appToast.loginSuccess(); },
+      onError: (ctx) => { appToast.loginError(ctx.error.message); }
     });
   };
 
