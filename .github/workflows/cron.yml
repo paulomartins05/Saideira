@@ -1,0 +1,14 @@
+name: Executar Cron (A cada 6 horas)
+
+on:
+  schedule:
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+
+jobs:
+  run-cron:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Cron Endpoint
+        run: |
+          curl -X GET "https://salgado-salvo.vercel.app/cron" -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}"
