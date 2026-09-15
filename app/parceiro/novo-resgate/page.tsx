@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { novoResgateSchema, type NovoResgateFormInputs } from "@/lib/schemas/novo-resgates";
+import { juntarEndereco } from "@/lib/utils";
 
 import Container from "../../componentes/container";
 import { criarOferta } from "@/app/actions/ofertas";
@@ -53,28 +55,7 @@ const formatCoinInput = (valorAtual: string): string => {
   });
 };
 
-const produtoSchema = z.object({
-  nome: z.string().min(3, "O nome precisa ter pelo menos 3 caracteres."),
-  descricao: z.string().min(10, "Detalhe melhor os ingredientes do seu lanche."),
-  categoria: z.string().min(1, "Você precisa selecionar uma categoria acima."),
-  precoOriginal: z.string().min(1, "Obrigatório"),
-  precoResgate: z.string().min(1, "Obrigatório"),
-  localizacao: z.string().min(5, "Informe o endereço completo de retirada."),
-  quantidade: z.number({ message: "Obrigatório" }).min(1, "Mínimo de 1."),
-  validade: z.number({ message: "Obrigatório" }).min(1, "Mínimo de 1 hora."),
-  termosAceitos: z.boolean().refine((val) => val === true, {
-    message: "Você precisa aceitar os termos de contrato.",
-  }),
-}).refine((data) => {
-  const pOrig = Number(data.precoOriginal.replace(/\./g, "").replace(",", "."));
-  const pResg = Number(data.precoResgate.replace(/\./g, "").replace(",", "."));
-  return pResg < pOrig;
-}, {
-  message: "Atenção: O Preço de Resgate deve ser MENOR que o Preço Normal!",
-  path: ["precoResgate"],
-});
 
-type ProdutoFormInputs = z.infer<typeof produtoSchema>;
 type UsuarioComLocalizacao = {
   localizacao?: string | null
   tipoNegocio?: "RESTAURANTE" | "PADARIA" | "MERCADO" | "DOCERIA" | "OUTRO" | null
@@ -96,8 +77,8 @@ export default function CadastrarNovoResgate() {
     setValue,
     watch,
     formState: { errors, isSubmitting },
-  } = useForm<ProdutoFormInputs>({
-    resolver: zodResolver(produtoSchema),
+  } = useForm<NovoResgateFormInputs>({
+    resolver: zodResolver(novoResgateSchema),
     defaultValues: {
       quantidade: 1,
       termosAceitos: false,
@@ -112,12 +93,9 @@ export default function CadastrarNovoResgate() {
       tipoNegocio?: "RESTAURANTE" | "PADARIA" | "MERCADO" | "DOCERIA" | "OUTRO" | null;
     };
     const enderecoDoUsuario = (session?.user as UsuarioComLocalizacao)?.localizacao;
-    if (enderecoDoUsuario) {
-      setValue("localizacao", enderecoDoUsuario);
-    }
   }, [session, setValue]);
 
-  const onSubmit = async (data: ProdutoFormInputs) => {
+  const onSubmit = async (data: NovoResgateFormInputs) => {
     if (imagemFiles.length === 0) {
       appToast.aviso("Foto obrigatória", "Por favor, adicione pelo menos uma foto do lanche.");
       return;
@@ -126,6 +104,15 @@ export default function CadastrarNovoResgate() {
     try {
       const precoOriginalLimpo = data.precoOriginal.replace(/\./g, "").replace(",", ".");
       const precoResgateLimpo = data.precoResgate.replace(/\./g, "").replace(",", ".");
+
+      const localizacaoUnificada = juntarEndereco({
+        cep: data.cep,
+        rua: data.rua,
+        numero: data.numero,
+        bairro: data.bairro,
+        cidade: data.cidade,
+        estado: data.estado
+      });
 
       const serverData = new FormData();
       serverData.append("titulo", data.nome);
@@ -139,7 +126,7 @@ export default function CadastrarNovoResgate() {
       serverData.append("dataValidade", dataExpiraçao.toISOString());
 
       serverData.append("categoria", data.categoria);
-      serverData.append("localizacao", data.localizacao);
+      serverData.append("localizacao", localizacaoUnificada);
       imagemFiles.forEach(file => {
         serverData.append("imagem", file);
       });
@@ -195,7 +182,7 @@ export default function CadastrarNovoResgate() {
                     <label className="text-sm font-bold text-night">Fotos da Oferta</label>
                     <span className="text-xs text-muted font-medium">{imagemFiles.length}/3 fotos</span>
                   </div>
-                  
+
                   <label className="group relative cursor-pointer block">
                     <input
                       type="file"
@@ -211,24 +198,24 @@ export default function CadastrarNovoResgate() {
                         }
                       }}
                     />
-                    
+
                     <div className="grid grid-cols-3 gap-3">
                       {[0, 1, 2].map((index) => (
                         <div key={index} className={`aspect-square rounded-2xl border-2 flex flex-col items-center justify-center transition-all overflow-hidden relative pointer-events-none
                           ${imagemPreviews[index] ? "border-line shadow-sm" : "border-dashed border-line bg-paper group-hover:bg-line/30 group-hover:border-amber"}
                         `}>
-                           {imagemPreviews[index] ? (
-                               <img src={imagemPreviews[index]} className="w-full h-full object-cover" />
-                           ) : (
-                               <>
-                                 <span className="text-2xl mb-1 opacity-50 group-hover:opacity-100 group-hover:text-amber transition-all">
-                                   {index === 0 ? "📷" : "➕"}
-                                 </span>
-                                 <span className="text-[10px] font-semibold text-muted text-center leading-tight px-1">
-                                   {index === 0 ? "Foto Principal" : `Slot ${index + 1}`}
-                                 </span>
-                               </>
-                           )}
+                          {imagemPreviews[index] ? (
+                            <img src={imagemPreviews[index]} className="w-full h-full object-cover" />
+                          ) : (
+                            <>
+                              <span className="text-2xl mb-1 opacity-50 group-hover:opacity-100 group-hover:text-amber transition-all">
+                                {index === 0 ? "📷" : "➕"}
+                              </span>
+                              <span className="text-[10px] font-semibold text-muted text-center leading-tight px-1">
+                                {index === 0 ? "Foto Principal" : `Slot ${index + 1}`}
+                              </span>
+                            </>
+                          )}
                         </div>
                       ))}
                     </div>
@@ -320,28 +307,68 @@ export default function CadastrarNovoResgate() {
               <h2 className="text-lg font-bold text-night mb-4">Inventário e Localização</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
 
-                <div className="md:col-span-2">
-                  <div className="flex justify-between items-end mb-1">
-                    <label className="text-sm text-night font-medium opacity-0">Espaçador</label>
-                    {(session?.user as UsuarioComLocalizacao)?.localizacao && (
-                      <button
-                        type="button"
-                        onClick={() => setValue("localizacao", (session?.user as UsuarioComLocalizacao).localizacao as string, { shouldValidate: true })}
-                        className="text-xs text-amber-dark hover:text-amber font-semibold flex items-center gap-1 transition-colors bg-amber/10 px-2 py-1 rounded-md"
-                      >
-                        🏠 Meu endereço
-                      </button>
-                    )}
+                <div className="md:col-span-2 grid grid-cols-2 gap-4">
+                  <div className="col-span-2">
+                    <InputForm
+                      label="CEP"
+                      type="text"
+                      placeholder="Ex: 00000-000"
+                      icon={<span className="text-lg">📍</span>}
+                      className="bg-white"
+                      {...register("cep")}
+                      error={errors.cep?.message}
+                    />
                   </div>
-                  <InputForm
-                    label="Localização de Retirada"
-                    type="text"
-                    placeholder="Ex: Rua das Flores, 123 - Centro"
-                    icon={<span className="text-lg">📍</span>}
-                    className="bg-white"
-                    {...register("localizacao")}
-                    error={errors.localizacao?.message}
-                  />
+                  <div className="col-span-2 md:col-span-1">
+                    <InputForm
+                      label="Rua"
+                      type="text"
+                      placeholder="Ex: Rua das Flores"
+                      className="bg-white"
+                      {...register("rua")}
+                      error={errors.rua?.message}
+                    />
+                  </div>
+                  <div className="col-span-2 md:col-span-1">
+                    <InputForm
+                      label="Número"
+                      type="text"
+                      placeholder="Ex: 123"
+                      className="bg-white"
+                      {...register("numero")}
+                      error={errors.numero?.message}
+                    />
+                  </div>
+                  <div className="col-span-2">
+                    <InputForm
+                      label="Bairro"
+                      type="text"
+                      placeholder="Ex: Centro"
+                      className="bg-white"
+                      {...register("bairro")}
+                      error={errors.bairro?.message}
+                    />
+                  </div>
+                  <div className="col-span-2 md:col-span-1">
+                    <InputForm
+                      label="Cidade"
+                      type="text"
+                      placeholder="Ex: São Paulo"
+                      className="bg-white"
+                      {...register("cidade")}
+                      error={errors.cidade?.message}
+                    />
+                  </div>
+                  <div className="col-span-2 md:col-span-1">
+                    <InputForm
+                      label="Estado"
+                      type="text"
+                      placeholder="Ex: SP"
+                      className="bg-white"
+                      {...register("estado")}
+                      error={errors.estado?.message}
+                    />
+                  </div>
                 </div>
 
                 <InputForm

@@ -21,3 +21,7 @@ export function calcularTempoPostagem(dataCriacao: Date): string {
 
   return `${Math.floor(diferencaEmHoras / 24)} d`;
 }
+
+export function juntarEndereco(dados: { rua: string, numero: string, bairro: string, cidade: string, estado: string, cep: string }) {
+  return `${dados.rua}, ${dados.numero} - ${dados.bairro}, ${dados.cidade} - ${dados.estado}, CEP: ${dados.cep}`;
+}
