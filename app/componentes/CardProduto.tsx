@@ -1,6 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { deveDestacarOferta } from "@/lib/planos";
+import { Star, MapPin } from "lucide-react";
+
 
 
 export interface ProdutoProps {
@@ -54,7 +56,7 @@ export default function CardProduto({
 
         {temDestaque && !isEsgotado && (
           <div className="absolute -top-2 left-1/2 -translate-x-1/2 bg-gradient-to-r from-yellow-400 to-yellow-600 text-white px-4 py-1 rounded-full text-xs font-bold shadow-md z-20 flex items-center gap-1 border border-yellow-200">
-            ⭐ Destaque
+            <Star className="w-[1.2em] h-[1.2em] inline-block align-text-bottom" /> Destaque
           </div>
         )}
 
@@ -69,7 +71,7 @@ export default function CardProduto({
           )}
 
           <div className="absolute top-3 right-3 bg-white px-3 py-1 rounded-full text-xs font-bold text-background-secondary shadow-sm flex items-center gap-1 z-10">
-            📍 Postado há {tempoPostagem}
+            <MapPin className="w-[1.2em] h-[1.2em] inline-block align-text-bottom" /> Postado há {tempoPostagem}
           </div>
           {distancia !== undefined && (
             <div className="absolute top-3 left-3 bg-white px-3 py-1 rounded-full text-xs font-bold text-[#D9774A] shadow-sm flex items-center gap-1 z-10">

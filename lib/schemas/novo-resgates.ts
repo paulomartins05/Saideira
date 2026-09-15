@@ -7,7 +7,7 @@ export const novoResgateSchema = z.object({
   precoOriginal: z.string().min(1, "Obrigatório"),
   precoResgate: z.string().min(1, "Obrigatório"),
   quantidade: z.number({ message: "Obrigatório" }).min(1, "Mínimo de 1."),
-  validade: z.number({ message: "Obrigatório" }).min(1, "Mínimo de 1 hora."),
+  validade: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Informe um horário válido (HH:MM)"),
   termosAceitos: z.boolean().refine((val) => val === true, {
     message: "Você precisa aceitar os termos de contrato.",
   }),

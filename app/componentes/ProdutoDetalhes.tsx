@@ -4,6 +4,8 @@ import Button from "./button";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { criarResgate } from "@/app/actions/resgate";
+import { Clock, MapPin, ShoppingCart } from "lucide-react";
+
 
 interface DetalhesProps {
   nome: string;
@@ -43,7 +45,7 @@ export default function ProdutoDetalhes({
 
       <div className="flex items-center gap-2 mb-4">
         <span className="bg-success-bg text-success text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
-          🕒 Postado há {tempoPostagem}
+          <Clock className="w-[1.2em] h-[1.2em] inline-block align-text-bottom" /> Postado há {tempoPostagem}
         </span>
       </div>
 
@@ -56,7 +58,7 @@ export default function ProdutoDetalhes({
       </p>
 
       <div className="flex items-start gap-3 mb-8 p-4 bg-paper rounded-2xl border border-line-dark">
-        <span className="text-xl">📍</span>
+        <span className="text-xl"><MapPin className="w-[1.2em] h-[1.2em] inline-block align-text-bottom" /></span>
         <p className="font-body text-sm text-night/80 leading-relaxed">
           <strong>Endereço de Retirada:</strong> <br />
           {localizacao}
@@ -94,7 +96,7 @@ export default function ProdutoDetalhes({
             }} className="flex-1 w-full">
               <Button type="submit" variant="primary" className="w-full h-full min-h-[3.5rem] flex justify-center items-center gap-2 bg-amber hover:bg-amber-dark text-night font-bold rounded-2xl shadow-lg shadow-amber/20 transition-all text-base md:text-lg">
                 {usuarioId ? (
-                  <>🛒 Resgatar {quantidade > 1 ? `${quantidade} itens` : ''}</>
+                  <><ShoppingCart className="w-[1.2em] h-[1.2em] inline-block align-text-bottom" /> Resgatar {quantidade > 1 ? `${quantidade} itens` : ''}</>
                 ) : (
                   <>Faça Login para Resgatar</>
                 )}

@@ -61,7 +61,13 @@ export const auth = betterAuth({
         type: "string",
         required: false,
         input: true
-      }
+      },
+      cep: { type: "string", required: false, input: true },
+      rua: { type: "string", required: false, input: true },
+      numero: { type: "string", required: false, input: true },
+      bairro: { type: "string", required: false, input: true },
+      cidade: { type: "string", required: false, input: true },
+      estado: { type: "string", required: false, input: true },
     }
   }
 });
