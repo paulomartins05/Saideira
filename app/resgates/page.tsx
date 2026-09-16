@@ -30,6 +30,7 @@ export default async function PaginaTodosResgates({
     ? Prisma.sql`AND (o.titulo ILIKE ${'%' + textoDaBusca + '%'} OR o.localizacao ILIKE ${'%' + textoDaBusca + '%'} OR o.descricao ILIKE ${'%' + textoDaBusca + '%'})`
     : Prisma.empty;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const countRaw: any = await prisma.$queryRaw`
     SELECT COUNT(o.id) as count
     FROM "Oferta" o
@@ -45,6 +46,7 @@ export default async function PaginaTodosResgates({
   const limit = itensPorPagina;
   const offset = (paginaAtual - 1) * itensPorPagina;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const produtosDoBancoPaginados: any[] = await prisma.$queryRaw`
     SELECT 
       o.*,

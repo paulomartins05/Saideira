@@ -54,7 +54,7 @@ export default function ProdutoDetalhes({
       </h1>
 
       <p className="font-body text-sm text-muted mb-6">
-        Do "{loja}"
+        Do &quot;{loja}&quot;
       </p>
 
       <div className="flex items-start gap-3 mb-8 p-4 bg-paper rounded-2xl border border-line-dark">

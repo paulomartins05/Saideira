@@ -10,6 +10,7 @@ cloudinary.config({
 
 async function executarUploadClodinary(
   buffer: Buffer,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   opcoesCustomizadas: Record<string, any>
 ): Promise<string> {
   return new Promise((resolve, reject) => {

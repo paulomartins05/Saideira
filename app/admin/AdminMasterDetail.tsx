@@ -7,6 +7,7 @@ import { CheckCircle2, Store, FileText, Phone, Mail } from "lucide-react";
 import { appToast } from "@/lib/toast";
 import { useRouter } from "next/navigation";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function AdminMasterDetail({ parceiros }: { parceiros: any[] }) {
     const router = useRouter();
     const [selectedId, setSelectedId] = useState<string | null>(parceiros[0]?.id || null);

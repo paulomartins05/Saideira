@@ -86,8 +86,8 @@ export async function criarResgate(userId: string, ofertaId: string, quantidadeP
     revalidatePath("/perfil")
     return result.resgateGerado
   }
-  catch (error: any) {
-    if (error.message === "OFERTA_ESGOTADA") {
+  catch (error: unknown) {
+    if (error instanceof Error && error.message === "OFERTA_ESGOTADA") {
       redirecionarEsgotado = true;
     } else {
       throw error;
@@ -143,7 +143,7 @@ export async function validarResgate(resgateId: string, pinDigitado: string) {
     const maxTentativas = 3;
     const tempoBloqueioMinutos = 15;
 
-    let updateData: any = {
+    const updateData: { tentativasPin: number; bloqueadoAte?: Date | null } = {
       tentativasPin: novasTentativas
     };
 
