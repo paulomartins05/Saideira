@@ -6,6 +6,7 @@ import { redirect } from "next/navigation"
 import { auth } from "@/lib/auth"
 import { headers } from "next/headers"
 import { notificarParceiroNovoResgate } from "@/lib/emails"
+import { notificarParceiroWhatsApp } from "@/lib/whatsapp"
 
 export async function criarResgate(userId: string, ofertaId: string, quantidadePedida: number = 1) {
 
@@ -28,7 +29,7 @@ export async function criarResgate(userId: string, ofertaId: string, quantidadeP
           quantidade: true,
           titulo: true,
           vendedor: {
-            select: { email: true }
+            select: { email: true, telefone: true }
           }
         }
       })
@@ -75,13 +76,21 @@ export async function criarResgate(userId: string, ofertaId: string, quantidadeP
       return { resgateGerado, ofertaAtual, consumidor }
     })
 
-    // Dispara a notificação de forma assíncrona (fire-and-forget)
     notificarParceiroNovoResgate(
       result.ofertaAtual.vendedor.email,
       result.consumidor?.name || "Cliente",
       result.ofertaAtual.titulo,
       result.resgateGerado.codigoPin
     )
+
+    if (result.ofertaAtual.vendedor.telefone) {
+      notificarParceiroWhatsApp(
+        result.ofertaAtual.vendedor.telefone,
+        result.consumidor?.name || "Cliente",
+        result.ofertaAtual.titulo,
+        result.resgateGerado.codigoPin
+      );
+    }
 
     revalidatePath("/perfil")
     return result.resgateGerado
@@ -129,14 +138,12 @@ export async function validarResgate(resgateId: string, pinDigitado: string) {
 
   const agora = new Date();
 
-  // 1. Trava de tempo: Se está bloqueado e a data de bloqueio AINDA NÃO passou
   if (resgate.bloqueadoAte && resgate.bloqueadoAte > agora) {
     const minutosRestantes = Math.ceil((resgate.bloqueadoAte.getTime() - agora.getTime()) / 60000);
     throw new Error(`Este resgate foi bloqueado por segurança. Tente novamente em ${minutosRestantes} minutos. `)
   }
 
   if (resgate.codigoPin !== pinDigitado) {
-    // 2. O tempo expirou? Se sim, ele ganha uma nova chance (reseta pra 1)
     const tempoBloqueioExpirou = resgate.bloqueadoAte !== null && resgate.bloqueadoAte <= agora;
     const novasTentativas = tempoBloqueioExpirou ? 1 : resgate.tentativasPin + 1;
 
@@ -147,12 +154,10 @@ export async function validarResgate(resgateId: string, pinDigitado: string) {
       tentativasPin: novasTentativas
     };
 
-    // 3. Aplica o castigo novamente se estourar as 3 tentativas
     if (novasTentativas >= maxTentativas) {
       const dataDesbloqueio = new Date(agora.getTime() + tempoBloqueioMinutos * 60000);
       updateData.bloqueadoAte = dataDesbloqueio;
     } else if (tempoBloqueioExpirou) {
-      // Libera o bloqueio antigo do banco para não dar conflito futuro
       updateData.bloqueadoAte = null;
     }
 
@@ -187,7 +192,7 @@ export async function getCartCount() {
   const session = await auth.api.getSession({
     headers: reqHeaders
   })
-  
+
   if (!session?.user) return 0;
 
   const count = await prisma.resgate.count({
@@ -196,6 +201,6 @@ export async function getCartCount() {
       status: "PENDENTE"
     }
   });
-  
+
   return count;
 }
