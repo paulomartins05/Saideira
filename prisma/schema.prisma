@@ -161,6 +161,7 @@ model Resgate {
 model Avaliacao {
   id         String   @id @default(cuid())
   nota       Int
+  comentario String?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   userId     String

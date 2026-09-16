@@ -4,7 +4,6 @@ import { prisma } from "@/lib/prisma"
 import { auth } from "@/lib/auth"
 import { headers } from "next/headers"
 import { revalidatePath } from "next/cache"
-import { success } from "zod"
 
 export async function criarAvaliação(resgateId: string, nota: number, comentario?: string) {
     const reqHeaders = await headers()
@@ -51,6 +50,7 @@ export async function criarAvaliação(resgateId: string, nota: number, comentar
     await prisma.avaliacao.create({
         data: {
             nota,
+            comentario,
             userId: session.user.id,
             parceiroId: resgate.oferta.vendedorId,
             resgateId: resgate.id
