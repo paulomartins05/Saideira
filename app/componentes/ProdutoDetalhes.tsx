@@ -1,13 +1,15 @@
 "use client"
 
 import Button from "./button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { getMediaParceiro } from "@/app/actions/avaliacoes";
 import { criarResgate } from "@/app/actions/resgate";
-import { Clock, MapPin, ShoppingCart } from "lucide-react";
+import { Clock, MapPin, ShoppingCart, Star } from "lucide-react";
 
 
 interface DetalhesProps {
+  parceiroId: string;
   nome: string;
   loja: string;
   localizacao: string;
@@ -21,12 +23,17 @@ interface DetalhesProps {
 }
 
 export default function ProdutoDetalhes({
-  nome, loja, localizacao, descricao, precoOriginal, precoAtual, tempoPostagem, ofertaId, usuarioId, estoqueDisponivel
+  nome, loja, localizacao, descricao, precoOriginal, precoAtual, tempoPostagem, ofertaId, usuarioId, estoqueDisponivel, parceiroId
 }: DetalhesProps) {
 
   const router = useRouter()
   const [quantidade, setQuantidade] = useState(1)
   const [erroEstoque, setErroEstoque] = useState("")
+  const [stats, setStats] = useState<{visivel: boolean, mensagem?: string, media?: number|null, quantidade?: number}>({ visivel: false, mensagem: "Carregando..." })
+
+  useEffect(() => {
+    getMediaParceiro(parceiroId).then(setStats).catch(console.error)
+  }, [parceiroId])
 
   const diminuir = () => {
     if (quantidade > 1) { setQuantidade(quantidade - 1); setErroEstoque(""); }
@@ -56,6 +63,23 @@ export default function ProdutoDetalhes({
       <p className="font-body text-sm text-muted mb-6">
         Do &quot;{loja}&quot;
       </p>
+
+      {/* Selo de Avaliação (Badge) */}
+      <div className="mb-8">
+        {!stats.visivel ? (
+          <span className="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-semibold text-blue-700 ring-1 ring-inset ring-blue-700/10">
+            {stats.mensagem}
+          </span>
+        ) : (
+          <div className="flex items-center gap-1.5 text-yellow-500 font-bold bg-yellow-50 inline-flex px-2 py-1 rounded-full ring-1 ring-inset ring-yellow-600/20">
+            <Star className="w-4 h-4 fill-yellow-500 text-yellow-500" />
+            <span className="text-sm">{stats.media}</span>
+            <span className="text-gray-500 text-xs font-normal ml-1">
+              ({stats.quantidade})
+            </span>
+          </div>
+        )}
+      </div>
 
       <div className="flex items-start gap-3 mb-8 p-4 bg-paper rounded-2xl border border-line-dark">
         <span className="text-xl"><MapPin className="w-[1.2em] h-[1.2em] inline-block align-text-bottom" /></span>

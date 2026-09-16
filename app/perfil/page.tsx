@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { ChevronRight, Edit2, History, TrendingDown, PackageCheck } from "lucide-react";
+import { BotaoAvaliar } from "../componentes/BotaoAvaliar";
 
 export default async function PerfilPage() {
   const reqHeaders = await headers();
@@ -20,7 +21,8 @@ export default async function PerfilPage() {
     include: {
       oferta: {
         include: { vendedor: true }
-      }
+      },
+      avaliacao: true
     },
     orderBy: { createdAt: "desc" }
   });
@@ -106,6 +108,13 @@ export default async function PerfilPage() {
                       <p className="text-[11px] text-muted font-medium">
                         {resgate.createdAt.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })}
                       </p>
+                      
+                      {resgate.status === "RETIRADO" && !resgate.avaliacao && (
+                         <BotaoAvaliar resgateId={resgate.id} />
+                      )}
+                      {resgate.avaliacao && (
+                        <p className="text-[11px] text-green-600 font-bold mt-1">Avaliado com {resgate.avaliacao.nota} ⭐</p>
+                      )}
                     </div>
                   </div>
                 ))
