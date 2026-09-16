@@ -7,7 +7,9 @@ import { auth } from "@/lib/auth"
 import { revalidatePath } from "next/cache";
 import { validarResgate } from "@/app/actions/resgate";
 import { alterarStatusOferta } from "@/app/actions/ofertas";
-import { ChevronRight, Edit2, Wallet, PackageCheck, TrendingDown, Star, Leaf, QrCode, Tag, Plus, CheckCircle2, History } from "lucide-react";
+import { getMetricasParceiro } from "@/app/actions/dashboard-parceiro";
+import { StatsCard } from "@/app/componentes/StatsCard";
+import { ChevronRight, Edit2, Wallet, PackageCheck, TrendingDown, Star, Leaf, QrCode, Tag, Plus, CheckCircle2, History, TrendingUp } from "lucide-react";
 
 export default async function Parceiro({
   searchParams
@@ -25,6 +27,7 @@ export default async function Parceiro({
   }
 
   const usuario = session.user;
+  const metricas = await getMetricasParceiro(usuario.id);
   const ofertasDoBanco = await prisma.oferta.findMany({
     where: {
       vendedorId: usuario.id,
@@ -122,18 +125,21 @@ export default async function Parceiro({
               {abaAtiva === "visao-geral" && (
                 <>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div className="bg-card p-6 rounded-[20px] border border-line flex flex-col">
-                      <p className="text-[12.5px] font-bold uppercase tracking-widest text-muted mb-2">Saldo a Receber</p>
-                      <p className="font-display font-extrabold text-[28px] text-night mt-auto">R$ {saldo.toFixed(2).replace('.', ',')}</p>
-                    </div>
-                    <div className="bg-night text-amber p-6 rounded-[20px] flex flex-col relative overflow-hidden">
-                      <div className="absolute -right-4 -bottom-4 w-20 h-20 bg-amber/20 blur-[20px] rounded-full"></div>
-                      <p className="text-[12.5px] font-bold uppercase tracking-widest opacity-80 mb-2">Resgates Hoje</p>
-                      <p className="font-display font-extrabold text-[32px] mt-auto relative z-10">{resgatesHoje}</p>
-                    </div>
-                    <div className="bg-card p-6 rounded-[20px] border border-line flex flex-col">
-                      <p className="text-[12.5px] font-bold uppercase tracking-widest text-muted mb-2 flex items-center justify-between">
-                        Desperdício Evitado <Leaf className="w-4 h-4 text-green-600" />
+                    <StatsCard 
+                      titulo="Vendas no Mês" 
+                      valor={metricas.vendasNoMes} 
+                      subtitulo="Itens retirados neste mês"
+                      icone={PackageCheck}
+                    />
+                    <StatsCard 
+                      titulo="Receita no Mês" 
+                      valor={`R$ ${metricas.receitaNoMes.toFixed(2).replace('.', ',')}`} 
+                      subtitulo="Ganhos gerados este mês"
+                      icone={TrendingUp}
+                    />
+                    <div className="bg-card p-6 rounded-[20px] border border-line flex flex-col justify-center text-center">
+                      <p className="text-[12.5px] font-bold uppercase tracking-widest text-muted mb-2 flex items-center justify-center gap-1.5">
+                        <Leaf className="w-4 h-4 text-green-600" /> Desperdício Evitado 
                       </p>
                       <p className="font-display font-extrabold text-[28px] text-night mt-auto">{impactoKg} <span className="text-lg">kg</span></p>
                     </div>
@@ -246,6 +252,35 @@ export default async function Parceiro({
                       </div>
                     </div>
 
+                  </div>
+
+                  {/* Top Ofertas (Itens Mais Resgatados) */}
+                  <div className="bg-card p-6 rounded-[20px] border border-line flex flex-col mt-6">
+                    <div className="flex items-center gap-2 mb-4">
+                      <Star className="w-5 h-5 text-amber-500" />
+                      <h2 className="font-display font-extrabold text-[20px]">Itens Mais Resgatados (Mês Atual)</h2>
+                    </div>
+                    
+                    <div className="flex flex-col gap-3">
+                      {metricas.topOfertas.length === 0 ? (
+                          <div className="text-center py-6 bg-paper rounded-xl border border-line border-dashed">
+                             <p className="text-[13px] text-muted font-medium">Nenhum item resgatado ainda.</p>
+                          </div>
+                      ) : (
+                          metricas.topOfertas.map((oferta) => (
+                            <div key={oferta.id} className="flex justify-between items-center bg-paper p-4 rounded-xl border border-line">
+                              <div>
+                                <p className="font-bold text-[14px] text-night">{oferta.titulo}</p>
+                                <p className="text-[12px] text-muted mt-0.5">{oferta.categoria}</p>
+                              </div>
+                              <div className="text-right">
+                                <p className="font-display font-bold text-[18px] text-amber-dark leading-none mb-1">{oferta._count.resgates}</p>
+                                <p className="text-[10px] uppercase font-bold text-muted tracking-widest leading-none">Resgates</p>
+                              </div>
+                            </div>
+                          ))
+                      )}
+                    </div>
                   </div>
                 </>
               )}
