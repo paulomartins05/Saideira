@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client"
   output   = "../generated/prisma"
@@ -36,45 +35,46 @@ enum StatusAssinatura {
   EXPIRADA
 }
 
-
 model User {
-  id            String    @id @default(cuid())
-  name          String
-  email         String    @unique
-  emailVerified Boolean   @default(false)
-  image         String?
-  createdAt     DateTime  @default(now()) 
-  updatedAt     DateTime  @updatedAt
-  role          RoleUsuario    @default(CONSUMIDOR)
-  telefone      String?
-  cnpj          String?   
-  cep           String? 
-  rua           String?
-  numero        String?
-  bairro        String?
-  cidade        String?
-  estado        String? 
-  latitude      Float?
-  longitude     Float?
-  sessions      Session[]
-  accounts      Account[]
-  ofertas       Oferta[]
-  resgates      Resgate[]
-  tipoNegocio   TipoNegocio?
-  assinatura    Assinatura?
+  id                  String       @id @default(cuid())
+  name                String
+  email               String       @unique
+  emailVerified       Boolean      @default(false)
+  image               String?
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+  role                RoleUsuario  @default(CONSUMIDOR)
+  telefone            String?
+  cnpj                String?
+  cep                 String?
+  rua                 String?
+  numero              String?
+  bairro              String?
+  cidade              String?
+  estado              String?
+  latitude            Float?
+  longitude           Float?
+  sessions            Session[]
+  accounts            Account[]
+  ofertas             Oferta[]
+  resgates            Resgate[]
+  tipoNegocio         TipoNegocio?
+  assinatura          Assinatura?
+  avaliacoesFeitas    Avaliacao[]  @relation("AvaliacoesFeitas")
+  avaliacoesRecebidas Avaliacao[]  @relation("AvaliacoesRecebidas")
 }
 
 model Assinatura {
-  id                    String   @id @default(cuid())
-  parceiroId            String   @unique
-  parceiro              User     @relation(fields: [parceiroId], references: [id], onDelete: Cascade)
-  status                StatusAssinatura @default(EXPIRADA)
-  provedorPagamentoId   String?
-  inicioEm              DateTime?
-  renovaEm              DateTime?
-  canceladaEm           DateTime?
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
+  id                  String           @id @default(cuid())
+  parceiroId          String           @unique
+  parceiro            User             @relation(fields: [parceiroId], references: [id], onDelete: Cascade)
+  status              StatusAssinatura @default(EXPIRADA)
+  provedorPagamentoId String?
+  inicioEm            DateTime?
+  renovaEm            DateTime?
+  canceladaEm         DateTime?
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
 }
 
 model Session {
@@ -101,56 +101,75 @@ model Account {
   accessTokenExpiresAt  DateTime?
   refreshTokenExpiresAt DateTime?
   scope                 String?
-  password              String?   
+  password              String?
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
 }
 
 model Verification {
-  id         String    @id @default(cuid())
+  id         String   @id @default(cuid())
   identifier String
   value      String
   expiresAt  DateTime
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
 
 model Oferta {
-  id              String   @id @default(cuid())
-  titulo          String   
-  descricao       String   
-  precoOriginal   Float    
-  precoResgate   Float    
-  quantidade      Int      
-  dataValidade    DateTime 
-  categoria       String
-  localizacao     String
-  latitude        Float?
-  longitude       Float?
-  imagemUrl       String[]
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  resgates    Resgate[]
-  vendedorId      String
-  vendedor        User     @relation(fields: [vendedorId], references: [id], onDelete: Cascade)
-  ativo Boolean @default(true)
+  id            String    @id @default(cuid())
+  titulo        String
+  descricao     String
+  precoOriginal Float
+  precoResgate  Float
+  quantidade    Int
+  dataValidade  DateTime
+  categoria     String
+  localizacao   String
+  latitude      Float?
+  longitude     Float?
+  imagemUrl     String[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  resgates      Resgate[]
+  vendedorId    String
+  vendedor      User      @relation(fields: [vendedorId], references: [id], onDelete: Cascade)
+  ativo         Boolean   @default(true)
+
   @@index([vendedorId])
 }
 
 model Resgate {
-  id          String   @id @default(cuid())
-  userId      String
-  ofertaId    String
-  status      StatusResgate   @default(PENDENTE)
-  quantidade  Int      @default(1)
-  codigoPin   String   
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  tentativasPin Int             @default(0)
+  id            String        @id @default(cuid())
+  userId        String
+  ofertaId      String
+  status        StatusResgate @default(PENDENTE)
+  quantidade    Int           @default(1)
+  codigoPin     String
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  tentativasPin Int           @default(0)
   bloqueadoAte  DateTime?
-  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  oferta    Oferta @relation(fields: [ofertaId], references: [id], onDelete: Cascade)
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  oferta        Oferta        @relation(fields: [ofertaId], references: [id], onDelete: Cascade)
+  avaliacao     Avaliacao?
+
   @@index([userId])
   @@index([ofertaId])
   @@index([status])
+}
+
+model Avaliacao {
+  id         String   @id @default(cuid())
+  nota       Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  userId     String
+  user       User     @relation("AvaliacoesFeitas", fields: [userId], references: [id], onDelete: Cascade)
+  parceiroId String
+  parceiro   User     @relation("AvaliacoesRecebidas", fields: [parceiroId], references: [id], onDelete: Cascade)
+  resgateId  String   @unique
+  resgate    Resgate  @relation(fields: [resgateId], references: [id], onDelete: Cascade)
+
+  @@index([parceiroId])
+  @@index([userId])
 }
