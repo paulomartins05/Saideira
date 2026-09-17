@@ -1,17 +1,26 @@
 "use client";
 
 import { useState } from "react";
-import { aprovarParceiro } from "../actions/admin";
+import { aprovarParceiro, recusarParceiro } from "../actions/admin";
 import Button from "../componentes/button";
-import { CheckCircle2, Store, FileText, Phone, Mail } from "lucide-react";
+import { CheckCircle2, Store, FileText, Phone, Mail, Check, X } from "lucide-react";
 import { appToast } from "@/lib/toast";
 import { useRouter } from "next/navigation";
 
+interface ParceiroPendente {
+    id: string;
+    name: string;
+    email: string;
+    telefone: string;
+    cnpj: string
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export default function AdminMasterDetail({ parceiros }: { parceiros: any[] }) {
+export default function AdminMasterDetail({ parceiros }: { parceiros: ParceiroPendente[] }) {
     const router = useRouter();
     const [selectedId, setSelectedId] = useState<string | null>(parceiros[0]?.id || null);
     const [isLoading, setIsLoading] = useState(false);
+    const [isRejecting, setIsRejecting] = useState(false);
 
     const selectedUser = parceiros.find(p => p.id === selectedId);
 
@@ -25,10 +34,34 @@ export default function AdminMasterDetail({ parceiros }: { parceiros: any[] }) {
 
             const nextUser = parceiros.find(p => p.id !== selectedUser.id);
             setSelectedId(nextUser ? nextUser.id : null);
-        } catch (e) {
-            appToast.erro("Erro", "Não foi possível aprovar o parceiro.");
-        } finally {
+        } catch (e: any) {
+            const mensagem = e?.message || "Não foi possível aprovar o parceiro.";
+            appToast.erro("Atenção", mensagem);
+        }
+        finally {
             setIsLoading(false);
+        }
+    };
+
+    const handleRecusar = async () => {
+        if (!selectedUser) {
+            return
+        }
+
+        setIsRejecting(true)
+
+        try {
+            await recusarParceiro(selectedUser.id);
+            appToast.sucesso("Parceiro Recusado", "O pedido de parceria foi cancelado.");
+            router.refresh();
+            const nextUser = parceiros.find(p => p.id !== selectedUser.id);
+            setSelectedId(nextUser ? nextUser.id : null);
+        } catch (e: any) {
+            const mensagem = e?.message || "Não foi possível recusar o parceiro.";
+            appToast.erro("Atenção", mensagem);
+        }
+        finally {
+            setIsRejecting(false);
         }
     };
 
@@ -69,11 +102,11 @@ export default function AdminMasterDetail({ parceiros }: { parceiros: any[] }) {
             <div className={`flex-1 overflow-y-auto bg-paper p-4 md:p-10 ${!selectedId ? 'hidden md:block' : 'block'}`}>
                 {selectedUser ? (
                     <div className="max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
-                        <button 
-                            onClick={() => setSelectedId(null)} 
+                        <button
+                            onClick={() => setSelectedId(null)}
                             className="md:hidden flex items-center gap-2 text-muted font-bold text-sm mb-6 hover:text-night transition-colors"
                         >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
                             Voltar para a Fila
                         </button>
 
@@ -117,15 +150,27 @@ export default function AdminMasterDetail({ parceiros }: { parceiros: any[] }) {
                                     variant="primary"
                                     className="flex-1 bg-success hover:bg-[#438a5f] text-white rounded-xl py-3.5 shadow-lg shadow-success/20 transition-all font-bold flex justify-center items-center gap-2"
                                     onClick={handleAprovar}
-                                    disabled={isLoading}
+                                    disabled={isLoading || isRejecting}
                                 >
-                                    {isLoading ? "Aprovando..." : "✅ Aprovar Parceiro"}
+                                    {isLoading ? "Processando..." : (
+                                        <>
+                                            <Check className="w-5 h-5" />
+                                            Aprovar Parceiro
+                                        </>
+                                    )}
                                 </Button>
                                 <Button
                                     variant="outline"
                                     className="flex-1 border-coral text-coral hover:bg-coral/10 rounded-xl py-3.5 transition-all font-bold flex justify-center items-center gap-2"
+                                    onClick={handleRecusar}
+                                    disabled={isLoading || isRejecting}
                                 >
-                                    ❌ Recusar
+                                    {isRejecting ? "Processando..." : (
+                                        <>
+                                            <X className="w-5 h-5" />
+                                            Recusar
+                                        </>
+                                    )}
                                 </Button>
                             </div>
                         </div>
