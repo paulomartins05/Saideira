@@ -105,6 +105,14 @@ export default async function PerfilPage() {
                       <p className={`text-[12px] font-bold uppercase tracking-wide mb-0.5 ${resgate.status === "PENDENTE" ? "text-amber-dark" : "text-green-600"}`}>
                         {resgate.status}
                       </p>
+
+                      {resgate.status === "PENDENTE" && (
+                        <div className="bg-amber/10 border border-amber/30 rounded-lg px-3 py-2 my-2 inline-block text-center">
+                          <p className="text-[10px] text-amber-dark uppercase font-bold tracking-wider mb-0.5">Código de Retirada</p>
+                          <p className="text-xl font-display font-extrabold text-night tracking-[0.2em]">{resgate.codigoPin}</p>
+                        </div>
+                      )}
+
                       <p className="text-[11px] text-muted font-medium">
                         {resgate.createdAt.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })}
                       </p>

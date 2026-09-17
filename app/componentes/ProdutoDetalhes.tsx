@@ -29,7 +29,7 @@ export default function ProdutoDetalhes({
   const router = useRouter()
   const [quantidade, setQuantidade] = useState(1)
   const [erroEstoque, setErroEstoque] = useState("")
-  const [stats, setStats] = useState<{visivel: boolean, mensagem?: string, media?: number|null, quantidade?: number}>({ visivel: false, mensagem: "Carregando..." })
+  const [stats, setStats] = useState<{ visivel: boolean, mensagem?: string, media?: number | null, quantidade?: number }>({ visivel: false, mensagem: "Carregando..." })
 
   useEffect(() => {
     getMediaParceiro(parceiroId).then(setStats).catch(console.error)
@@ -116,7 +116,7 @@ export default function ProdutoDetalhes({
             <form action={async () => {
               if (!usuarioId) return router.push("/login");
               await criarResgate(usuarioId, ofertaId, quantidade);
-              router.push("/perfil");
+              router.push("/carrinho");
             }} className="flex-1 w-full">
               <Button type="submit" variant="primary" className="w-full h-full min-h-[3.5rem] flex justify-center items-center gap-2 bg-amber hover:bg-amber-dark text-night font-bold rounded-2xl shadow-lg shadow-amber/20 transition-all text-base md:text-lg">
                 {usuarioId ? (
