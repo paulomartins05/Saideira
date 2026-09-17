@@ -21,8 +21,8 @@ export default function NavLink({ href, children, onClick }: NavLinkProps) {
       className={cn(
         "font-inter text-sm md:text-base font-medium transition-all duration-200",
         isActive 
-          ? "text-laranja-destaque cursor-default" 
-          : "text-black hover:text-laranja-destaque hover:opacity-70"
+          ? "text-amber font-bold cursor-default" 
+          : "text-paper/80 hover:text-white"
       )}
     >
       {children}

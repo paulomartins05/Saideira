@@ -82,6 +82,7 @@ export default function ListaResgatesClient({ produtos }: { produtos: ProdutoPro
               <OfertaCard
                 loja={produto.loja}
                 titulo={produto.nome}
+                descricao={produto.descricao}
                 precoAntigo={`R$ ${(produto.preco * 2).toFixed(2).replace('.', ',')}`}
                 precoNovo={`R$ ${produto.preco.toFixed(2).replace('.', ',')}`}
                 tempoRestante={produto.tempoRestanteFormatado}

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { getHeaderRoutes } from "@/lib/routes";
 
 export default function NavLinks({ role }: { role?: string | null }) {
     const pathname = usePathname();
@@ -15,22 +16,11 @@ export default function NavLinks({ role }: { role?: string | null }) {
 
     return (
         <nav className="hidden md:flex items-center gap-6">
-            <Link href="/" className={getNavClass("/")}>
-                Início
-            </Link>
-            <Link href="/resgates" className={getNavClass("/resgates")}>
-                Ofertas
-            </Link>
-
-            {role === "PARCEIRO" ? (
-                <Link href="/parceiro" className={getNavClass("/parceiro")}>
-                    Painel do Parceiro
+            {getHeaderRoutes(role).map((rota) => (
+                <Link key={rota.path} href={rota.path} className={getNavClass(rota.path)}>
+                    {rota.label}
                 </Link>
-            ) : (
-                <Link href="/contato" className={getNavClass("/contato")}>
-                    Vender excedente
-                </Link>
-            )}
+            ))}
         </nav>
     );
 }

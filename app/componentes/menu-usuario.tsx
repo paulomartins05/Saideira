@@ -18,8 +18,10 @@ export default function MenuUsuario({ usuario }: MenuUsuarioProps) {
 
       <button
         onClick={() => setMenuAberto(!menuAberto)}
-        className="w-10 h-10 rounded-full border-2 border-line overflow-hidden flex items-center justify-center bg-card hover:opacity-80 transition-opacity"
+        className="w-10 h-10 rounded-full border-2 border-line overflow-hidden flex items-center justify-center bg-card hover:opacity-80 transition-opacity focus-visible:ring-2 focus-visible:ring-amber focus-visible:outline-none"
         title="Menu da Conta"
+        aria-haspopup="true"
+        aria-expanded={menuAberto}
       >
         {usuario.image ? (
           <img src={usuario.image} alt="Perfil" className="w-full h-full object-cover" />
@@ -31,7 +33,13 @@ export default function MenuUsuario({ usuario }: MenuUsuarioProps) {
       </button>
 
       {menuAberto && (
-        <div className="absolute right-0 mt-3 w-56 bg-card border border-line rounded-2xl shadow-xl p-3 flex flex-col gap-2 z-50">
+        <>
+          <div 
+            className="fixed inset-0 z-40" 
+            onClick={() => setMenuAberto(false)}
+            aria-hidden="true"
+          />
+          <div className="absolute right-0 mt-3 w-56 bg-card border border-line rounded-2xl shadow-xl p-3 flex flex-col gap-2 z-50 animate-in slide-in-from-top-2 duration-200">
 
           <div className="px-2 pb-3 border-b border-line mb-1">
             <p className="text-[14px] font-bold truncate text-night">{usuario.name || "Usuário"}</p>
@@ -51,6 +59,7 @@ export default function MenuUsuario({ usuario }: MenuUsuarioProps) {
           </div>
 
         </div>
+        </>
       )}
 
     </div>
