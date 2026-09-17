@@ -314,7 +314,7 @@ export default function CadastrarNovoResgate() {
               <div className="bg-paper border border-line rounded-[20px] p-6 relative">
                 <span className="absolute left-5 top-7 text-muted"><MapPin className="w-5 h-5" /></span>
                 <div className="pl-8 grid grid-cols-2 gap-5">
-                  <div className="col-span-2 md:col-span-1"><FormGroup label="CEP" error={errors.cep?.message}><input type="text" className={inputClass} {...register("cep")} /></FormGroup></div>
+                  <div className="col-span-2 md:col-span-1"><FormGroup label="CEP" error={errors.cep?.message}><input type="text" className={inputClass} {...register("cep", { onBlur: handleBuscarCep })} /></FormGroup></div>
                   <div className="col-span-2 md:col-span-1"><FormGroup label="Rua" error={errors.rua?.message}><input type="text" className={inputClass} {...register("rua")} /></FormGroup></div>
                   <div className="col-span-2 md:col-span-1"><FormGroup label="Número" error={errors.numero?.message}><input type="text" className={inputClass} {...register("numero")} /></FormGroup></div>
                   <div className="col-span-2 md:col-span-1"><FormGroup label="Bairro" error={errors.bairro?.message}><input type="text" className={inputClass} {...register("bairro")} /></FormGroup></div>
