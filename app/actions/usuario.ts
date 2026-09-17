@@ -25,6 +25,9 @@ export async function atualizarPerfilUsuario(formData: FormData) {
     const imagem = formData.get("imagem") as File | null;
 
 
+    const rua = formData.get("rua") as string | null;
+    const numero = formData.get("numero") as string | null;
+
     let novaImagemUrl = undefined
     if (imagem && imagem.size > 0) {
         const url = await uploadImagemProduto(imagem)
@@ -70,7 +73,9 @@ export async function atualizarPerfilUsuario(formData: FormData) {
         data: {
             telefone: telefone,
             ...(cnpj && { cnpj }),
-            ...(localizacao && { localizacao })
+            ...(localizacao && { localizacao }),
+            ...(rua && { rua }),
+            ...(numero && { numero })
         }
     })
 
