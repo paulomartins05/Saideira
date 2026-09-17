@@ -9,6 +9,8 @@ import HeroSection from "./_components/hero-section";
 import ExploreLanches from "./_components/ExploreLanches";
 import ResgatesDisponiveis from "./_components/ResgatesDisponiveis";
 
+export const revalidate = 60;
+
 export default function Home() {
   return (
     <>
