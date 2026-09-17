@@ -13,10 +13,11 @@ import Financeiro from "./_components/Financeiro";
 export default async function Parceiro({
   searchParams
 }: {
-  searchParams: Promise<{ aba?: string }>
+  searchParams: Promise<{ aba?: string; periodo?: string }>
 }) {
   const params = await searchParams;
   const abaAtiva = params.aba || "visao-geral";
+  const periodoAtivo = params.periodo || "todos";
 
   const reqHeaders = await headers();
   const session = await auth.api.getSession({ headers: reqHeaders });
@@ -91,7 +92,7 @@ export default async function Parceiro({
               }>
                 {abaAtiva === "visao-geral" && <VisaoGeral usuarioId={usuario.id} />}
                 {abaAtiva === "produtos" && <MeusProdutos usuarioId={usuario.id} />}
-                {abaAtiva === "financeiro" && <Financeiro usuarioId={usuario.id} />}
+                {abaAtiva === "financeiro" && <Financeiro usuarioId={usuario.id} periodo={periodoAtivo} />}
               </Suspense>
             </div>
 
