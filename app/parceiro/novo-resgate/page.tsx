@@ -13,7 +13,7 @@ import { formatCoinInput } from "@/lib/formatacao";
 import Container from "../../componentes/container";
 import { criarOferta } from "@/app/actions/ofertas";
 import { authClient } from "@/lib/auth-client";
-import Header from "../../pages/header";
+import Header from "../../_components/header";
 import InputForm from "../../componentes/InputForm";
 import { appToast } from "@/lib/toast";
 import { Utensils, Archive, Coffee, CupSoda, Croissant, Donut, Cake, Apple, Beef, ShoppingCart, Candy, Pizza, Package, Tag } from "lucide-react";
@@ -190,7 +190,7 @@ export default function CadastrarNovoResgate() {
             {/* CABEÇALHO DO PARCEIRO */}
             <div className="bg-[#1e2029] rounded-xl p-4 flex items-center gap-4 relative z-10 -mb-4">
               <div className="text-amber pl-2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2" /><path d="M7 2v20" /><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7" /></svg>
               </div>
               <div className="flex flex-col">
                 <span className="text-[12.5px] text-gray-400 font-medium tracking-wide">Publicando como</span>

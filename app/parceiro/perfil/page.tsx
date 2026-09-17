@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
-import Header from "@/app/pages/header";
+import Header from "@/app/_components/header";
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/lib/auth"
 import { revalidatePath } from "next/cache";
@@ -74,25 +74,25 @@ export default async function Parceiro({
 
       <main className="pb-10">
         <div className="max-w-[1000px] mx-auto px-7 pt-7">
-          
+
           <div className="mb-8">
             <div className="flex items-center gap-1.5 text-[12.5px] text-muted mb-4 flex-wrap font-medium">
               <Link href="/" className="hover:text-night transition-colors">Início</Link>
               <ChevronRight className="w-3.5 h-3.5" />
               <span className="text-night font-bold">Painel do Parceiro</span>
             </div>
-            
+
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-card border border-line p-6 rounded-[20px]">
               <div className="flex items-center gap-4">
-                 <div className="w-14 h-14 rounded-full bg-night text-amber font-display font-extrabold text-xl flex items-center justify-center border-2 border-amber">
-                    {usuario.name ? usuario.name.charAt(0).toUpperCase() : "L"}
-                 </div>
-                 <div>
-                    <h1 className="text-[22px] font-display font-extrabold tracking-[-0.01em]">
-                      {usuario.name || "Minha Loja"}
-                    </h1>
-                    <p className="text-[13px] text-muted">Gerencie suas ofertas e resgates</p>
-                 </div>
+                <div className="w-14 h-14 rounded-full bg-night text-amber font-display font-extrabold text-xl flex items-center justify-center border-2 border-amber">
+                  {usuario.name ? usuario.name.charAt(0).toUpperCase() : "L"}
+                </div>
+                <div>
+                  <h1 className="text-[22px] font-display font-extrabold tracking-[-0.01em]">
+                    {usuario.name || "Minha Loja"}
+                  </h1>
+                  <p className="text-[13px] text-muted">Gerencie suas ofertas e resgates</p>
+                </div>
               </div>
               <Link href="/parceiro/editar" className="shrink-0 bg-line text-night font-bold text-[13px] px-5 py-2.5 rounded-lg hover:bg-line/70 transition-colors flex items-center gap-2 justify-center">
                 <Edit2 className="w-4 h-4" />
@@ -102,7 +102,7 @@ export default async function Parceiro({
           </div>
 
           <div className="flex flex-col md:flex-row gap-6">
-            
+
             {/* Sidebar Navigation */}
             <aside className="w-full md:w-64 shrink-0 flex flex-col gap-1.5">
               <Link href="?aba=visao-geral" className={`flex items-center gap-2.5 px-4 py-3.5 rounded-xl font-bold text-[13.5px] transition-colors ${abaAtiva === "visao-geral" ? "bg-night text-amber" : "text-muted hover:bg-line/50 hover:text-night"}`}>
@@ -125,28 +125,28 @@ export default async function Parceiro({
               {abaAtiva === "visao-geral" && (
                 <>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <StatsCard 
-                      titulo="Vendas no Mês" 
-                      valor={metricas.vendasNoMes} 
+                    <StatsCard
+                      titulo="Vendas no Mês"
+                      valor={metricas.vendasNoMes}
                       subtitulo="Itens retirados neste mês"
                       icone={PackageCheck}
                     />
-                    <StatsCard 
-                      titulo="Receita no Mês" 
-                      valor={`R$ ${metricas.receitaNoMes.toFixed(2).replace('.', ',')}`} 
+                    <StatsCard
+                      titulo="Receita no Mês"
+                      valor={`R$ ${metricas.receitaNoMes.toFixed(2).replace('.', ',')}`}
                       subtitulo="Ganhos gerados este mês"
                       icone={TrendingUp}
                     />
                     <div className="bg-card p-6 rounded-[20px] border border-line flex flex-col justify-center text-center">
                       <p className="text-[12.5px] font-bold uppercase tracking-widest text-muted mb-2 flex items-center justify-center gap-1.5">
-                        <Leaf className="w-4 h-4 text-green-600" /> Desperdício Evitado 
+                        <Leaf className="w-4 h-4 text-green-600" /> Desperdício Evitado
                       </p>
                       <p className="font-display font-extrabold text-[28px] text-night mt-auto">{impactoKg} <span className="text-lg">kg</span></p>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-2">
-                    
+
                     {/* Validador */}
                     <div className="bg-card p-6 rounded-[20px] border border-line flex flex-col">
                       <div className="flex items-center gap-2 mb-1">
@@ -158,8 +158,8 @@ export default async function Parceiro({
                       <div className="flex flex-col gap-3">
                         {pedidosPendentes.length === 0 ? (
                           <div className="text-center py-8 bg-paper rounded-xl border border-line border-dashed">
-                             <CheckCircle2 className="w-8 h-8 text-muted mx-auto mb-2" />
-                             <p className="text-[13px] text-muted font-medium">Nenhum cliente na fila.</p>
+                            <CheckCircle2 className="w-8 h-8 text-muted mx-auto mb-2" />
+                            <p className="text-[13px] text-muted font-medium">Nenhum cliente na fila.</p>
                           </div>
                         ) : (
                           pedidosPendentes.map(pedido => (
@@ -173,7 +173,7 @@ export default async function Parceiro({
 
                               {pedido.bloqueadoAte && pedido.bloqueadoAte > new Date() ? (
                                 <div className="bg-coral/10 text-coral px-3 py-1.5 rounded-lg border border-coral/20 text-[11px] font-bold text-center">
-                                  Bloqueado.<br/>Tente em {Math.ceil((pedido.bloqueadoAte.getTime() - new Date().getTime()) / 60000)} min.
+                                  Bloqueado.<br />Tente em {Math.ceil((pedido.bloqueadoAte.getTime() - new Date().getTime()) / 60000)} min.
                                 </div>
                               ) : (
                                 <form action={async (formData) => {
@@ -218,7 +218,7 @@ export default async function Parceiro({
                       <div className="flex flex-col gap-3 overflow-y-auto max-h-[400px] pr-1">
                         {ofertasDoBanco.length === 0 ? (
                           <div className="text-center py-8 bg-paper rounded-xl border border-line border-dashed">
-                             <p className="text-[13px] text-muted font-medium">Nenhuma oferta ativa no momento.</p>
+                            <p className="text-[13px] text-muted font-medium">Nenhuma oferta ativa no momento.</p>
                           </div>
                         ) : (
                           ofertasDoBanco.map(oferta => (
@@ -260,25 +260,25 @@ export default async function Parceiro({
                       <Star className="w-5 h-5 text-amber-500" />
                       <h2 className="font-display font-extrabold text-[20px]">Itens Mais Resgatados (Mês Atual)</h2>
                     </div>
-                    
+
                     <div className="flex flex-col gap-3">
                       {metricas.topOfertas.length === 0 ? (
-                          <div className="text-center py-6 bg-paper rounded-xl border border-line border-dashed">
-                             <p className="text-[13px] text-muted font-medium">Nenhum item resgatado ainda.</p>
-                          </div>
+                        <div className="text-center py-6 bg-paper rounded-xl border border-line border-dashed">
+                          <p className="text-[13px] text-muted font-medium">Nenhum item resgatado ainda.</p>
+                        </div>
                       ) : (
-                          metricas.topOfertas.map((oferta) => (
-                            <div key={oferta.id} className="flex justify-between items-center bg-paper p-4 rounded-xl border border-line">
-                              <div>
-                                <p className="font-bold text-[14px] text-night">{oferta.titulo}</p>
-                                <p className="text-[12px] text-muted mt-0.5">{oferta.categoria}</p>
-                              </div>
-                              <div className="text-right">
-                                <p className="font-display font-bold text-[18px] text-amber-dark leading-none mb-1">{oferta._count.resgates}</p>
-                                <p className="text-[10px] uppercase font-bold text-muted tracking-widest leading-none">Resgates</p>
-                              </div>
+                        metricas.topOfertas.map((oferta) => (
+                          <div key={oferta.id} className="flex justify-between items-center bg-paper p-4 rounded-xl border border-line">
+                            <div>
+                              <p className="font-bold text-[14px] text-night">{oferta.titulo}</p>
+                              <p className="text-[12px] text-muted mt-0.5">{oferta.categoria}</p>
                             </div>
-                          ))
+                            <div className="text-right">
+                              <p className="font-display font-bold text-[18px] text-amber-dark leading-none mb-1">{oferta._count.resgates}</p>
+                              <p className="text-[10px] uppercase font-bold text-muted tracking-widest leading-none">Resgates</p>
+                            </div>
+                          </div>
+                        ))
                       )}
                     </div>
                   </div>
@@ -341,12 +341,12 @@ export default async function Parceiro({
                         R$ {saldo.toFixed(2).replace('.', ',')}
                       </p>
                     </div>
-                    
+
                     <div className="bg-paper p-6 rounded-[16px] border border-line flex flex-col justify-center items-start">
-                       <p className="text-[13px] font-bold text-night mb-3">Deseja receber seu dinheiro?</p>
-                       <button className="bg-night hover:bg-night-3 text-amber font-bold py-2.5 px-5 text-[13px] rounded-lg w-full sm:w-auto transition-colors">
-                         Solicitar Saque
-                       </button>
+                      <p className="text-[13px] font-bold text-night mb-3">Deseja receber seu dinheiro?</p>
+                      <button className="bg-night hover:bg-night-3 text-amber font-bold py-2.5 px-5 text-[13px] rounded-lg w-full sm:w-auto transition-colors">
+                        Solicitar Saque
+                      </button>
                     </div>
                   </div>
 
@@ -354,7 +354,7 @@ export default async function Parceiro({
                     <History className="w-5 h-5 text-muted" />
                     <h3 className="font-display font-extrabold text-lg">Histórico de Transações</h3>
                   </div>
-                  
+
                   <div className="flex flex-col gap-3">
                     {resgatesConcluidos.length === 0 ? (
                       <p className="text-[13.5px] text-center text-muted py-8">Você ainda não possui transações finalizadas.</p>
@@ -362,23 +362,23 @@ export default async function Parceiro({
                       resgatesConcluidos
                         .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
                         .map(resgate => (
-                        <div key={resgate.id} className="flex items-center justify-between p-4 border border-line rounded-[12px] bg-paper">
-                          <div className="flex items-center gap-3.5">
-                            <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 shrink-0">
-                              <Wallet className="w-4 h-4" />
+                          <div key={resgate.id} className="flex items-center justify-between p-4 border border-line rounded-[12px] bg-paper">
+                            <div className="flex items-center gap-3.5">
+                              <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 shrink-0">
+                                <Wallet className="w-4 h-4" />
+                              </div>
+                              <div>
+                                <p className="font-bold text-[13.5px] text-night">{resgate.oferta.titulo}</p>
+                                <p className="text-[11.5px] text-muted font-medium mt-0.5">
+                                  {resgate.updatedAt.toLocaleDateString('pt-BR')} às {resgate.updatedAt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                                </p>
+                              </div>
                             </div>
-                            <div>
-                              <p className="font-bold text-[13.5px] text-night">{resgate.oferta.titulo}</p>
-                              <p className="text-[11.5px] text-muted font-medium mt-0.5">
-                                {resgate.updatedAt.toLocaleDateString('pt-BR')} às {resgate.updatedAt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
-                              </p>
-                            </div>
+                            <p className="font-bold text-green-600 text-[14px]">
+                              + R$ {Number(resgate.oferta.precoResgate).toFixed(2).replace('.', ',')}
+                            </p>
                           </div>
-                          <p className="font-bold text-green-600 text-[14px]">
-                            + R$ {Number(resgate.oferta.precoResgate).toFixed(2).replace('.', ',')}
-                          </p>
-                        </div>
-                      ))
+                        ))
                     )}
                   </div>
                 </div>

@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import Container from "../componentes/container";
 import Link from "next/link";
-import Header from "../pages/header";
+import Header from "../_components/header";
 import FiltroCategorias from "../componentes/FiltroCategorias";
 import Paginacao from "../componentes/Paginacao";
 import ListaResgatesClient from "../componentes/ListaResgatesClient";
@@ -87,8 +87,8 @@ export default async function PaginaTodosResgates({
 
     const diffMs = new Date(p.dataValidade).getTime() - agora;
     const diffMins = Math.max(1, Math.floor(diffMs / 60000));
-    const tempoRestanteFormatado = diffMins > 60 
-      ? `${Math.floor(diffMins / 60)}h ${diffMins % 60}m` 
+    const tempoRestanteFormatado = diffMins > 60
+      ? `${Math.floor(diffMins / 60)}h ${diffMins % 60}m`
       : `${diffMins} min`;
 
     return {
@@ -113,7 +113,7 @@ export default async function PaginaTodosResgates({
 
       <main className="pb-10">
         <div className="max-w-[1160px] mx-auto px-7 pt-7">
-          
+
           <div className="flex items-center gap-1.5 text-[12.5px] text-muted mb-3.5 flex-wrap font-medium">
             <Link href="/" className="hover:text-night transition-colors">Início</Link>
             <ChevronRight className="w-3.5 h-3.5" />

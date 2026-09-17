@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import Header from "../../pages/header";
+import Header from "../../_components/header";
 import Container from "../../componentes/container";
 import ProdutoDetalhes from "../../componentes/ProdutoDetalhes";
 import GaleriaImagens from "../../componentes/GaleriaImagens";

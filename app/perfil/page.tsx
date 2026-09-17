@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Header from "../pages/header";
+import Header from "../_components/header";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { headers } from "next/headers";
@@ -73,7 +73,7 @@ export default async function PerfilPage() {
               <span className="font-display font-extrabold text-[32px] mb-1 leading-none">{totalResgates}</span>
               <span className="text-[10px] uppercase tracking-widest text-muted font-bold">Resgates Feitos</span>
             </div>
-            
+
             <div className="bg-amber text-night rounded-[20px] p-6 flex flex-col items-center justify-center text-center">
               <TrendingDown className="w-6 h-6 text-night/50 mb-3" />
               <span className="font-display font-extrabold text-[32px] mb-1 leading-none">
@@ -88,7 +88,7 @@ export default async function PerfilPage() {
               <History className="w-5 h-5 text-muted" />
               <h2 className="font-display font-extrabold text-lg">Histórico Recente</h2>
             </div>
-            
+
             <div className="flex flex-col">
               {historicoPedidos.length === 0 ? (
                 <p className="text-[13.5px] text-muted text-center py-6">Você ainda não realizou nenhum resgate.</p>
@@ -116,9 +116,9 @@ export default async function PerfilPage() {
                       <p className="text-[11px] text-muted font-medium">
                         {resgate.createdAt.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })}
                       </p>
-                      
+
                       {resgate.status === "RETIRADO" && !resgate.avaliacao && (
-                         <BotaoAvaliar resgateId={resgate.id} />
+                        <BotaoAvaliar resgateId={resgate.id} />
                       )}
                       {resgate.avaliacao && (
                         <p className="text-[11px] text-green-600 font-bold mt-1">Avaliado com {resgate.avaliacao.nota} ⭐</p>

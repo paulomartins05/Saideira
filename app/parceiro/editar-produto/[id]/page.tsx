@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import Container from "@/app/componentes/container";
-import Header from "@/app/pages/header";
+import Header from "@/app/_components/header";
 import Button from "@/app/componentes/button";
 import Link from "next/link";
 import { editarOferta } from "@/app/actions/ofertas";

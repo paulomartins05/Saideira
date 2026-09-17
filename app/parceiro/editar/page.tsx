@@ -2,7 +2,7 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
-import Header from "@/app/pages/header";
+import Header from "@/app/_components/header";
 import Container from "@/app/componentes/container";
 import Button from "@/app/componentes/button";
 import Link from "next/link";

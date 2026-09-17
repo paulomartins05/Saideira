@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
-import Header from "../pages/header";
+import Header from "../_components/header";
 import { Ticket } from "../componentes/ui/Ticket";
 import { ChevronRight, ShoppingBag } from "lucide-react";
 

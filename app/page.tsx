@@ -1,7 +1,7 @@
-import Header from "./pages/header";
-import HeroSection from "./pages/hero-section";
-import ExploreLanches from "./pages/ExploreLanches";
-import ResgatesDisponiveis from "./pages/ResgatesDisponiveis";
+import Header from "./_components/header";
+import HeroSection from "./_components/hero-section";
+import ExploreLanches from "./_components/ExploreLanches";
+import ResgatesDisponiveis from "./_components/ResgatesDisponiveis";
 
 export default function Home() {
   return (

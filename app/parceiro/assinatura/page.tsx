@@ -1,4 +1,4 @@
-import Header from "@/app/pages/header";
+import Header from "@/app/_components/header";
 import Container from "@/app/componentes/container";
 import Button from "@/app/componentes/button";
 import { auth } from "@/lib/auth";
@@ -22,7 +22,7 @@ export default async function AssinaturaPage(props: Props) {
 
   const reqHeaders = await headers();
   const session = await auth.api.getSession({ headers: reqHeaders });
-  
+
   if (!session?.user || session.user.role !== "PARCEIRO") {
     redirect("/");
   }
@@ -36,7 +36,7 @@ export default async function AssinaturaPage(props: Props) {
   return (
     <div className="bg-[#Fdfbf7] min-h-screen flex flex-col font-inter text-[#2d2d2d]">
       <Header />
-      
+
       <main className="py-12 grow">
         <Container>
           <div className="max-w-5xl mx-auto">
@@ -51,7 +51,7 @@ export default async function AssinaturaPage(props: Props) {
                 Coloque sua loja em destaque
               </h1>
               <p className="text-[15px] text-gray-600 max-w-2xl font-medium leading-relaxed">
-                Suas ofertas ganham prioridade entre negócios com o mesmo nível de urgência<br/>
+                Suas ofertas ganham prioridade entre negócios com o mesmo nível de urgência<br />
                 — sem nunca passar na frente de uma oferta prestes a vencer.
               </p>
             </div>
@@ -61,7 +61,7 @@ export default async function AssinaturaPage(props: Props) {
                 <CheckCircle className="w-[1.2em] h-[1.2em] inline-block align-text-bottom" /> Cancelamento realizado com sucesso. Você não será mais cobrado.
               </div>
             )}
-            
+
             {erroCancelamento && (
               <div className="mb-8 bg-red-50 text-red-700 p-4 rounded-xl border border-red-200 font-medium">
                 <XCircle className="w-[1.2em] h-[1.2em] inline-block align-text-bottom" /> Tivemos uma instabilidade com o Mercado Pago. Tente novamente em alguns minutos.
@@ -69,12 +69,12 @@ export default async function AssinaturaPage(props: Props) {
             )}
 
             <div className="flex flex-col md:flex-row gap-10 md:gap-16 items-start mt-10">
-              
+
               {/* Lado Esquerdo: Card Escuro do Plano */}
               <div className="w-full md:w-[400px] shrink-0 bg-[#15171a] rounded-[24px] p-8 shadow-xl text-white relative overflow-hidden">
                 {/* Glow sutil no fundo do card */}
                 <div className="absolute -top-20 -right-20 w-40 h-40 bg-[#fbbd23] opacity-10 blur-[50px] rounded-full"></div>
-                
+
                 <div className="relative z-10">
                   <div className="inline-block border border-[#fbbd23]/40 text-[#fbbd23] text-[12px] font-bold px-3 py-1.5 rounded-full mb-8">
                     Plano Destaque
@@ -86,7 +86,7 @@ export default async function AssinaturaPage(props: Props) {
                       <span className="text-[52px] font-extrabold tracking-tighter -mt-2">19,90</span>
                     </div>
                     <div className="text-[13px] text-gray-400 font-medium leading-snug pt-2">
-                      /mês, cancele<br/>quando quiser
+                      /mês, cancele<br />quando quiser
                     </div>
                   </div>
 
@@ -110,7 +110,7 @@ export default async function AssinaturaPage(props: Props) {
                   </ul>
 
                   {!isActive ? (
-                     <form action="/api/assinatura" method="POST">
+                    <form action="/api/assinatura" method="POST">
                       <button type="submit" className="w-full bg-[#fbbd23] hover:bg-[#e5a91f] text-[#111] font-bold text-[15px] py-4 rounded-xl transition-all shadow-lg shadow-[#fbbd23]/20">
                         Assinar com Mercado Pago
                       </button>
@@ -125,17 +125,17 @@ export default async function AssinaturaPage(props: Props) {
 
               {/* Lado Direito: Informações e Status */}
               <div className="flex-1 flex flex-col pt-2">
-                
+
                 {isActive && (
                   <div className="bg-[#eefcf2] border border-[#bbf7d0] text-[#166534] p-5 rounded-xl flex items-center gap-2.5 mb-10 shadow-sm font-medium text-[15px]">
                     <CheckCircle className="w-[1.2em] h-[1.2em] inline-block align-text-bottom" /> Sua assinatura está ativa — sua loja já tem prioridade.
                   </div>
                 )}
-                
+
                 {assinatura?.status === "INADIMPLENTE" && (
-                   <div className="bg-red-50 border border-red-200 text-red-700 p-5 rounded-xl flex items-center gap-2.5 mb-10 shadow-sm font-medium text-[15px]">
-                   <AlertTriangle className="w-[1.2em] h-[1.2em] inline-block align-text-bottom" /> Seu último pagamento falhou. Por favor, assine novamente para regularizar.
-                 </div>
+                  <div className="bg-red-50 border border-red-200 text-red-700 p-5 rounded-xl flex items-center gap-2.5 mb-10 shadow-sm font-medium text-[15px]">
+                    <AlertTriangle className="w-[1.2em] h-[1.2em] inline-block align-text-bottom" /> Seu último pagamento falhou. Por favor, assine novamente para regularizar.
+                  </div>
                 )}
 
                 <div className="mb-10">
@@ -154,7 +154,7 @@ export default async function AssinaturaPage(props: Props) {
                     </form>
                   </div>
                 )}
-                
+
               </div>
 
             </div>
