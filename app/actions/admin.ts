@@ -75,3 +75,23 @@ export async function aprovarParceiro(usuarioId: string) {
 
     revalidatePath('/admin')
 }
+
+export async function recusarParceiro(usuarioId: string) {
+    const reqHeaders = await headers()
+    const session = await auth.api.getSession({
+        headers: reqHeaders
+    })
+
+    if (!session || session.user.role != "ADMIN") {
+        throw new Error("Acesso negado: Apenas administradores podem recusar")
+    }
+
+    await prisma.user.update({
+        where: { id: usuarioId },
+        data: {
+            cnpj: null
+        }
+    })
+    revalidatePath('/admin')
+
+}
