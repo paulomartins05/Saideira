@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, Children } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
@@ -8,9 +8,37 @@ import { uploadImagemPerfil } from "@/app/actions/upload";
 import { appToast } from "@/lib/toast";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { Eye, EyeOff, Lock, User, Trash2 } from "lucide-react";
 import { cadastroSchema, type CadastroFormInputs } from "@/lib/schemas/cadastro";
+
+
+const formartarCEP = (v: string) => {
+  v = v.replace(/\D/g, '');
+  v = v.replace(/(\d{5})(\d)/, '$1-$2');
+  return v;
+}
+
+const formatarTelefone = (v: string) => {
+  v = v.replace(/\D/g, "");
+  if (v.length <= 10) return v.replace(/^(\d{2})(\d{4})(\d)/, "($1) $2-$3").slice(0, 14);
+  return v.replace(/^(\d{2})(\d{5})(\d)/, "($1) $2-$3").slice(0, 15);
+};
+const formatarCNPJ = (v: string) => {
+  v = v.replace(/\D/g, "");
+  return v.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d)/, "$1.$2.$3/$4-$5").slice(0, 18);
+};
+
+const FormGroup = ({ label, error, children }: { label: string, error?: string, children: React.ReactNode }) => (
+  <div>
+    <label className="block text-[13px] font-bold text-night mb-1.5">{label}</label>
+    {children}
+    {error && (
+      <span className="text-coral text-xs mt-1 font-medium flex items-center gap-1">
+        {error}
+      </span>
+    )}
+  </div>
+);
 
 export default function CadastroPage() {
 
@@ -26,10 +54,31 @@ export default function CadastroPage() {
   });
   const tipoConta = watch("tipoConta");
 
+
+  const buscarCep = async (cepDigitado: string) => {
+    const cepLimpo = cepDigitado.replace(/\D/g, "");
+    if (cepLimpo.length !== 8) return;
+    try {
+      const res = await fetch(`https://viacep.com.br/ws/${cepLimpo}/json/`);
+      const data = await res.json();
+      if (!data.erro) {
+        setValue("rua", data.logradouro, { shouldValidate: true });
+        setValue("bairro", data.bairro, { shouldValidate: true });
+        setValue("cidade", data.localidade, { shouldValidate: true });
+        setValue("estado", data.uf, { shouldValidate: true });
+
+        document.getElementById("numero")?.focus();
+      }
+    } catch (error) {
+      console.error("Erro ao buscar CEP", error);
+    }
+  };
+
   const handleRemoverFoto = () => {
     setFotoPerfil(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
+
 
   const onSubmit = async (data: CadastroFormInputs) => {
     try {
@@ -89,23 +138,24 @@ export default function CadastroPage() {
 
           <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
 
-            <div>
-              <label className={labelClass}>Nome Completo</label>
+            <FormGroup label="Nome Completo" error={errors.nome?.message}>
               <input type="text" placeholder="Seu nome" className={inputClass} {...register("nome")} />
-              {errors.nome && <span className="text-coral text-xs mt-1 block font-medium">{errors.nome.message}</span>}
-            </div>
+            </FormGroup>
 
-            <div>
-              <label className={labelClass}>Email</label>
+            <FormGroup label="Email" error={errors.email?.message}>
               <input type="email" placeholder="seu@email.com" className={inputClass} {...register("email")} />
-              {errors.email && <span className="text-coral text-xs mt-1 block font-medium">{errors.email.message}</span>}
-            </div>
+            </FormGroup>
 
-            <div>
-              <label className={labelClass}>Telefone / WhatsApp</label>
-              <input type="tel" placeholder="(00) 00000-0000" className={inputClass} {...register("telefone")} />
-              {errors.telefone && <span className="text-coral text-xs mt-1 block font-medium">{errors.telefone.message}</span>}
-            </div>
+            <FormGroup label="Telefone / WhatsApp" error={errors.telefone?.message}>
+              <input
+                type="tel"
+                placeholder="(00) 00000-0000"
+                className={inputClass}
+                {...register("telefone", {
+                  onChange: (e) => e.target.value = formatarTelefone(e.target.value)
+                })}
+              />
+            </FormGroup>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
@@ -153,55 +203,57 @@ export default function CadastroPage() {
               </div>
             </div>
 
-            {/* ENDEREÇO */}
             <div className="mt-4 pt-4 border-t border-line">
               <h3 className="font-bold text-night mb-4">Endereço de Entrega</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className={labelClass}>CEP</label>
-                  <input type="text" placeholder="00000-000" className={inputClass} {...register("cep")} />
-                  {errors.cep && <span className="text-coral text-xs mt-1 block">{errors.cep.message}</span>}
-                </div>
-                <div>
-                  <label className={labelClass}>Rua</label>
+                <FormGroup label="CEP" error={errors.cep?.message}>
+                  <input
+                    type="text"
+                    placeholder="00000-000"
+                    className={inputClass}
+                    {...register("cep", {
+                      onChange: (e) => {
+                        const valorFormatado = formartarCEP(e.target.value);
+                        e.target.value = valorFormatado;
+                        if (valorFormatado.length === 9) buscarCep(valorFormatado);
+                      }
+                    })}
+                  />
+                </FormGroup>
+                <FormGroup label="Rua" error={errors.rua?.message}>
                   <input type="text" placeholder="Rua das Flores" className={inputClass} {...register("rua")} />
-                  {errors.rua && <span className="text-coral text-xs mt-1 block">{errors.rua.message}</span>}
-                </div>
-                <div>
-                  <label className={labelClass}>Número</label>
-                  <input type="text" placeholder="100" className={inputClass} {...register("numero")} />
-                  {errors.numero && <span className="text-coral text-xs mt-1 block">{errors.numero.message}</span>}
-                </div>
-                <div>
-                  <label className={labelClass}>Bairro</label>
+                </FormGroup>
+                <FormGroup label="Número" error={errors.numero?.message}>
+                  <input id="numero" type="text" placeholder="100" className={inputClass} {...register("numero")} />
+                </FormGroup>
+                <FormGroup label="Bairro" error={errors.bairro?.message}>
                   <input type="text" placeholder="Centro" className={inputClass} {...register("bairro")} />
-                  {errors.bairro && <span className="text-coral text-xs mt-1 block">{errors.bairro.message}</span>}
-                </div>
-                <div>
-                  <label className={labelClass}>Cidade</label>
+                </FormGroup>
+                <FormGroup label="Cidade" error={errors.cidade?.message}>
                   <input type="text" placeholder="Sua Cidade" className={inputClass} {...register("cidade")} />
-                  {errors.cidade && <span className="text-coral text-xs mt-1 block">{errors.cidade.message}</span>}
-                </div>
-                <div>
-                  <label className={labelClass}>Estado</label>
+                </FormGroup>
+                <FormGroup label="Estado" error={errors.estado?.message}>
                   <input type="text" placeholder="UF" className={inputClass} {...register("estado")} />
-                  {errors.estado && <span className="text-coral text-xs mt-1 block">{errors.estado.message}</span>}
-                </div>
+                </FormGroup>
               </div>
             </div>
 
-            {/* DADOS DE PARCEIRO */}
             {tipoConta === "parceiro" && (
               <div className="mt-2 pt-4 border-t border-line animate-in fade-in slide-in-from-top-4">
                 <h3 className="font-bold text-night mb-4">Dados da Loja</h3>
                 <div className="grid grid-cols-1 gap-4">
-                  <div>
-                    <label htmlFor="cnpj" className={labelClass}>CNPJ</label>
-                    <input id="cnpj" type="text" placeholder="00.000.000/0000-00" className={inputClass} {...register("cnpj")} />
-                    {errors.cnpj && <span className="text-coral text-xs mt-1 block">{errors.cnpj.message}</span>}
-                  </div>
-                  <div>
-                    <label htmlFor="tipoNegocio" className={labelClass}>Tipo de Negócio</label>
+                  <FormGroup label="CNPJ" error={errors.cnpj?.message}>
+                    <input
+                      id="cnpj"
+                      type="text"
+                      placeholder="00.000.000/0000-00"
+                      className={inputClass}
+                      {...register("cnpj", {
+                        onChange: (e) => e.target.value = formatarCNPJ(e.target.value)
+                      })}
+                    />
+                  </FormGroup>
+                  <FormGroup label="Tipo de Negócio" error={errors.tipoNegocio?.message}>
                     <select id="tipoNegocio" className={inputClass} {...register("tipoNegocio")}>
                       <option value="">Selecione o tipo do seu negócio</option>
                       <option value="RESTAURANTE">Restaurante</option>
@@ -210,8 +262,7 @@ export default function CadastroPage() {
                       <option value="DOCERIA">Doceria</option>
                       <option value="OUTRO">Outro</option>
                     </select>
-                    {errors.tipoNegocio && <span className="text-coral text-xs mt-1 block">{errors.tipoNegocio.message}</span>}
-                  </div>
+                  </FormGroup>
                 </div>
               </div>
             )}
