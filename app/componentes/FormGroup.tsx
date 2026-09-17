@@ -1,7 +1,7 @@
 import React from "react";
 
 interface FormGroupProps {
-    label: string;
+    label: React.ReactNode;
     error?: string;
     children: React.ReactNode;
 }
