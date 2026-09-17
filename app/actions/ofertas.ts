@@ -16,6 +16,7 @@ const ofertaSchema = z.object({
   precoOriginal: z.number().positive("O preço original deve ser maior que zero"),
   precoResgate: z.number().positive("O preço de resgate deve ser maior que zero"),
   quantidade: z.number().int().positive("A quantidade deve ser de pelo menos 1 item"),
+  peso: z.number().positive("O peso deve ser maior que zero"),
   dataValidade: z.date().min(new Date(), "A data de validade deve ser no futuro"),
 }).refine((dados) => dados.precoResgate < dados.precoOriginal, {
   message: "O preço de resgate deve ser obrigatoriamente menor que o preço original",
@@ -45,6 +46,7 @@ export async function criarOferta(formData: FormData) {
     precoResgate: parseFloat((formData.get("precoResgate") as string).replace(",", ".")),
     quantidade: parseInt(formData.get("quantidade") as string),
     dataValidade: new Date(formData.get("dataValidade") as string),
+    peso: parseFloat((formData.get("peso") as string).replace(",", ".")),
   }
 
 
@@ -105,6 +107,7 @@ export async function criarOferta(formData: FormData) {
         dataValidade: validacao.data.dataValidade,
         imagemUrl: urlsDasImagens,
         vendedorId: session.user.id,
+        peso: validacao.data.peso,
         latitude: latitude,
         longitude: longitude,
       }

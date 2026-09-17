@@ -121,6 +121,7 @@ model Oferta {
   descricao     String
   precoOriginal Float
   precoResgate  Float
+   peso          Float     @default(0.3)
   quantidade    Int
   dataValidade  DateTime
   categoria     String
