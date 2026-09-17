@@ -40,3 +40,19 @@ export function CategoriasSkeleton() {
         </section>
     );
 }
+
+export function TicketSkeleton() {
+    return (
+        <div className="bg-card border border-line rounded-[20px] p-5 mb-4 animate-pulse flex flex-col md:flex-row gap-5">
+            <div className="w-full md:w-[120px] h-[120px] bg-line rounded-xl shrink-0" />
+
+            <div className="flex-1 flex flex-col justify-between py-1">
+                <div>
+                    <div className="h-4 bg-line rounded-md w-1/4 mb-3" />
+                    <div className="h-6 bg-line rounded-md w-3/4 mb-4" />
+                </div>
+                <div className="h-10 bg-line rounded-lg w-full md:w-1/3" />
+            </div>
+        </div>
+    );
+}
