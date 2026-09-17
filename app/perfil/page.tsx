@@ -1,4 +1,3 @@
-// app/perfil/page.tsx
 import Link from "next/link";
 import Header from "../_components/header";
 import { auth } from "@/lib/auth";
