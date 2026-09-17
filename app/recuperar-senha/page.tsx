@@ -2,24 +2,32 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { ArrowLeft, Mail } from "lucide-react"
+import { ArrowLeft, Mail, Send } from "lucide-react"
 import { authClient } from "@/lib/auth-client"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { z } from "zod"
+import FormGroup from "../componentes/FormGroup"
 
-export default function RecuperarSenha() {
-  const [email, setEmail] = useState("")
-  const [loading, setLoading] = useState(false)
+const recuperarSchema = z.object({
+  email: z.string().email("Digite um e-mail válido"),
+})
+type RecuperarFormInputs = z.infer<typeof recuperarSchema>
+
+export default function RecuperarSenhaPage() {
   const [sucesso, setSucesso] = useState(false)
   const [erro, setErro] = useState("")
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    setErro("")
+  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<RecuperarFormInputs>({
+    resolver: zodResolver(recuperarSchema)
+  })
 
+  const onSubmit = async (data: RecuperarFormInputs) => {
+    setErro("")
     try {
       // @ts-expect-error: Better-Auth types are sometimes incomplete for forgetPassword, but it exists at runtime.
       const { error } = await authClient.forgetPassword({
-        email: email,
+        email: data.email,
         redirectTo: "/nova-senha"
       })
 
@@ -30,13 +38,13 @@ export default function RecuperarSenha() {
       }
     } catch (err) {
       setErro("Ocorreu um erro inesperado. Tente novamente.")
-    } finally {
-      setLoading(false)
     }
   }
 
+  const inputClass = "w-full px-4 py-3 rounded-xl border border-line bg-white focus:outline-none focus:border-amber transition-all"
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-paper px-4">
+    <div className="min-h-screen flex items-center justify-center bg-paper px-4 font-inter">
       <div className="max-w-md w-full bg-card p-8 rounded-[20px] shadow-sm border border-line">
 
         <Link href="/login" className="inline-flex items-center text-sm text-muted hover:text-night transition-colors mb-6 font-medium">
@@ -53,32 +61,34 @@ export default function RecuperarSenha() {
             <Mail className="w-5 h-5 shrink-0 mt-0.5" />
             <div>
               <p className="font-bold text-sm">E-mail enviado!</p>
-              <p className="text-xs mt-1">Se existir uma conta com <strong>{email}</strong>, você receberá as instruções em instantes. Cheque também sua caixa de SPAM.</p>
+              <p className="text-xs mt-1">Se existir uma conta cadastrada, você receberá as instruções em instantes. Cheque o SPAM.</p>
             </div>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-            <div>
-              <label htmlFor="email" className="block text-sm font-bold text-night mb-1.5">Seu E-mail</label>
+          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+
+            <FormGroup label="Seu E-mail" error={errors.email?.message}>
               <input
-                id="email"
                 type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
                 placeholder="nome@email.com.br"
-                className="w-full px-4 py-3 rounded-xl border border-line bg-white focus:outline-none focus:border-amber focus:ring-1 focus:ring-amber transition-all"
+                className={inputClass}
+                {...register("email")}
               />
-            </div>
+            </FormGroup>
 
             {erro && <p className="text-coral text-xs font-bold">{erro}</p>}
 
             <button
               type="submit"
-              disabled={loading || !email}
-              className="w-full bg-night hover:bg-night-3 text-amber font-bold py-3.5 rounded-xl transition-colors disabled:opacity-50 mt-2"
+              disabled={isSubmitting}
+              className="w-full flex items-center justify-center gap-2 bg-night hover:bg-night-3 text-amber font-bold py-3.5 rounded-xl transition-colors disabled:opacity-50 mt-2"
             >
-              {loading ? "Processando..." : "Enviar link de recuperação"}
+              {isSubmitting ? "Processando..." : (
+                <>
+                  <Send className="w-4 h-4" />
+                  Enviar link
+                </>
+              )}
             </button>
           </form>
         )}
