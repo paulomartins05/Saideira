@@ -5,12 +5,25 @@ import Container from "../../componentes/container";
 import ProdutoDetalhes from "../../componentes/ProdutoDetalhes";
 import GaleriaImagens from "../../componentes/GaleriaImagens";
 import MapaGeolocalizacao from "../../componentes/MapaGeolocalizacao";
+import CountdownValidade from "../_components/CountdownValidade";
 
 import { prisma } from "@/lib/prisma"
 import { notFound } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import { calcularTempoPostagem } from "@/lib/utils";
+import { calcularTempoPostagem, calcularDistancia } from "@/lib/utils";
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+  const idResolvido = (await params).id;
+  const produto = await prisma.oferta.findUnique({
+    where: { id: idResolvido },
+    select: { titulo: true }
+  });
+
+  return {
+    title: produto ? `${produto.titulo} | Saideira` : "Resgate não encontrado",
+  };
+}
 
 export default async function PaginaProdutoUnico({
   params
@@ -33,6 +46,24 @@ export default async function PaginaProdutoUnico({
 
   const nomeDaLoja = produto.vendedor.name || "Parceiro Salgado Salvo";
 
+  let userLat = null;
+  let userLon = null;
+  if (usuario?.id) {
+    const dbUser = await prisma.user.findUnique({ where: { id: usuario.id } });
+    userLat = dbUser?.latitude;
+    userLon = dbUser?.longitude;
+  }
+
+  let distanciaFormatada = null;
+  if (userLat && userLon && produto.latitude && produto.longitude) {
+    const distKm = calcularDistancia(userLat, userLon, produto.latitude, produto.longitude);
+    if (distKm < 1) {
+      distanciaFormatada = `${Math.round(distKm * 1000)}m`;
+    } else {
+      distanciaFormatada = `${distKm.toFixed(1).replace('.', ',')}km`;
+    }
+  }
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -42,7 +73,7 @@ export default async function PaginaProdutoUnico({
         <Container>
           <div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-6">
             <div className="font-display text-4xl md:text-5xl font-bold tracking-tighter text-amber drop-shadow-md">
-              02:15:30
+              <CountdownValidade validade={produto.dataValidade} />
             </div>
             <div className="font-body text-sm md:text-base text-paper/80 uppercase tracking-widest font-semibold">
               Para encerrar resgates do dia
@@ -68,6 +99,7 @@ export default async function PaginaProdutoUnico({
 
             <div>
               <ProdutoDetalhes
+                parceiroId={produto.vendedorId}
                 nome={produto.titulo}
                 loja={nomeDaLoja}
                 localizacao={produto.localizacao}
@@ -78,6 +110,7 @@ export default async function PaginaProdutoUnico({
                 ofertaId={produto.id}
                 usuarioId={usuario?.id}
                 estoqueDisponivel={produto.quantidade}
+                distanciaFormatada={distanciaFormatada}
               />
 
               {produto.latitude && produto.longitude && (

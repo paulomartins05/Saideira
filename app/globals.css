@@ -30,7 +30,7 @@
 
 @layer base {
   body {
-    background-color: #E9E6DE;
+    background-color: var(--color-paper);
     color: var(--color-night);
   }
 }

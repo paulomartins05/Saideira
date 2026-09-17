@@ -1,15 +1,16 @@
 "use client"
 
-import { useTheme } from "next-themes"
 import { Toaster as Sonner, type ToasterProps } from "sonner"
 import { Check, Info, AlertTriangle, XCircle, Loader2 } from "lucide-react"
 
 const Toaster = ({ ...props }: ToasterProps) => {
-  const { theme = "system" } = useTheme()
-
   return (
     <Sonner
-      theme={theme as ToasterProps["theme"]}
+      theme="light"
+      position="top-center"
+      duration={3500}
+      visibleToasts={3}
+      closeButton
       className="toaster group"
       toastOptions={{
         classNames: {

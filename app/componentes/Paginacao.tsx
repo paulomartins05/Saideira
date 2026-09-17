@@ -20,6 +20,12 @@ export default function Paginacao({ paginaAtual, totalPaginas }: PaginacaoProps)
 
   const paginas = Array.from({ length: totalPaginas }, (_, index) => index + 1);
 
+  const createPageURL = (pageNumber: number | string) => {
+    const params = new URLSearchParams(searchParams);
+    params.set("pagina", pageNumber.toString());
+    return `/resgates?${params.toString()}`;
+  };
+
   return (
     <div className="w-full flex flex-col items-center justify-center mt-12 mb-8 gap-4">
       <span className="font-inter text-sm text-background-secondary font-medium">
@@ -34,7 +40,7 @@ export default function Paginacao({ paginaAtual, totalPaginas }: PaginacaoProps)
           </span>
         ) : (
           <Link
-            href={`/resgates?categoria=${categoria}&pagina=${paginaAtual - 1}`}
+            href={createPageURL(paginaAtual - 1)}
             className="px-4 py-2 rounded-full border border-background-secondary/30 font-inter text-sm text-background-secondary hover:bg-background-secondary/5 transition-colors"
           >
             Anterior
@@ -45,10 +51,10 @@ export default function Paginacao({ paginaAtual, totalPaginas }: PaginacaoProps)
           {paginas.map((num) => (
             <Link
               key={num}
-              href={`/resgates?categoria=${categoria}&pagina=${num}`}
+              href={createPageURL(num)}
               className={`w-8 h-8 flex items-center justify-center rounded-full font-inter text-sm transition-colors ${
                 paginaAtual === num
-                  ? "bg-[#D9774A] text-white font-bold"
+                  ? "bg-amber text-night font-bold"
                   : "text-background-secondary hover:bg-background-secondary/10"
               }`}
             >
@@ -58,13 +64,13 @@ export default function Paginacao({ paginaAtual, totalPaginas }: PaginacaoProps)
         </div>
 
         {paginaAtual === totalPaginas ? (
-          <span className="px-4 py-2 rounded-full bg-[#D9774A] text-white font-inter text-sm font-bold opacity-50 cursor-not-allowed">
+          <span className="px-4 py-2 rounded-full bg-amber text-night font-inter text-sm font-bold opacity-50 cursor-not-allowed">
             Próxima
           </span>
         ) : (
           <Link
-            href={`/resgates?categoria=${categoria}&pagina=${paginaAtual + 1}`}
-            className="px-4 py-2 rounded-full bg-[#D9774A] text-white font-inter text-sm font-bold hover:bg-[#D9774A]/90 transition-colors"
+            href={createPageURL(paginaAtual + 1)}
+            className="px-4 py-2 rounded-full bg-amber text-night font-inter text-sm font-bold hover:bg-amber-dark transition-colors"
           >
             Próxima
           </Link>

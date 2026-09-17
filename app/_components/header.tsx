@@ -17,7 +17,6 @@ export default async function Header() {
     <header className="w-full bg-night text-paper relative z-50">
       <div className="max-w-[1160px] mx-auto py-4 px-7 flex items-center justify-between gap-5">
 
-        {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5 font-display font-extrabold text-[19px] text-white group">
           <span className="w-8 h-8 rounded-lg bg-amber text-night flex items-center justify-center font-display font-extrabold text-base group-hover:scale-110 transition-transform">
             S

@@ -13,15 +13,16 @@ const categorias = [
 
 interface FiltroProps {
   categoriaAtiva: string;
+  buscaAtual?: string;
 }
 
-export default function FiltroCategorias({ categoriaAtiva }: FiltroProps) {
+export default function FiltroCategorias({ categoriaAtiva, buscaAtual }: FiltroProps) {
   return (
     <div className="flex gap-2 flex-wrap mb-5">
       {categorias.map((categoria) => (
         <Link
           key={categoria.nome}
-          href={`/resgates?categoria=${categoria.nome}`} 
+          href={`/resgates?categoria=${categoria.nome}${buscaAtual ? `&busca=${buscaAtual}` : ''}`} 
           className={cn(
             "px-4 py-2 pr-4 pl-3 text-[12.5px] font-semibold flex items-center gap-1.5 border-[1.5px] transition-colors [clip-path:polygon(0_0,calc(100%-10px)_0,100%_10px,100%_100%,0_100%)]",
             categoria.nome === categoriaAtiva

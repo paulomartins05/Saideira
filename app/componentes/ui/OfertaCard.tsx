@@ -1,4 +1,6 @@
 import { Utensils, Clock, Check } from "lucide-react";
+import Image from "next/image";
+
 interface OfertaCardProps {
     loja: string;
     titulo: string;
@@ -6,13 +8,26 @@ interface OfertaCardProps {
     precoNovo: string;
     tempoRestante: string;
     isPremium?: boolean;
+    imagemUrl?: string;
 }
-export function OfertaCard({ loja, titulo, precoAntigo, precoNovo, tempoRestante, isPremium }: OfertaCardProps) {
+
+export function OfertaCard({ loja, titulo, precoAntigo, precoNovo, tempoRestante, isPremium, imagemUrl }: OfertaCardProps) {
     return (
         <article className={`bg-card border rounded-xl overflow-hidden transition-all ${isPremium ? 'border-amber ring-1 ring-amber/20' : 'border-line'
             }`}>
-            <div className="aspect-[4/3] bg-[#EFE9DC] relative flex items-center justify-center overflow-hidden">
-                <Utensils className="w-8 h-8 text-[#B7AD98]" />
+            <div className="aspect-[4/3] bg-paper relative flex items-center justify-center overflow-hidden">
+
+                {imagemUrl ? (
+                    <Image
+                        src={imagemUrl}
+                        alt={titulo}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    />
+                ) : (
+                    <Utensils className="w-8 h-8 text-muted" />
+                )}
 
                 <span className={`absolute top-2 left-2 inline-flex items-center gap-1 text-[10.5px] font-extrabold px-2 py-1 rounded-md shadow-[0_0_0_1px] ${isPremium
                     ? 'bg-coral text-white shadow-coral/40'
@@ -33,7 +48,7 @@ export function OfertaCard({ loja, titulo, precoAntigo, precoNovo, tempoRestante
                 <p className="text-[10.5px] text-muted font-semibold mb-1">{loja}</p>
                 <h3 className="font-display text-[14.5px] font-bold mb-2 leading-tight">{titulo}</h3>
                 <div className="flex items-center justify-between">
-                    <span className="text-[10.5px] text-[#A39D8E] line-through">{precoAntigo}</span>
+                    <span className="text-[10.5px] text-muted line-through">{precoAntigo}</span>
                     <span className="font-display text-lg font-extrabold">{precoNovo}</span>
                 </div>
             </div>

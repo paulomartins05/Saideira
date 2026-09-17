@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { getMediaParceiro } from "@/app/actions/avaliacoes";
 import { criarResgate } from "@/app/actions/resgate";
-import { Clock, MapPin, ShoppingCart, Star } from "lucide-react";
+import { Clock, MapPin, ShoppingCart, Star, Store } from "lucide-react";
 
 
 interface DetalhesProps {
@@ -20,10 +20,11 @@ interface DetalhesProps {
   ofertaId: string;
   usuarioId?: string;
   estoqueDisponivel: number;
+  distanciaFormatada?: string | null;
 }
 
 export default function ProdutoDetalhes({
-  nome, loja, localizacao, descricao, precoOriginal, precoAtual, tempoPostagem, ofertaId, usuarioId, estoqueDisponivel, parceiroId
+  nome, loja, localizacao, descricao, precoOriginal, precoAtual, tempoPostagem, ofertaId, usuarioId, estoqueDisponivel, parceiroId, distanciaFormatada
 }: DetalhesProps) {
 
   const router = useRouter()
@@ -60,11 +61,18 @@ export default function ProdutoDetalhes({
         {nome}
       </h1>
 
-      <p className="font-body text-sm text-muted mb-6">
-        Do &quot;{loja}&quot;
-      </p>
+      <div className="flex items-center gap-3 mb-6 bg-paper p-3 rounded-xl border border-line w-fit pr-6">
+        <div className="w-10 h-10 rounded-full bg-night flex items-center justify-center text-amber">
+          <Store className="w-5 h-5" />
+        </div>
+        <div>
+          <p className="text-[11px] font-bold text-muted uppercase tracking-wider mb-0.5">Vendido por</p>
+          <p className="font-body text-sm text-night font-bold">
+            {loja}
+          </p>
+        </div>
+      </div>
 
-      {/* Selo de Avaliação (Badge) */}
       <div className="mb-8">
         {!stats.visivel ? (
           <span className="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-semibold text-blue-700 ring-1 ring-inset ring-blue-700/10">
@@ -82,11 +90,18 @@ export default function ProdutoDetalhes({
       </div>
 
       <div className="flex items-start gap-3 mb-8 p-4 bg-paper rounded-2xl border border-line-dark">
-        <span className="text-xl"><MapPin className="w-[1.2em] h-[1.2em] inline-block align-text-bottom" /></span>
-        <p className="font-body text-sm text-night/80 leading-relaxed">
-          <strong>Endereço de Retirada:</strong> <br />
-          {localizacao}
-        </p>
+        <span className="text-xl text-night mt-1"><MapPin className="w-[1.2em] h-[1.2em] inline-block align-text-bottom" /></span>
+        <div className="flex flex-col">
+          <p className="font-body text-sm text-night/80 leading-relaxed mb-1.5">
+            <strong>Endereço de Retirada:</strong> <br />
+            {localizacao}
+          </p>
+          {distanciaFormatada && (
+            <span className="text-xs font-bold text-amber-dark bg-amber/10 border border-amber/30 px-2 py-1 rounded-md w-fit">
+              📍 A {distanciaFormatada} de você
+            </span>
+          )}
+        </div>
       </div>
 
       <p className="font-body text-sm md:text-base text-night/90 mb-8 leading-relaxed">
