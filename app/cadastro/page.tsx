@@ -10,7 +10,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Lock, User, Trash2 } from "lucide-react";
 import { cadastroSchema, type CadastroFormInputs } from "@/lib/schemas/cadastro";
-
+import FormGroup from "../componentes/FormGroup";
 
 const formartarCEP = (v: string) => {
   v = v.replace(/\D/g, '');
@@ -27,18 +27,6 @@ const formatarCNPJ = (v: string) => {
   v = v.replace(/\D/g, "");
   return v.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d)/, "$1.$2.$3/$4-$5").slice(0, 18);
 };
-
-const FormGroup = ({ label, error, children }: { label: string, error?: string, children: React.ReactNode }) => (
-  <div>
-    <label className="block text-[13px] font-bold text-night mb-1.5">{label}</label>
-    {children}
-    {error && (
-      <span className="text-coral text-xs mt-1 font-medium flex items-center gap-1">
-        {error}
-      </span>
-    )}
-  </div>
-);
 
 export default function CadastroPage() {
 
