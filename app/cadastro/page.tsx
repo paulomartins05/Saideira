@@ -36,7 +36,7 @@ export default function CadastroPage() {
   const [fotoPerfil, setFotoPerfil] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const { register, handleSubmit, setValue, watch, formState: { errors, isSubmitting } } = useForm<CadastroFormInputs>({
+  const { register, handleSubmit, setValue, watch, setError, clearErrors, formState: { errors, isSubmitting } } = useForm<CadastroFormInputs>({
     resolver: zodResolver(cadastroSchema),
     defaultValues: { tipoConta: "consumidor" }
   });
@@ -67,6 +67,26 @@ export default function CadastroPage() {
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
+  const validarCnpjAoVivo = async (cnpjDigitado: string) => {
+    const cnpjLimpo = cnpjDigitado.replace(/\D/g, "");
+    if (cnpjLimpo.length !== 14) return;
+    
+    try {
+      const res = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${cnpjLimpo}`);
+      if (!res.ok) {
+        setError("cnpj", { type: "manual", message: "CNPJ não encontrado na Receita Federal" });
+        return;
+      }
+      const data = await res.json();
+      if (data.descricao_situacao_cadastral !== "ATIVA") {
+        setError("cnpj", { type: "manual", message: `CNPJ inativo (Situação: ${data.descricao_situacao_cadastral})` });
+        return;
+      }
+      clearErrors("cnpj");
+    } catch (error) {
+      console.error("Erro ao validar CNPJ", error);
+    }
+  };
 
   const onSubmit = async (data: CadastroFormInputs) => {
     try {
@@ -77,14 +97,40 @@ export default function CadastroPage() {
         fotoUrlCloudinary = await uploadImagemPerfil(uploadData) || undefined;
       }
 
+      let latitude = undefined;
+      let longitude = undefined;
+
+      if (tipoConta === "parceiro" && data.rua && data.numero && data.cidade) {
+        try {
+          const query = encodeURIComponent(`${data.numero} ${data.rua}, ${data.cidade}, ${data.estado}, Brazil`);
+          const geoRes = await fetch(`https://nominatim.openstreetmap.org/search?q=${query}&format=json&limit=1`, {
+            headers: {
+              'User-Agent': 'SalgadoSalvoApp/1.0'
+            }
+          });
+          const geoData = await geoRes.json();
+          if (geoData && geoData.length > 0) {
+            latitude = parseFloat(geoData[0].lat);
+            longitude = parseFloat(geoData[0].lon);
+          }
+        } catch (e) {
+          console.error("Erro ao geocodificar endereço", e);
+        }
+      }
+
       const payload = {
         name: data.nome, email: data.email, password: data.senha,
         image: fotoUrlCloudinary, telefone: data.telefone,
         role: tipoConta === "parceiro" ? "PARCEIRO" : "CONSUMIDOR",
         cnpj: tipoConta === "parceiro" ? data.cnpj : undefined,
-        tipoNegocio: tipoConta === "parceiro" ? data.tipoNegocio : undefined,
-        cep: data.cep, rua: data.rua, numero: data.numero, bairro: data.bairro,
-        cidade: data.cidade, estado: data.estado, callbackURL: "/"
+        cep: tipoConta === "parceiro" ? data.cep : undefined, 
+        rua: tipoConta === "parceiro" ? data.rua : undefined, 
+        numero: tipoConta === "parceiro" ? data.numero : undefined, 
+        bairro: tipoConta === "parceiro" ? data.bairro : undefined,
+        cidade: tipoConta === "parceiro" ? data.cidade : undefined, 
+        estado: tipoConta === "parceiro" ? data.estado : undefined,
+        latitude, longitude,
+        callbackURL: "/"
       };
 
       const { error } = await authClient.signUp.email(payload);
@@ -191,40 +237,42 @@ export default function CadastroPage() {
               </div>
             </div>
 
-            <div className="mt-4 pt-4 border-t border-line">
-              <h3 className="font-bold text-night mb-4">Endereço de Entrega</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormGroup label="CEP" error={errors.cep?.message}>
-                  <input
-                    type="text"
-                    placeholder="00000-000"
-                    className={inputClass}
-                    {...register("cep", {
-                      onChange: (e) => {
-                        const valorFormatado = formartarCEP(e.target.value);
-                        e.target.value = valorFormatado;
-                        if (valorFormatado.length === 9) buscarCep(valorFormatado);
-                      }
-                    })}
-                  />
-                </FormGroup>
-                <FormGroup label="Rua" error={errors.rua?.message}>
-                  <input type="text" placeholder="Rua das Flores" className={inputClass} {...register("rua")} />
-                </FormGroup>
-                <FormGroup label="Número" error={errors.numero?.message}>
-                  <input id="numero" type="text" placeholder="100" className={inputClass} {...register("numero")} />
-                </FormGroup>
-                <FormGroup label="Bairro" error={errors.bairro?.message}>
-                  <input type="text" placeholder="Centro" className={inputClass} {...register("bairro")} />
-                </FormGroup>
-                <FormGroup label="Cidade" error={errors.cidade?.message}>
-                  <input type="text" placeholder="Sua Cidade" className={inputClass} {...register("cidade")} />
-                </FormGroup>
-                <FormGroup label="Estado" error={errors.estado?.message}>
-                  <input type="text" placeholder="UF" className={inputClass} {...register("estado")} />
-                </FormGroup>
+            {tipoConta === "parceiro" && (
+              <div className="mt-4 pt-4 border-t border-line">
+                <h3 className="font-bold text-night mb-4">Endereço da Loja</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormGroup label="CEP" error={errors.cep?.message}>
+                    <input
+                      type="text"
+                      placeholder="00000-000"
+                      className={inputClass}
+                      {...register("cep", {
+                        onChange: (e) => {
+                          const valorFormatado = formartarCEP(e.target.value);
+                          e.target.value = valorFormatado;
+                          if (valorFormatado.length === 9) buscarCep(valorFormatado);
+                        }
+                      })}
+                    />
+                  </FormGroup>
+                  <FormGroup label="Rua" error={errors.rua?.message}>
+                    <input type="text" placeholder="Rua das Flores" className={inputClass} {...register("rua")} />
+                  </FormGroup>
+                  <FormGroup label="Número" error={errors.numero?.message}>
+                    <input id="numero" type="text" placeholder="100" className={inputClass} {...register("numero")} />
+                  </FormGroup>
+                  <FormGroup label="Bairro" error={errors.bairro?.message}>
+                    <input type="text" placeholder="Centro" className={inputClass} {...register("bairro")} />
+                  </FormGroup>
+                  <FormGroup label="Cidade" error={errors.cidade?.message}>
+                    <input type="text" placeholder="Sua Cidade" className={inputClass} {...register("cidade")} />
+                  </FormGroup>
+                  <FormGroup label="Estado" error={errors.estado?.message}>
+                    <input type="text" placeholder="UF" className={inputClass} {...register("estado")} />
+                  </FormGroup>
+                </div>
               </div>
-            </div>
+            )}
 
             {tipoConta === "parceiro" && (
               <div className="mt-2 pt-4 border-t border-line animate-in fade-in slide-in-from-top-4">
@@ -237,7 +285,8 @@ export default function CadastroPage() {
                       placeholder="00.000.000/0000-00"
                       className={inputClass}
                       {...register("cnpj", {
-                        onChange: (e) => e.target.value = formatarCNPJ(e.target.value)
+                        onChange: (e) => e.target.value = formatarCNPJ(e.target.value),
+                        onBlur: (e) => validarCnpjAoVivo(e.target.value)
                       })}
                     />
                   </FormGroup>

@@ -68,6 +68,8 @@ export const auth = betterAuth({
       bairro: { type: "string", required: false, input: true },
       cidade: { type: "string", required: false, input: true },
       estado: { type: "string", required: false, input: true },
+      latitude: { type: "number", required: false, input: true },
+      longitude: { type: "number", required: false, input: true },
     }
   }
 });
