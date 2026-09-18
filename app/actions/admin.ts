@@ -54,16 +54,20 @@ export async function aprovarParceiro(usuarioId: string) {
 
     const cnpjLimpo = usuario.cnpj.replace(/\D/g, '');
 
-    const respostaApi = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${cnpjLimpo}`)
+    const isDevelopment = process.env.NODE_ENV === "development";
 
-    if (!respostaApi.ok) {
-        throw new Error("CNPJ inválido ou não encontrado na Receita Federal.");
-    }
+    if (!isDevelopment) {
+        const respostaApi = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${cnpjLimpo}`)
 
-    const dadosCnpj = await respostaApi.json()
+        if (!respostaApi.ok) {
+            throw new Error("CNPJ inválido ou não encontrado na Receita Federal.");
+        }
 
-    if (dadosCnpj.descricao_situacao_cadastral !== "ATIVA") {
-        throw new Error("A empresa deve estar ativa na Receita Federal para aprovação.")
+        const dadosCnpj = await respostaApi.json()
+
+        if (dadosCnpj.descricao_situacao_cadastral !== "ATIVA") {
+            throw new Error("A empresa deve estar ativa na Receita Federal para aprovação.")
+        }
     }
 
     await prisma.user.update({

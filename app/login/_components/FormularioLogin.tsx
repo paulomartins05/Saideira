@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Lock, LogIn } from "lucide-react";
@@ -14,6 +14,7 @@ import { loginSchema, type LoginFormInputs } from "@/lib/validations/login";
 export default function FormularioLogin() {
     const [mostrarSenha, setMostrarSenha] = useState(false);
     const searchParams = useSearchParams();
+    const router = useRouter();
     const callbackUrl = searchParams.get("callbackUrl") || "/";
 
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginFormInputs>({
@@ -22,15 +23,17 @@ export default function FormularioLogin() {
     });
 
     const onSubmit = async (data: LoginFormInputs) => {
-        await authClient.signIn.email({
+        const { error } = await authClient.signIn.email({
             email: data.email,
             password: data.senha,
             rememberMe: data.lembrarMe,
-            callbackURL: callbackUrl
-        }, {
-            onSuccess: () => { appToast.loginSuccess(); },
-            onError: (ctx) => { appToast.loginError(ctx.error.message); }
         });
+        if (error) {
+            appToast.loginError(error.message);
+            return;
+        }
+        appToast.loginSuccess();
+        router.push(callbackUrl);
     };
 
     const inputClass = "w-full bg-paper border border-line rounded-lg px-4 py-3 text-[13.5px] text-night focus:outline-none focus:border-night transition-colors placeholder:text-muted";

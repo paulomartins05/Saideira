@@ -2,6 +2,8 @@
 
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { Download } from "lucide-react";
+import { gerarConteudoCSV, type ResgateParaCSV } from "@/lib/csv";
+
 
 type ResgateSimples = {
     id: string;
@@ -24,18 +26,9 @@ export default function FiltroEExportacao({ resgates }: { resgates: ResgateSimpl
     const exportToCSV = () => {
         if (resgates.length === 0) return;
 
-        const cabecalho = "Data,Hora,Produto,Valor\n";
+        const conteudoDaPlanilha = gerarConteudoCSV(resgates);
 
-        const linhas = resgates.map(r => {
-            const dataObj = new Date(r.updatedAtStr);
-            const data = dataObj.toLocaleDateString('pt-BR');
-            const hora = dataObj.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-            const produto = `"${r.titulo}"`;
-            const valor = r.precoResgate.toFixed(2).replace('.', ',');
-            return `${data},${hora},${produto},${valor}`;
-        }).join("\n");
-
-        const csvContent = "data:text/csv;charset=utf-8,\uFEFF" + cabecalho + linhas;
+        const csvContent = "data:text/csv;charset=utf-8,\uFEFF" + conteudoDaPlanilha;
         const encodedUri = encodeURI(csvContent);
 
         const link = document.createElement("a");

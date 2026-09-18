@@ -5,11 +5,17 @@ async function main() {
 
   // 1. Busca os usuários base
   const parceiro = await prisma.user.findFirst({
-    where: { role: 'PARCEIRO' }
+    where: { 
+      role: 'PARCEIRO',
+      email: 'parceiro@teste.com' 
+    }
   })
 
   const consumidor = await prisma.user.findFirst({
-    where: { role: 'CONSUMIDOR' }
+    where: { 
+      role: 'CONSUMIDOR',
+      email: 'consumidor@teste.com'
+    }
   })
 
   if (!parceiro) {

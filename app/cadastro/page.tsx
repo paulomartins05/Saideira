@@ -230,7 +230,7 @@ export default function CadastroPage() {
               <div className="mt-2 pt-4 border-t border-line animate-in fade-in slide-in-from-top-4">
                 <h3 className="font-bold text-night mb-4">Dados da Loja</h3>
                 <div className="grid grid-cols-1 gap-4">
-                  <FormGroup label="CNPJ" error={errors.cnpj?.message}>
+                  <FormGroup label="CNPJ" htmlFor="cnpj" error={errors.cnpj?.message}>
                     <input
                       id="cnpj"
                       type="text"
