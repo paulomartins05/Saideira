@@ -27,6 +27,12 @@ export async function buscarParceirosPendentes() {
             email: true,
             telefone: true,
             cnpj: true,
+            rua: true,
+            numero: true,
+            bairro: true,
+            cidade: true,
+            estado: true,
+            cep: true
         }
     })
 
@@ -94,6 +100,59 @@ export async function recusarParceiro(usuarioId: string) {
         where: { id: usuarioId },
         data: {
             cnpj: null
+        }
+    })
+    revalidatePath('/admin')
+
+}
+
+export async function buscarParceirosAtivos() {
+
+    const reqHeaders = await headers()
+    const session = await auth.api.getSession({
+        headers: reqHeaders
+    })
+
+    if (!session || session.user.role !== "ADMIN") {
+        throw new Error("Acesso negado: apenas administradores podem visualizar")
+    }
+
+    const usuarios = await prisma.user.findMany({
+        where: {
+            role: "PARCEIRO"
+        },
+        select: {
+            id: true,
+            name: true,
+            email: true,
+            telefone: true,
+            cnpj: true,
+            rua: true,
+            numero: true,
+            bairro: true,
+            cidade: true,
+            estado: true,
+            cep: true
+        }
+    })
+
+    return usuarios
+}
+
+export async function revogarParceiro(usuarioId: string) {
+    const reqHeaders = await headers()
+    const session = await auth.api.getSession({
+        headers: reqHeaders
+    })
+
+    if (!session || session.user.role != "ADMIN") {
+        throw new Error("Acesso negado: Apenas administradores podem revogar")
+    }
+
+    await prisma.user.update({
+        where: { id: usuarioId },
+        data: {
+            role: "CONSUMIDOR"
         }
     })
     revalidatePath('/admin')

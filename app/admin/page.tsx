@@ -1,7 +1,7 @@
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { buscarParceirosPendentes } from "../actions/admin";
+import { buscarParceirosPendentes, buscarParceirosAtivos } from "../actions/admin";
 import { getMetricasAdmin } from "../actions/dashboard-admin";
 import Header from "../_components/header";
 import AdminMasterDetail from "./AdminMasterDetail";
@@ -14,8 +14,28 @@ export default async function AdminPage() {
 
   if (!session || session.user.role !== "ADMIN") redirect("/");
 
-  const parceirosPendentes = await buscarParceirosPendentes();
-  const metricas = await getMetricasAdmin();
+  const [parceirosPendentesPrisma, parceirosAtivosPrisma, metricas] = await Promise.all([
+    buscarParceirosPendentes(),
+    buscarParceirosAtivos(),
+    getMetricasAdmin()
+  ]);
+
+  const mapParceiro = (parceiro: any) => ({
+    id: parceiro.id,
+    name: parceiro.name,
+    email: parceiro.email,
+    telefone: parceiro.telefone || "Não informado",
+    cnpj: parceiro.cnpj || "Sem CNPJ",
+    rua: parceiro.rua || "Não informada",
+    numero: parceiro.numero || "S/N",
+    bairro: parceiro.bairro || "",
+    cidade: parceiro.cidade || "",
+    estado: parceiro.estado || "",
+    cep: parceiro.cep || "Sem CEP",
+  });
+
+  const parceirosPendentesFormatados = parceirosPendentesPrisma.map(mapParceiro);
+  const parceirosAtivosFormatados = parceirosAtivosPrisma.map(mapParceiro);
 
   return (
     <div className="min-h-screen flex flex-col font-inter bg-paper">
@@ -45,7 +65,7 @@ export default async function AdminPage() {
             />
           </div>
         </div>
-        <AdminMasterDetail parceiros={parceirosPendentes} />
+        <AdminMasterDetail parceirosPendentes={parceirosPendentesFormatados} parceirosAtivos={parceirosAtivosFormatados} />
       </main>
     </div>
   );
