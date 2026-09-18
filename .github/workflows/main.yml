@@ -48,6 +48,21 @@ jobs:
     name: Testes E2E (Playwright)
     runs-on: ubuntu-latest
     
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_DB: saideira_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+          
     steps:
       - name: Checkout do código
         uses: actions/checkout@v4
@@ -64,13 +79,17 @@ jobs:
       - name: Instalar navegadores do Playwright
         run: npx playwright install --with-deps
 
-      - name: Gerar Prisma Client
-        run: npx prisma generate
+      - name: Preparar Banco de Dados e Prisma
+        run: |
+          npx prisma generate
+          npx prisma db push
+        env:
+          DATABASE_URL: postgresql://test_user:test_password@localhost:5432/saideira_test?schema=public
 
       - name: Rodar Testes E2E
         run: npx playwright test
         env:
-          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          RESEND_API_KEY: "re_dummy_key_e2e"
           NEXT_PUBLIC_URL: http://127.0.0.1:3000
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
+          DATABASE_URL: postgresql://test_user:test_password@localhost:5432/saideira_test?schema=public
+          BETTER_AUTH_SECRET: "chave-secreta-de-mentirinha"

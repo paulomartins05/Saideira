@@ -2,7 +2,7 @@
 
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
-import { resend } from "@/lib/emails";
+import { getResend } from "@/lib/emails";
 
 export async function enviarMensagemContato(formData: FormData) {
     const reqHeaders = await headers();
@@ -16,7 +16,7 @@ export async function enviarMensagemContato(formData: FormData) {
     const mensagem = formData.get("mensagem") as string;
 
     try {
-        await resend.emails.send({
+        await getResend().emails.send({
             from: "Salgado Salvo <naoresponda@resend.dev>",
             to: "seu-email-real@seudominio.com.br",
             replyTo: session.user.email,

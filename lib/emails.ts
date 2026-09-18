@@ -1,6 +1,6 @@
 import { Resend } from "resend";
 
-function getResend() {
+export function getResend() {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
     console.warn("Aviso: RESEND_API_KEY ausente. Não será possível enviar e-mails.");
