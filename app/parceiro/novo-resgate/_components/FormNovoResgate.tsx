@@ -14,19 +14,8 @@ import {
     Utensils, Archive, Coffee, CupSoda, Croissant, Donut, Cake, Apple,
     Beef, ShoppingCart, Candy, Pizza, Package, Tag, Scale, Store, MapPin
 } from "lucide-react";
+import { CATEGORIAS_POR_NEGOCIO } from "@/app/constants/categorias";
 import FormGroup from "@/app/componentes/FormGroup";
-
-const categoriasPorNegocio: Record<string, { id: string; label: string; icon: React.ReactNode }[]> = {
-    RESTAURANTE: [
-        { id: "Prato principal", label: "Prato Feito", icon: <Utensils className="w-4 h-4 inline-block align-text-bottom" /> },
-        { id: "Marmita", label: "Marmita", icon: <Archive className="w-4 h-4 inline-block align-text-bottom" /> },
-        { id: "Sobremesa", label: "Sobremesa", icon: <Coffee className="w-4 h-4 inline-block align-text-bottom" /> },
-        { id: "Bebida", label: "Bebida", icon: <CupSoda className="w-4 h-4 inline-block align-text-bottom" /> },
-    ],
-    OUTRO: [
-        { id: "Diversos", label: "Diversos", icon: <Package className="w-4 h-4 inline-block align-text-bottom" /> },
-    ],
-};
 
 type UsuarioComLocalizacao = {
     localizacao?: string | null
@@ -38,7 +27,7 @@ export default function FormNovoResgate() {
     const { data: session } = authClient.useSession();
 
     const tipoNegocioUsuario = (session?.user as UsuarioComLocalizacao)?.tipoNegocio || "OUTRO";
-    const categoriasDisponiveis = categoriasPorNegocio[tipoNegocioUsuario] || categoriasPorNegocio.OUTRO;
+    const categoriasDisponiveis = CATEGORIAS_POR_NEGOCIO[tipoNegocioUsuario as keyof typeof CATEGORIAS_POR_NEGOCIO] || CATEGORIAS_POR_NEGOCIO.OUTRO;
 
     const [imagemFiles, setImagemFiles] = useState<File[]>([]);
     const [imagemPreviews, setImagemPreviews] = useState<string[]>([]);

@@ -8,6 +8,7 @@ import { editarOferta } from "@/app/actions/ofertas";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import FormGroup from "@/app/componentes/FormGroup";
+import { CATEGORIAS_POR_NEGOCIO } from "@/app/constants/categorias";
 import { Store, Tag, Scale, Utensils, MapPin } from "lucide-react";
 
 export default async function EditarProduto({
@@ -25,6 +26,13 @@ export default async function EditarProduto({
     if (!oferta || oferta.vendedorId !== session.user.id) {
         redirect("/parceiro/perfil?aba=produtos");
     }
+
+    const userDb = await prisma.user.findUnique({ 
+        where: { id: session.user.id },
+        select: { tipoNegocio: true }
+    });
+    const tipoNegocioUsuario = userDb?.tipoNegocio || "OUTRO";
+    const categoriasDisponiveis = CATEGORIAS_POR_NEGOCIO[tipoNegocioUsuario as keyof typeof CATEGORIAS_POR_NEGOCIO] || CATEGORIAS_POR_NEGOCIO.OUTRO;
 
     const dataValidadeFormatada = new Date(oferta.dataValidade.getTime() - (oferta.dataValidade.getTimezoneOffset() * 60000)).toISOString().slice(0, 16);
 
@@ -84,23 +92,9 @@ export default async function EditarProduto({
                                     <FormGroup label="Categoria">
                                         <select name="categoria" defaultValue={oferta.categoria} required className={`${inputClass} appearance-none cursor-pointer`}>
                                             <option value="">Selecione...</option>
-                                            <option value="Salgados">Salgados</option>
-                                            <option value="Doces">Doces</option>
-                                            <option value="Assados">Assados</option>
-                                            <option value="Bolos">Bolos</option>
-                                            <option value="Prato principal">Prato Feito</option>
-                                            <option value="Marmita">Marmita</option>
-                                            <option value="Sobremesa">Sobremesa</option>
-                                            <option value="Bebida">Bebida</option>
-                                            <option value="Pães">Pães</option>
-                                            <option value="Hortifruti">Hortifruti</option>
-                                            <option value="Padaria própria">Padaria</option>
-                                            <option value="Açougue">Açougue</option>
-                                            <option value="Mercearia">Mercearia</option>
-                                            <option value="Doces finos">Doces Finos</option>
-                                            <option value="Tortas">Tortas</option>
-                                            <option value="Diversos">Diversos</option>
-                                            <option value="Outros">Outros</option>
+                                            {categoriasDisponiveis.map((cat) => (
+                                                <option key={cat.id} value={cat.id}>{cat.label}</option>
+                                            ))}
                                         </select>
                                     </FormGroup>
 

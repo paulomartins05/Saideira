@@ -4,6 +4,7 @@ import { OfertaCard } from "./ui/OfertaCard";
 import Link from "next/link";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { Search } from "lucide-react";
+import { CATEGORIAS_POR_NEGOCIO } from "../constants/categorias";
 
 export type ProdutoPropsComLocal = {
   id: string,
@@ -31,6 +32,7 @@ export default function ListaResgatesClient({ produtos }: { produtos: ProdutoPro
 
     const formData = new FormData(e.currentTarget);
     const termo = formData.get("busca") as string;
+    const categoria = formData.get("categoria") as string;
 
     const params = new URLSearchParams(searchParams);
 
@@ -40,8 +42,13 @@ export default function ListaResgatesClient({ produtos }: { produtos: ProdutoPro
       params.delete("busca");
     }
 
-    params.set("pagina", "1");
+    if (categoria && categoria !== "") {
+      params.set("categoria", categoria);
+    } else {
+      params.delete("categoria");
+    }
 
+    params.set("pagina", "1");
 
     router.replace(`${pathname}?${params.toString()}`);
   };
@@ -56,15 +63,42 @@ export default function ListaResgatesClient({ produtos }: { produtos: ProdutoPro
           </p>
         </div>
 
-        <form onSubmit={handleBuscar} className="relative w-full md:w-auto md:min-w-[320px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
-          <input
-            type="text"
-            name="busca"
-            defaultValue={searchParams.get("busca")?.toString()}
-            placeholder="Buscar por pizza, bolo, mercado..."
-            className="w-full bg-paper border border-line rounded-xl py-2.5 pl-10 pr-4 text-[14px] text-night placeholder:text-muted focus:outline-none focus:border-amber focus:ring-1 focus:ring-amber transition-colors shadow-sm"
-          />
+        <form onSubmit={handleBuscar} className="flex gap-2 w-full md:w-auto md:min-w-[450px]">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
+            <input
+              type="text"
+              name="busca"
+              defaultValue={searchParams.get("busca")?.toString()}
+              placeholder="Buscar por pizza, bolo, mercado..."
+              className="w-full bg-paper border border-line rounded-xl py-2.5 pl-10 pr-4 text-[14px] text-night placeholder:text-muted focus:outline-none focus:border-amber focus:ring-1 focus:ring-amber transition-colors shadow-sm"
+            />
+          </div>
+
+          <select
+            name="categoria"
+            defaultValue={searchParams.get("categoria")?.toString() || ""}
+            className="bg-paper border border-line rounded-xl py-2.5 px-3 text-[14px] text-night focus:outline-none focus:border-amber focus:ring-1 focus:ring-amber transition-colors shadow-sm cursor-pointer max-w-[160px] truncate"
+            onChange={(e) => {
+              const form = e.target.form;
+              if (form) form.requestSubmit();
+            }}
+          >
+            <option value="">Todas Categorias</option>
+
+            {Object.entries(CATEGORIAS_POR_NEGOCIO).map(([tipoNegocio, categorias]) => (
+              <optgroup
+                key={tipoNegocio}
+                label={tipoNegocio.charAt(0) + tipoNegocio.slice(1).toLowerCase()}
+              >
+                {categorias.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.label}
+                  </option>
+                ))}
+              </optgroup>
+            ))}
+          </select>
           <button type="submit" className="hidden">Buscar</button>
         </form>
       </div>
