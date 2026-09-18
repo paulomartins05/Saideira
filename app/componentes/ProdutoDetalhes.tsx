@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import { getMediaParceiro } from "@/app/actions/avaliacoes";
 import { criarResgate } from "@/app/actions/resgate";
 import { Clock, MapPin, ShoppingCart, Star, Store } from "lucide-react";
+import Link from "next/link";
+
 
 
 interface DetalhesProps {
@@ -67,10 +69,14 @@ export default function ProdutoDetalhes({
         </div>
         <div>
           <p className="text-[11px] font-bold text-muted uppercase tracking-wider mb-0.5">Vendido por</p>
-          <p className="font-body text-sm text-night font-bold">
+          <Link
+            href={`/loja/${parceiroId}`}
+            className="font-body text-sm text-night font-bold hover:text-amber transition-colors underline decoration-amber/30 underline-offset-2"
+          >
             {loja}
-          </p>
+          </Link>
         </div>
+
       </div>
 
       <div className="mb-8">

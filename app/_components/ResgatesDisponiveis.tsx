@@ -19,7 +19,7 @@ export default async function ResgatesDisponiveis() {
   return (
     <section className="pb-10">
       <div className="max-w-[1160px] mx-auto px-7">
-        
+
         <h2 className="font-display text-[21px] font-extrabold m-0 tracking-[-0.01em] flex items-center gap-2">
           Fechando <span className="text-amber-dark">agora</span>
         </h2>
@@ -34,11 +34,10 @@ export default async function ResgatesDisponiveis() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
             {ofertas.map((oferta) => {
-              // Calculando o tempo restante em minutos/horas para mostrar de forma amigável
               const diffMs = new Date(oferta.dataValidade).getTime() - new Date().getTime();
               const diffMins = Math.max(1, Math.floor(diffMs / 60000));
-              const tempoFormatado = diffMins > 60 
-                ? `${Math.floor(diffMins / 60)}h ${diffMins % 60}m` 
+              const tempoFormatado = diffMins > 60
+                ? `${Math.floor(diffMins / 60)}h ${diffMins % 60}m`
                 : `${diffMins} min`;
 
               return (
@@ -46,10 +45,10 @@ export default async function ResgatesDisponiveis() {
                   <OfertaCard
                     loja={oferta.localizacao || "Loja Parceira"}
                     titulo={oferta.titulo}
-                    precoAntigo={`R$ ${(oferta.precoResgate * 2).toFixed(2).replace('.', ',')}`} // Simulação de preço antigo caso não exista
+                    precoAntigo={`R$ ${oferta.precoOriginal.toFixed(2).replace('.', ',')}`}
                     precoNovo={`R$ ${oferta.precoResgate.toFixed(2).replace('.', ',')}`}
                     tempoRestante={tempoFormatado}
-                    isPremium={diffMins < 30} // Destaque para ofertas que fecham em menos de 30 min
+                    isPremium={diffMins < 30}
                   />
                 </Link>
               );

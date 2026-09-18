@@ -4,16 +4,14 @@ import Header from "@/app/_components/header";
 import CardImpacto from "../componentes/CardImpacto";
 import Footer from "@/app/_components/footer";
 
-
 export const revalidate = 3600
 
 export const metadata = {
-    title: "Sobre Nós | Saideira",
+    title: "Sobre Nós",
     description: "Conheça o Saideira: salvando alimentos deliciosos do desperdício e conectando você a lojas locais sustentáveis.",
 }
 
 export default async function SobreNos() {
-
 
     const [parceirosAtivos, comprasSalvas, resgatesRetiradosComOferta] = await Promise.all([
 
