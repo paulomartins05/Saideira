@@ -69,3 +69,8 @@ jobs:
 
       - name: Rodar Testes E2E
         run: npx playwright test
+        env:
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          NEXT_PUBLIC_URL: http://127.0.0.1:3000
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}

@@ -4,7 +4,13 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import { Resend } from "resend";
 
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+function getResend() {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    console.warn("Aviso: RESEND_API_KEY ausente. Não será possível enviar e-mails.");
+  }
+  return new Resend(apiKey || "re_dummy_key_para_evitar_crash");
+}
 
 export const auth = betterAuth({
   baseURL: process.env.NEXT_PUBLIC_URL || "http://localhost:3000",
@@ -17,7 +23,7 @@ export const auth = betterAuth({
 
     sendResetPassword: async ({ user, url }) => {
       try {
-        await resend.emails.send({
+        await getResend().emails.send({
           from: "Salgado Salvo <naoresponda@resend.dev>",
           to: user.email,
           subject: "Redefinir sua senha - Salgado Salvo",

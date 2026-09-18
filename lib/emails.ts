@@ -1,6 +1,12 @@
 import { Resend } from "resend";
 
-export const resend = new Resend(process.env.RESEND_API_KEY);
+function getResend() {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    console.warn("Aviso: RESEND_API_KEY ausente. Não será possível enviar e-mails.");
+  }
+  return new Resend(apiKey || "re_dummy_key_para_evitar_crash");
+}
 
 export async function notificarParceiroNovoResgate(
   emailParceiro: string, 
@@ -9,7 +15,7 @@ export async function notificarParceiroNovoResgate(
   codigoResgate: string
 ) {
   try {
-    await resend.emails.send({
+    await getResend().emails.send({
       from: "Salgado Salvo <naoresponda@resend.dev>",
       to: emailParceiro,
       subject: "🎉 Novo Resgate Confirmado!",
@@ -34,7 +40,7 @@ export async function notificarConsumidorExpirando(
   nomeParceiro: string
 ) {
   try {
-    await resend.emails.send({
+    await getResend().emails.send({
       from: "Salgado Salvo <naoresponda@resend.dev>",
       to: emailConsumidor,
       subject: "⏰ Seu resgate está quase expirando!",
