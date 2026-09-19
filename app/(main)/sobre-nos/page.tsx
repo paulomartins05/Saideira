@@ -1,7 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { ShoppingBag, Leaf, Store } from "lucide-react";
 import CardImpacto from "@/app/componentes/CardImpacto";
-import Footer from "@/app/_components/footer";
 
 export const revalidate = 3600
 
@@ -97,7 +96,6 @@ export default async function SobreNos() {
                     </div>
                 </section>
             </main>
-            <Footer />
         </div>
     );
 }
