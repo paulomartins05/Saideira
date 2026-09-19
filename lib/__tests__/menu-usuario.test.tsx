@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import MenuUsuario from '@/app/componentes/menu-usuario';
+import MenuUsuario from '@/app/_components/Header/MenuUsuario';
 
 vi.mock('next/navigation', () => ({
     useRouter: () => ({ push: vi.fn(), refresh: vi.fn() })
