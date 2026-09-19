@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { ArrowLeft, Mail, Send } from "lucide-react"
+import { ArrowLeft, Mail, Send, Loader2 } from "lucide-react"
 import { authClient } from "@/lib/auth-client"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -83,7 +83,12 @@ export default function RecuperarSenhaPage() {
               disabled={isSubmitting}
               className="w-full flex items-center justify-center gap-2 bg-night hover:bg-night-3 text-amber font-bold py-3.5 rounded-xl transition-colors disabled:opacity-50 mt-2"
             >
-              {isSubmitting ? "Processando..." : (
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Processando...
+                </>
+              ) : (
                 <>
                   <Send className="w-4 h-4" />
                   Enviar link

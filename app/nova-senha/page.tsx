@@ -3,7 +3,7 @@
 import { useState, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { authClient } from "@/lib/auth-client"
-import { CheckCircle2, Save } from "lucide-react"
+import { CheckCircle2, Save, Loader2, Eye, EyeOff } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -26,6 +26,7 @@ function FormularioNovaSenha() {
 
   const [sucesso, setSucesso] = useState(false)
   const [erro, setErro] = useState("")
+  const [mostrarSenha, setMostrarSenha] = useState(false)
 
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<NovaSenhaFormInputs>({
     resolver: zodResolver(novaSenhaSchema)
@@ -81,22 +82,40 @@ function FormularioNovaSenha() {
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
 
       <FormGroup label="Nova Senha" error={errors.senha?.message}>
-        <input
-          type="password"
-          placeholder="Minímo 8 caracteres"
-          className={inputClass}
-          {...register("senha")}
-        />
+        <div className="relative">
+          <input
+            type={mostrarSenha ? "text" : "password"}
+            placeholder="Mínimo 8 caracteres"
+            className={`${inputClass} pr-10`}
+            {...register("senha")}
+          />
+          <button
+            type="button"
+            onClick={() => setMostrarSenha(!mostrarSenha)}
+            className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-muted hover:text-night"
+          >
+            {mostrarSenha ? <EyeOff className="w-[18px] h-[18px]" /> : <Eye className="w-[18px] h-[18px]" />}
+          </button>
+        </div>
+      </FormGroup>
+      <FormGroup label="Confirmar Nova Senha" error={errors.confirmarSenha?.message}>
+        <div className="relative">
+          <input
+            type={mostrarSenha ? "text" : "password"}
+            placeholder="Digite a mesma senha"
+            className={`${inputClass} pr-10`}
+            {...register("confirmarSenha")}
+          />
+          <button
+            type="button"
+            onClick={() => setMostrarSenha(!mostrarSenha)}
+            className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-muted hover:text-night"
+          >
+            {mostrarSenha ? <EyeOff className="w-[18px] h-[18px]" /> : <Eye className="w-[18px] h-[18px]" />}
+          </button>
+        </div>
       </FormGroup>
 
-      <FormGroup label="Confirmar Nova Senha" error={errors.confirmarSenha?.message}>
-        <input
-          type="password"
-          placeholder="Digite a mesma senha"
-          className={inputClass}
-          {...register("confirmarSenha")}
-        />
-      </FormGroup>
 
       {erro && <p className="text-coral text-xs font-bold">{erro}</p>}
 
@@ -105,13 +124,19 @@ function FormularioNovaSenha() {
         disabled={isSubmitting}
         className="w-full flex items-center justify-center gap-2 bg-night hover:bg-night-3 text-amber font-bold py-3.5 rounded-xl transition-colors disabled:opacity-50 mt-2"
       >
-        {isSubmitting ? "Salvando..." : (
+        {isSubmitting ? (
+          <>
+            <Loader2 className="w-4 h-4 animate-spin" /> {/* 👈 O Spinner! */}
+            Salvando...
+          </>
+        ) : (
           <>
             <Save className="w-4 h-4" />
             Salvar Nova Senha
           </>
         )}
       </button>
+
     </form>
   )
 }
