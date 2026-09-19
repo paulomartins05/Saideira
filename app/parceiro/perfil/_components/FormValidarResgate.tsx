@@ -3,6 +3,7 @@
 import { useTransition } from "react";
 import { validarResgate } from "@/app/actions/resgate";
 import { appToast } from "@/lib/toast";
+import { Loader2 } from "lucide-react";
 
 export default function FormValidarResgate({ resgateId }: { resgateId: string }) {
     const [isPending, startTransition] = useTransition();
@@ -37,7 +38,13 @@ export default function FormValidarResgate({ resgateId }: { resgateId: string })
                 className={`bg-night text-amber font-bold py-2 px-3 rounded-lg text-[12px] transition-colors ${isPending ? 'opacity-50 cursor-not-allowed' : 'hover:bg-night-3'
                     }`}
             >
-                {isPending ? "VALIDANDO..." : "VALIDAR"}
+                {isPending ? (
+                    <span className="flex items-center gap-1">
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" /> Validando...
+                    </span>
+                ) : (
+                    "VALIDAR"
+                )}
             </button>
         </form>
     );

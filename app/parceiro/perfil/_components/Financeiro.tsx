@@ -22,7 +22,8 @@ export default async function Financeiro({ usuarioId, periodo = "todos" }: { usu
     const resgatesConcluidos = await prisma.resgate.findMany({
         where: whereClause,
         include: { oferta: true },
-        orderBy: { updatedAt: 'desc' }
+        orderBy: { updatedAt: 'desc' },
+        take: 20
     });
 
     const saldo = resgatesConcluidos.reduce((total, resgate) => total + Number(resgate.oferta.precoResgate), 0);

@@ -9,7 +9,7 @@ import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import FormGroup from "@/app/componentes/FormGroup";
 import { CATEGORIAS_POR_NEGOCIO } from "@/app/constants/categorias";
-import { Store, Tag, Scale, Utensils, MapPin } from "lucide-react";
+import { Store, Tag, Scale, Utensils, MapPin, ChevronRight } from "lucide-react";
 
 export default async function EditarProduto({
     params
@@ -45,8 +45,12 @@ export default async function EditarProduto({
             <main className="py-10 grow">
                 <Container>
                     <div className="mb-8 text-center md:text-left">
-                        <div className="text-[13px] text-muted mb-3 font-medium">
-                            Dashboard {'>'} Resgates {'>'} <span className="font-bold text-night">Editar</span>
+                        <div className="flex items-center justify-center md:justify-start gap-1.5 text-[12.5px] text-muted mb-4 font-medium flex-wrap">
+                            <Link href="/parceiro/perfil" className="hover:text-night transition-colors">Painel do Parceiro</Link>
+                            <ChevronRight className="w-3.5 h-3.5" />
+                            <Link href="/parceiro/perfil?aba=produtos" className="hover:text-night transition-colors">Meus Produtos</Link>
+                            <ChevronRight className="w-3.5 h-3.5" />
+                            <span className="font-bold text-night">Editar</span>
                         </div>
                         <h1 className="font-display text-3xl md:text-4xl font-extrabold text-night tracking-tight">
                             Editar Oferta

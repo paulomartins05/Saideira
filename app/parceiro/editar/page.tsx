@@ -7,7 +7,7 @@ import Container from "@/app/componentes/container";
 import Link from "next/link";
 import FormEditarLoja from "./_components/FormEditarLoja";
 import FormTrocarSenha from "./_components/FormTrocarSenha";
-import { Settings } from "lucide-react";
+import { Settings, ChevronRight } from "lucide-react";
 
 export default async function EditarPerfilParceiro() {
     const reqHeaders = await headers()
@@ -36,8 +36,10 @@ export default async function EditarPerfilParceiro() {
             <main className="py-10 grow">
                 <Container>
                     <div className="mb-8 text-center md:text-left">
-                        <div className="text-[13px] text-muted mb-3 font-medium">
-                            Dashboard {'>'} <span className="font-bold text-night">Configurações</span>
+                        <div className="flex items-center justify-center md:justify-start gap-1.5 text-[12.5px] text-muted mb-4 font-medium flex-wrap">
+                            <Link href="/parceiro/perfil" className="hover:text-night transition-colors">Painel do Parceiro</Link>
+                            <ChevronRight className="w-3.5 h-3.5" />
+                            <span className="font-bold text-night">Configurações</span>
                         </div>
                         <h1 className="font-display text-3xl md:text-4xl font-extrabold text-night tracking-tight flex items-center justify-center md:justify-start gap-3">
                             <Settings className="w-8 h-8 text-amber" />

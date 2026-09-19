@@ -5,7 +5,8 @@ import { Plus, Edit2 } from "lucide-react";
 export default async function MeusProdutos({ usuarioId }: { usuarioId: string }) {
     const todasAsOfertas = await prisma.oferta.findMany({
         where: { vendedorId: usuarioId },
-        orderBy: { createdAt: "desc" }
+        orderBy: { createdAt: "desc" },
+        take: 20
     });
 
     return (
