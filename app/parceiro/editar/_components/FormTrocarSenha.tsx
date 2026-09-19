@@ -6,7 +6,7 @@ import { z } from "zod";
 import { alterarSenha } from "@/app/actions/usuario";
 import { appToast } from "@/lib/toast";
 import FormGroup from "@/app/componentes/FormGroup";
-import { KeyRound } from "lucide-react";
+import { KeyRound, Loader2 } from "lucide-react";
 
 const trocarSenhaSchema = z.object({
   senhaAtual: z.string().min(1, "A senha atual é obrigatória"),
@@ -59,8 +59,16 @@ export default function FormTrocarSenha() {
       </FormGroup>
 
       <button type="submit" disabled={isSubmitting} className={`mt-2 bg-night hover:bg-black text-paper font-bold py-4 rounded-xl w-full transition-all ${isSubmitting ? "opacity-50" : ""}`}>
-        {isSubmitting ? "ATUALIZANDO..." : "Atualizar Senha"}
+        {isSubmitting ? (
+          <span className="flex items-center justify-center gap-2">
+            <Loader2 className="w-4 h-4 animate-spin" />
+            Atualizando...
+          </span>
+        ) : (
+          "Atualizar Senha"
+        )}
       </button>
+
     </form>
   );
 }

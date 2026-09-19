@@ -6,7 +6,8 @@ import Header from "@/app/_components/header";
 import Container from "@/app/componentes/container";
 import Link from "next/link";
 import FormEditarConsumidor from "./_components/FormEditarConsumidor";
-import FormTrocarSenha from "@/app/parceiro/editar/_components/FormTrocarSenha"; // <-- Reaproveitando código (DRY)!
+import FormTrocarSenha from "@/app/parceiro/editar/_components/FormTrocarSenha";
+import { ChevronRight } from "lucide-react";
 
 export default async function EditarPerfil() {
     const reqHeaders = await headers();
@@ -32,12 +33,14 @@ export default async function EditarPerfil() {
                 <Container>
                     <div className="max-w-xl mx-auto bg-card p-8 rounded-2xl shadow-sm border border-line">
 
-                        <div className="flex items-center justify-between mb-8 border-b border-line pb-4">
-                            <h1 className="text-2xl font-display font-bold text-night">Editar Perfil</h1>
-                            <Link href="/perfil" className="text-sm font-bold text-muted hover:text-night transition-colors">
-                                Voltar
-                            </Link>
+                        <div className="flex items-center gap-1.5 text-[12.5px] text-muted mb-6 flex-wrap font-medium">
+                            <Link href="/perfil" className="hover:text-night transition-colors">Minha Conta</Link>
+                            <ChevronRight className="w-3.5 h-3.5" />
+                            <span className="text-night font-bold">Editar Perfil</span>
                         </div>
+                        <h1 className="text-2xl font-display font-bold text-night mb-8 border-b border-line pb-4">
+                            Configurações da Conta
+                        </h1>
 
                         <FormEditarConsumidor usuario={usuarioDB} />
 

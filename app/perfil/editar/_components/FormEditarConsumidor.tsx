@@ -1,13 +1,14 @@
 "use client";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { email, z } from "zod";
-import { atualizarPerfilUsuario } from "@/app/actions/usuario";
-import { appToast } from "@/lib/toast";
-import FormGroup from "@/app/componentes/FormGroup";
-import { Upload } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useState } from "react"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { z } from "zod"
+import { atualizarPerfilUsuario } from "@/app/actions/usuario"
+import { appToast } from "@/lib/toast"
+import FormGroup from "@/app/componentes/FormGroup"
+import { Upload, Loader2 } from "lucide-react"
+import { useRouter } from "next/navigation"
+
 
 const editarConsumidorSchema = z.object({
     nome: z.string().min(3, "O nome deve ter pelo menos 3 caracteres"),
@@ -92,8 +93,16 @@ export default function FormEditarConsumidor({ usuario }: { usuario: any }) {
                 </FormGroup>
             </div>
             <button type="submit" disabled={isSubmitting} className={`mt-2 bg-amber hover:bg-amber-dark text-night font-bold py-4 rounded-xl w-full transition-all ${isSubmitting ? "opacity-50" : ""}`}>
-                {isSubmitting ? "SALVANDO..." : "Salvar Alterações"}
+                {isSubmitting ? (
+                    <span className="flex items-center justify-center gap-2">
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Salvando...
+                    </span>
+                ) : (
+                    "Salvar Alterações"
+                )}
             </button>
+
         </form>
     );
 }

@@ -3,20 +3,33 @@ import { History, PackageCheck, TrendingDown } from "lucide-react";
 import { BotaoAvaliar } from "@/app/componentes/BotaoAvaliar";
 
 export default async function HistoricoResgates({ userId }: { userId: string }) {
-    const historicoPedidos = await prisma.resgate.findMany({
-        where: { userId: userId },
-        include: {
-            oferta: { include: { vendedor: true } },
-            avaliacao: true
-        },
-        orderBy: { createdAt: "desc" }
-    });
+    const [totalResgates, historicoPedidos, todasAsOfertas] = await Promise.all([
+        prisma.resgate.count({
+            where: { userId: userId }
+        }),
+        prisma.resgate.findMany({
+            where: { userId: userId },
+            include: {
+                oferta: { include: { vendedor: true } },
+                avaliacao: true
+            },
+            orderBy: { createdAt: "desc" },
+            take: 20
+        }),
+        prisma.resgate.findMany({
+            where: { userId: userId },
+            include: {
+                oferta: { select: { precoOriginal: true, precoResgate: true } }
+            }
+        })
+    ]);
 
-    const totalResgates = historicoPedidos.length;
-    const valorEconomizado = historicoPedidos.reduce((total, resgate) => {
-        const economia = Number(resgate.oferta.precoOriginal) - Number(resgate.oferta.precoResgate);
-        return total + (isNaN(economia) ? 0 : economia);
+    const valorEconomizado = todasAsOfertas.reduce((total, resgate) => {
+        const economiaUnitaria = Number(resgate.oferta.precoOriginal) - Number(resgate.oferta.precoResgate);
+        const economiaTotalDoPedido = economiaUnitaria * resgate.quantidade;
+        return total + (isNaN(economiaTotalDoPedido) ? 0 : economiaTotalDoPedido);
     }, 0);
+
 
     return (
         <>
