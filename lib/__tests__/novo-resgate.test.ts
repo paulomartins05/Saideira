@@ -1,5 +1,36 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { novoResgateSchema } from '@/lib/schemas/novo-resgates';
+import { criarOferta } from '@/app/actions/ofertas';
+import { prisma } from '@/lib/prisma';
+
+vi.mock('@/lib/prisma', () => ({
+    prisma: {
+        oferta: {
+            create: vi.fn(),
+        }
+    }
+}));
+
+
+describe('Salvando Oferta', () => {
+    it('deve chamar o banco de dados para salvar a coxinha', async () => {
+
+        const formDataFake = new FormData();
+        formDataFake.append("titulo", "Coxinha de Frango");
+        formDataFake.append("descricao", "Coxinha deliciosa que sobrou");
+        formDataFake.append("categoria", "Salgados");
+        formDataFake.append("localizacao", "Rua A");
+        formDataFake.append("precoOriginal", "10,00");
+        formDataFake.append("precoResgate", "5,00");
+        formDataFake.append("quantidade", "2");
+        formDataFake.append("peso", "200");
+        formDataFake.append("dataValidade", new Date().toISOString());
+
+        await criarOferta(formDataFake);
+
+        expect(prisma.oferta.create).not.toHaveBeenCalled();
+    });
+});
 
 describe('Zod Schema: Novo Resgate', () => {
 
