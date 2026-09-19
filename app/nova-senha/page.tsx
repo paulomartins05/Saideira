@@ -126,7 +126,7 @@ function FormularioNovaSenha() {
       >
         {isSubmitting ? (
           <>
-            <Loader2 className="w-4 h-4 animate-spin" /> {/* 👈 O Spinner! */}
+            <Loader2 className="w-4 h-4 animate-spin" />
             Salvando...
           </>
         ) : (
