@@ -3,6 +3,23 @@ import { prisma } from "@/lib/prisma";
 import { calcularTempoPostagem } from "@/lib/utils";
 import ListaResgatesClient from "@/app/componentes/ListaResgatesClient";
 import Paginacao from "@/app/componentes/Paginacao";
+import EmptyStateResgates from "./EmptyStateResgates";
+
+interface ProdutoRaw {
+  id: string;
+  titulo: string;
+  categoria: string;
+  descricao: string;
+  precoResgate: number;
+  createdAt: Date;
+  dataValidade: Date;
+  imagemUrl: string[] | null;
+  latitude: number | null;
+  longitude: number | null;
+  quantidade: number;
+  vendedorName: string | null;
+  assinaturaStatus: string | null;
+}
 
 export default async function ListaOfertas({
   categoriaAtiva,
@@ -23,8 +40,7 @@ export default async function ListaOfertas({
     ? Prisma.sql`AND (o.titulo ILIKE ${'%' + textoDaBusca + '%'} OR o.localizacao ILIKE ${'%' + textoDaBusca + '%'} OR o.descricao ILIKE ${'%' + textoDaBusca + '%'})`
     : Prisma.empty;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const countRaw: any = await prisma.$queryRaw`
+  const countRaw = await prisma.$queryRaw<{ count: bigint }[]>`
     SELECT COUNT(o.id) as count
     FROM "Oferta" o
     WHERE o.ativo = true 
@@ -33,13 +49,14 @@ export default async function ListaOfertas({
       ${categoriaFilter}
       ${searchFilter}
   `;
+
   const totalDeItens = Number(countRaw[0].count);
   const totalPaginas = Math.ceil(totalDeItens / itensPorPagina);
 
   const limit = itensPorPagina;
   const offset = (paginaAtual - 1) * itensPorPagina;
 
-  const produtosDoBancoPaginados: any[] = await prisma.$queryRaw`
+  const produtosDoBancoPaginados = await prisma.$queryRaw<ProdutoRaw[]>`
     SELECT 
       o.*,
       u.name as "vendedorName",
@@ -97,9 +114,13 @@ export default async function ListaOfertas({
       isPremium,
       faixaUrgencia,
       tempoRestanteFormatado,
-      loja: p.vendedorName || "Loja Desconhecida", // <- Adicionamos o nome da loja!
+      loja: p.vendedorName || "Loja Desconhecida",
     }
   });
+
+  if (produtosFormatados.length === 0) {
+    return <EmptyStateResgates />;
+  }
 
   return (
     <>

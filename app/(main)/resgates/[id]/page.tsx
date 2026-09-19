@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import Container from "@/app/componentes/container";
 import ProdutoDetalhes from "@/app/componentes/ProdutoDetalhes";
@@ -11,19 +10,32 @@ import { notFound } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { calcularTempoPostagem, calcularDistancia } from "@/lib/utils";
+import { cache } from "react";
 
+const getProdutoCached = cache(async (id: string) => {
+  return await prisma.oferta.findUnique({
+    where: { id },
+    include: { vendedor: true },
+  });
+});
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const idResolvido = (await params).id;
-  const produto = await prisma.oferta.findUnique({
-    where: { id: idResolvido },
-    select: { titulo: true }
-  });
 
+  const produto = await getProdutoCached(idResolvido);
+  if (!produto) {
+    return { title: "Resgate não encontrado | Saideira" };
+  }
+  const fotoOpenGraph = produto.imagemUrl?.[0] || "";
   return {
-    title: produto ? `${produto.titulo} | Saideira` : "Resgate não encontrado",
+    title: `${produto.titulo} | Saideira`,
+    description: `Resgate ${produto.titulo} por apenas R$ ${Number(produto.precoResgate).toFixed(2).replace('.', ',')} no app Saideira! Salve comida deliciosa e economize.`,
+    openGraph: {
+      title: `${produto.titulo} | Saideira`,
+      description: `Resgate este produto no app Saideira e evite o desperdício alimentar!`,
+      images: fotoOpenGraph ? [{ url: fotoOpenGraph }] : [],
+    }
   };
 }
-
 export default async function PaginaProdutoUnico({
   params
 }: {
@@ -34,17 +46,11 @@ export default async function PaginaProdutoUnico({
     headers: reqHeaders
   });
   const usuario = session?.user;
-
   const idResolvido = (await params).id;
-  const produto = await prisma.oferta.findUnique({
-    where: { id: idResolvido },
-    include: { vendedor: true },
-  })
 
+  const produto = await getProdutoCached(idResolvido);
   if (!produto) notFound();
-
   const nomeDaLoja = produto.vendedor.name || "Parceiro Salgado Salvo";
-
   let userLat = null;
   let userLon = null;
   if (usuario?.id) {
@@ -52,7 +58,6 @@ export default async function PaginaProdutoUnico({
     userLat = dbUser?.latitude;
     userLon = dbUser?.longitude;
   }
-
   let distanciaFormatada = null;
   if (userLat && userLon && produto.latitude && produto.longitude) {
     const distKm = calcularDistancia(userLat, userLon, produto.latitude, produto.longitude);
@@ -62,7 +67,6 @@ export default async function PaginaProdutoUnico({
       distanciaFormatada = `${distKm.toFixed(1).replace('.', ',')}km`;
     }
   }
-
   return (
     <div className="min-h-screen flex flex-col">
       <hr className="border-line" />
