@@ -49,6 +49,7 @@ export default async function ResgatesDisponiveis() {
                     precoNovo={`R$ ${oferta.precoResgate.toFixed(2).replace('.', ',')}`}
                     tempoRestante={tempoFormatado}
                     isPremium={diffMins < 30}
+                    imagemUrl={oferta.imagemUrl.length > 0 ? oferta.imagemUrl[0] : ""}
                   />
                 </Link>
               );
