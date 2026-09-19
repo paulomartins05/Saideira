@@ -1,52 +1,21 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
-import Footer from "@/app/_components/footer";
 import CardProduto from "@/app/componentes/CardProduto";
 import { Star, MapPin, Store } from "lucide-react";
+import { calcularTempoPostagem } from "@/lib/utils";
+import { cache } from "react";
 
 export const revalidate = 60
 
-export async function generateMetadata({ params }: LojaPageProps) {
-    const loja = await prisma.user.findUnique({
-        where: { id: params.id, role: "PARCEIRO" },
-        select: { name: true }
-    })
-    if (!loja) return { title: "Loja não encontrada | Saideira" };
-    return {
-        title: `${loja.name} | Saideira`,
-        description: `Confira as ofertas exclusivas de ${loja.name} e ajude a combater o desperdício!`,
-    }
-}
-
-function calcularTempoPostagem(dataCriacao: Date): string {
-    const agora = new Date();
-    const diferencaMilisegundos = agora.getTime() - dataCriacao.getTime();
-
-    const diferencaMinutos = Math.floor(diferencaMilisegundos / (1000 * 60));
-    const diferencaHoras = Math.floor(diferencaMinutos / 60);
-    const diferencaDias = Math.floor(diferencaHoras / 24);
-
-    if (diferencaMinutos < 60) {
-        return diferencaMinutos <= 1 ? "Agora mesmo" : `Há ${diferencaMinutos} min`;
-    } else if (diferencaHoras < 24) {
-        return diferencaHoras === 1 ? "Há 1 hora" : `Há ${diferencaHoras} horas`;
-    } else {
-        return diferencaDias === 1 ? "Ontem" : `Há ${diferencaDias} dias`;
-    }
-}
-
 interface LojaPageProps {
-    params: {
+    params: Promise<{
         id: string
-    };
+    }>;
 }
 
-export default async function LojaParceiroPage({ params }: LojaPageProps) {
-    const loja = await prisma.user.findUnique({
-        where: {
-            id: params.id,
-            role: "PARCEIRO"
-        },
+const getLojaCached = cache(async (id: string) => {
+    return await prisma.user.findUnique({
+        where: { id: id, role: "PARCEIRO" },
         include: {
             ofertas: {
                 where: {
@@ -61,12 +30,34 @@ export default async function LojaParceiroPage({ params }: LojaPageProps) {
             }
         }
     });
+});
+
+
+export async function generateMetadata({ params }: LojaPageProps) {
+    const idResolvido = (await params).id;
+
+    const loja = await getLojaCached(idResolvido);
+
+    if (!loja) return { title: "Loja não encontrada | Saideira" };
+    return {
+        title: `${loja.name} | Saideira`,
+        description: `Confira as ofertas exclusivas de ${loja.name} e ajude a combater o desperdício!`,
+    }
+}
+
+
+export default async function LojaParceiroPage({ params }: LojaPageProps) {
+    const idResolvido = (await params).id;
+
+    const loja = await getLojaCached(idResolvido);
+
 
     if (!loja) {
         notFound()
     }
 
-    let notaMedia = 5.0;
+    const temAvaliacoes = loja.avaliacoesRecebidas.length > 0;
+    let notaMedia = 0;
     if (loja.avaliacoesRecebidas.length > 0) {
         const somaNotas = loja.avaliacoesRecebidas.reduce((acc, aval) => acc + aval.nota, 0)
         notaMedia = somaNotas / loja.avaliacoesRecebidas.length
@@ -90,10 +81,18 @@ export default async function LojaParceiroPage({ params }: LojaPageProps) {
                         <div className="text-center md:text-left flex-1">
                             <div className="flex flex-col md:flex-row items-center gap-3 mb-2">
                                 <h1 className="font-display text-4xl font-extrabold">{loja.name}</h1>
-                                <div className="flex items-center gap-1 bg-white/10 px-3 py-1 rounded-full text-amber font-bold text-sm backdrop-blur-sm border border-white/5">
-                                    <Star className="w-4 h-4 fill-amber" />
-                                    {notaMedia.toFixed(1)} ({loja.avaliacoesRecebidas.length})
-                                </div>
+
+                                {temAvaliacoes ? (
+                                    <div className="flex items-center gap-1 bg-white/10 px-3 py-1 rounded-full text-amber font-bold text-sm backdrop-blur-sm border border-white/5">
+                                        <Star className="w-4 h-4 fill-amber" />
+                                        {notaMedia.toFixed(1)} ({loja.avaliacoesRecebidas.length})
+                                    </div>
+                                ) : (
+                                    <div className="flex items-center gap-1.5 bg-white/10 px-3 py-1 rounded-full text-white font-bold text-[13px] backdrop-blur-sm border border-white/5">
+                                        <Star className="w-3.5 h-3.5 text-paper/80" />
+                                        Novo Parceiro
+                                    </div>
+                                )}
                             </div>
 
                             <p className="text-muted/80 text-lg flex items-center justify-center md:justify-start gap-2 mb-4">
@@ -165,8 +164,6 @@ export default async function LojaParceiroPage({ params }: LojaPageProps) {
 
                 </div>
             </main>
-
-            <Footer />
         </div>
     );
 }
