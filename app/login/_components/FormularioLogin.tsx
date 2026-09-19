@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff, Lock, LogIn } from "lucide-react";
+import { Eye, EyeOff, Lock, LogIn, Loader2 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { appToast } from "@/lib/toast";
 import FormGroup from "@/app/componentes/FormGroup";
@@ -76,8 +76,22 @@ export default function FormularioLogin() {
                     <label htmlFor="lembrarMe" className="text-[13px] font-semibold text-night cursor-pointer">Lembrar de mim</label>
                 </div>
 
-                <button type="submit" disabled={isSubmitting} className="w-full bg-night text-amber font-bold text-[14.5px] py-3.5 rounded-lg hover:bg-night-3 transition-colors disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2">
-                    {isSubmitting ? "Entrando..." : <><LogIn className="w-4 h-4" /> Entrar na Conta</>}
+                <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full bg-night text-amber font-bold text-[14.5px] py-3.5 rounded-lg hover:bg-night-3 transition-colors disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                    {isSubmitting ? (
+                        <>
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            Entrando...
+                        </>
+                    ) : (
+                        <>
+                            <LogIn className="w-4 h-4" />
+                            Entrar na Conta
+                        </>
+                    )}
                 </button>
             </form>
 
