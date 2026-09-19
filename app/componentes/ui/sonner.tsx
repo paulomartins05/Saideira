@@ -2,13 +2,15 @@
 
 import { Toaster as Sonner, type ToasterProps } from "sonner"
 import { Check, Info, AlertTriangle, XCircle, Loader2 } from "lucide-react"
+import { useMediaQuery } from "@/app/hooks/use-media-query"
 
 const Toaster = ({ ...props }: ToasterProps) => {
+  const isMobile = useMediaQuery("(max-width: 768px)");
   return (
     <Sonner
       theme="light"
-      position="top-center"
-      duration={3500}
+      position={isMobile ? "bottom-center" : "top-center"}
+      duration={5000}
       visibleToasts={3}
       closeButton
       className="toaster group"
@@ -22,6 +24,8 @@ const Toaster = ({ ...props }: ToasterProps) => {
           error: "group-[.toaster]:border-l-coral group-[.toast]:[&_[data-icon]]:bg-[#FBE4E0] group-[.toast]:[&_[data-icon]]:text-coral",
           warning: "group-[.toaster]:border-l-amber group-[.toast]:[&_[data-icon]]:bg-[#FBF0DA] group-[.toast]:[&_[data-icon]]:text-amber-dark",
           info: "group-[.toaster]:border-l-info group-[.toast]:[&_[data-icon]]:bg-info-bg group-[.toast]:[&_[data-icon]]:text-info",
+          actionButton: "group-[.toast]:bg-amber group-[.toast]:text-night group-[.toast]:font-bold group-[.toast]:px-4 group-[.toast]:py-1.5 group-[.toast]:rounded-lg group-[.toast]:transition-all group-[.toast]:hover:scale-105 active:scale-95",
+          cancelButton: "group-[.toast]:bg-line group-[.toast]:text-muted group-[.toast]:font-bold group-[.toast]:px-4 group-[.toast]:py-1.5 group-[.toast]:rounded-lg group-[.toast]:transition-colors group-[.toast]:hover:bg-night group-[.toast]:hover:text-white",
         },
       }}
       icons={{

@@ -30,9 +30,13 @@ export const appToast = {
     toast.success("Item adicionado ao carrinho", {
       description: `${itemNome} foi adicionado.`,
     }),
-  removeCarrinho: (itemNome: string) =>
+  removeCarrinho: (itemNome: string, onUndo?: () => void) =>
     toast.info("Item removido", {
       description: `${itemNome} foi removido do carrinho.`,
+      action: onUndo ? {
+        label: "Desfazer",
+        onClick: onUndo
+      } : undefined
     }),
   carrinhoVazio: () =>
     toast.warning("Seu carrinho está vazio", {
@@ -60,6 +64,7 @@ export const appToast = {
     toast.success("Estoque atualizado", {
       description: `A disponibilidade de ${itemNome} foi alterada.`,
     }),
+
 
   sucesso: (titulo: string, descricao?: string) =>
     toast.success(titulo, { description: descricao }),
