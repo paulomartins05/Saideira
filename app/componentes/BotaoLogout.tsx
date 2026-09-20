@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation"
 import { authClient } from "@/lib/auth-client"
 import Button from "./button"
 
-export default function BotaoLogout() {
+export default function BotaoLogout({ className, children }: { className?: string, children?: React.ReactNode }) {
   const router = useRouter()
 
   const handleSair = async () => {
@@ -17,12 +17,11 @@ export default function BotaoLogout() {
     }});
   }
   return (
-      <Button 
+      <button 
         onClick={handleSair} 
-        variant="outline" 
-        className="w-full md:w-auto border-red-500 text-red-500 hover:bg-red-50 hover:text-red-600 font-bold"
+        className={className || "block w-full px-3 py-2.5 text-[13.5px] text-night hover:bg-line/30 rounded-xl transition-colors font-bold text-center"}
       >
-        SAIR DA CONTA
-      </Button>
+        {children || "Sair da Conta"}
+      </button>
     );
 }

@@ -71,7 +71,7 @@ export default async function Header() {
             </Link>
           )}
 
-          <MenuMobile rotas={rotas} />
+          <MenuMobile rotas={rotas} usuario={usuario} />
         </div>
       </div>
     </header>

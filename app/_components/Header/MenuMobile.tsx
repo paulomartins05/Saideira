@@ -3,12 +3,14 @@
 import { useState, useEffect } from "react";
 import NavLink from "./NavLink";
 import { Menu, X } from "lucide-react";
+import BotaoLogout from "@/app/componentes/BotaoLogout";
 
 interface MenuMobileProps {
   rotas: Array<{ label: string; path: string }>;
+  usuario?: any;
 }
 
-export default function MenuMobile({ rotas }: MenuMobileProps) {
+export default function MenuMobile({ rotas, usuario }: MenuMobileProps) {
   const [aberto, setAberto] = useState(false);
   const fecharMenu = () => setAberto(false);
 
@@ -45,6 +47,16 @@ export default function MenuMobile({ rotas }: MenuMobileProps) {
                 {rota.label}
               </NavLink>
             ))}
+            
+            <NavLink href="/sobre-nos" variant="mobile" onClick={fecharMenu}>
+              Sobre Nós
+            </NavLink>
+            
+            {usuario && (
+              <BotaoLogout className="block w-full py-2 text-[24px] font-display font-extrabold text-paper hover:text-amber transition-colors text-left">
+                Sair da Conta
+              </BotaoLogout>
+            )}
           </nav>
         </div>
       )}
