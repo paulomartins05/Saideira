@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { getMediaParceiro } from "@/app/actions/avaliacoes";
 import { criarResgate } from "@/app/actions/resgate";
-import { Clock, MapPin, ShoppingCart, Star, Store } from "lucide-react";
+import { Clock, MapPin, ShoppingCart, Star, Store, Loader2 } from "lucide-react";
 import Link from "next/link";
 
 
@@ -32,6 +32,7 @@ export default function ProdutoDetalhes({
   const router = useRouter()
   const [quantidade, setQuantidade] = useState(1)
   const [erroEstoque, setErroEstoque] = useState("")
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [stats, setStats] = useState<{ visivel: boolean, mensagem?: string, media?: number | null, quantidade?: number }>({ visivel: false, mensagem: "Carregando..." })
 
   useEffect(() => {
@@ -46,6 +47,24 @@ export default function ProdutoDetalhes({
     if (quantidade < estoqueDisponivel) { setQuantidade(quantidade + 1); setErroEstoque(""); }
     else { setErroEstoque(`Temos apenas ${estoqueDisponivel} itens em estoque no momento!`); }
   }
+
+  const handleResgatar = async () => {
+    if (!usuarioId) {
+      router.push("/login");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      await criarResgate(usuarioId, ofertaId, quantidade);
+      router.push("/carrinho");
+    } catch (error) {
+      console.error("Erro ao resgatar:", error);
+      setIsSubmitting(false);
+    }
+  }
+
 
   const formatarPreco = (valor: number) =>
     new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor);
@@ -134,16 +153,20 @@ export default function ProdutoDetalhes({
               <button type="button" onClick={aumentar} className="text-muted hover:text-night text-2xl font-bold transition-colors">+</button>
             </div>
 
-            <form action={async () => {
-              if (!usuarioId) return router.push("/login");
-              await criarResgate(usuarioId, ofertaId, quantidade);
-              router.push("/carrinho");
-            }} className="flex-1 w-full">
-              <Button type="submit" variant="primary" className="w-full h-full min-h-[3.5rem] flex justify-center items-center gap-2 bg-amber hover:bg-amber-dark text-night font-bold rounded-2xl shadow-lg shadow-amber/20 transition-all text-base md:text-lg">
-                {usuarioId ? (
-                  <><ShoppingCart className="w-[1.2em] h-[1.2em] inline-block align-text-bottom" /> Resgatar {quantidade > 1 ? `${quantidade} itens` : ''}</>
-                ) : (
+            <form action={handleResgatar} className="flex-1 w-full">
+              <Button
+                type="submit"
+                variant="primary"
+                disabled={isSubmitting}
+                className={`w-full h-full min-h-[3.5rem] flex justify-center items-center gap-2 bg-amber text-night font-bold rounded-2xl shadow-lg shadow-amber/20 transition-all text-base md:text-lg ${isSubmitting ? "opacity-70 cursor-not-allowed hover:bg-amber" : "hover:bg-amber-dark"
+                  }`}
+              >
+                {isSubmitting ? (
+                  <><Loader2 className="w-[1.2em] h-[1.2em] inline-block align-text-bottom animate-spin" /> Processando...</>
+                ) : !usuarioId ? (
                   <>Faça Login para Resgatar</>
+                ) : (
+                  <><ShoppingCart className="w-[1.2em] h-[1.2em] inline-block align-text-bottom" /> Resgatar {quantidade > 1 ? `${quantidade} itens` : ''}</>
                 )}
               </Button>
             </form>
