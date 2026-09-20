@@ -14,6 +14,7 @@ function getResend() {
 
 export const auth = betterAuth({
   baseURL: process.env.NEXT_PUBLIC_URL || "http://localhost:3000",
+  trustedOrigins: process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL}`] : [],
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
