@@ -82,7 +82,6 @@ export async function atualizarPerfilUsuario(formData: FormData) {
     const isParceiro = session.user.role === "PARCEIRO"
 
     revalidatePath(isParceiro ? "/parceiro/perfil" : "/perfil")
-    redirect(isParceiro ? "/parceiro/perfil" : "/perfil")
 }
 
 
@@ -106,7 +105,6 @@ export async function alterarSenha(formData: FormData) {
     }
 
     try {
-
         await auth.api.changePassword({
             headers: reqHeaders,
             body: {
@@ -115,12 +113,10 @@ export async function alterarSenha(formData: FormData) {
                 revokeOtherSessions: true
             }
         })
-        revalidatePath("/perfil")
-        redirect("/perfil")
-
     } catch (error) {
         console.error("Erro ao trocar senha")
         throw new Error("Erro ao trocar senha")
     }
 
+    revalidatePath("/perfil")
 }
