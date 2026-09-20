@@ -118,9 +118,6 @@ export default async function ListaOfertas({
     }
   });
 
-  if (produtosFormatados.length === 0) {
-    return <EmptyStateResgates />;
-  }
 
   return (
     <>
