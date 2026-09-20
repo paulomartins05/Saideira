@@ -4,7 +4,6 @@ import { auth } from "./auth"
 
 export const authClient = createAuthClient({
     plugins: [
-        inferAdditionalFields<typeof auth>(), 
+        inferAdditionalFields<typeof auth>(),
     ],
-    baseURL: process.env.NEXT_PUBLIC_URL || "http://localhost:3000",
 })
