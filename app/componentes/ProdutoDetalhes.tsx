@@ -162,14 +162,13 @@ export default function ProdutoDetalhes({
               <Button
                 type="submit"
                 variant="primary"
-                disabled={isSubmitting}
-                className={`w-full h-full min-h-[3.5rem] flex justify-center items-center gap-2 bg-amber text-night font-bold rounded-2xl shadow-lg shadow-amber/20 transition-all text-base md:text-lg ${isSubmitting ? "opacity-70 cursor-not-allowed hover:bg-amber" : "hover:bg-amber-dark"
-                  }`}
+                isLoading={isSubmitting}
+                className={`w-full h-full min-h-[3.5rem] flex justify-center items-center gap-2 bg-amber text-night font-bold rounded-2xl shadow-lg shadow-amber/20 transition-all text-base md:text-lg hover:bg-amber-dark`}
               >
-                {isSubmitting ? (
-                  <><Loader2 className="w-[1.2em] h-[1.2em] inline-block align-text-bottom animate-spin" /> Processando...</>
-                ) : !usuarioId ? (
-                  <>Faça Login para Resgatar</>
+                {!usuarioId ? (
+                  "Faça Login para Resgatar"
+                ) : isSubmitting ? (
+                  "Processando..."
                 ) : (
                   <><ShoppingCart className="w-[1.2em] h-[1.2em] inline-block align-text-bottom" /> Resgatar {quantidade > 1 ? `${quantidade} itens` : ''}</>
                 )}
