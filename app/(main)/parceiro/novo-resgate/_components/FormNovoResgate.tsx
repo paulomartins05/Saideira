@@ -120,13 +120,7 @@ export default function FormNovoResgate() {
             serverData.append("quantidade", data.quantidade.toString());
             serverData.append("peso", pesoLimpo);
 
-            const [horasStr, minutosStr] = data.validade.split(":");
-            const dataExpiraçao = new Date();
-            dataExpiraçao.setHours(parseInt(horasStr), parseInt(minutosStr), 0, 0);
-
-            if (dataExpiraçao.getTime() < Date.now()) {
-                dataExpiraçao.setDate(dataExpiraçao.getDate() + 1);
-            }
+            const dataExpiraçao = new Date(data.validade);
             serverData.append("dataValidade", dataExpiraçao.toISOString());
             serverData.append("categoria", data.categoria);
             serverData.append("localizacao", localizacaoUnificada);
@@ -187,7 +181,7 @@ export default function FormNovoResgate() {
                     </FormGroup>
 
                     <FormGroup label="Disponível Até" error={errors.validade?.message}>
-                        <input type="time" className={`${inputClass} cursor-pointer`} {...register("validade")} />
+                        <input type="datetime-local" className={`${inputClass} cursor-pointer`} {...register("validade")} />
                     </FormGroup>
                 </div>
 
@@ -240,7 +234,7 @@ export default function FormNovoResgate() {
 
                 {descontoPercentual > 0 && (
                     <div className="flex items-center gap-3 -mt-2">
-                        <div className="bg-coral text-white font-bold py-1 px-2.5 rounded text-[12px]">-{descontoPercentual}% de desconto</div>
+                        <div className="bg-coral text-white font-bold py-1 px-2.5 rounded text-[12px]">{descontoPercentual}% OFF</div>
                     </div>
                 )}
 
