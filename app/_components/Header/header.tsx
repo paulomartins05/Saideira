@@ -45,15 +45,13 @@ export default async function Header() {
             ) : (
               <Link
                 href="/login"
-                className="w-9 h-9 rounded-full bg-transparent border-[1.5px] border-paper/30 text-paper flex items-center justify-center hover:bg-paper/10 transition-colors focus-visible:ring-2 focus-visible:ring-amber focus-visible:outline-none"
-                aria-label="Fazer Login"
+                className="bg-amber hover:bg-amber-dark text-night font-bold px-6 py-2.5 rounded-xl transition-colors focus-visible:ring-2 focus-visible:ring-amber focus-visible:outline-none flex items-center gap-2 text-[14px]"
               >
-                <User className="w-[18px] h-[18px]" />
+                Entrar
               </Link>
             )}
           </div>
-
-          {usuario?.role !== "PARCEIRO" && (
+          {usuario && usuario.role !== "PARCEIRO" && (
             <Link
               href="/carrinho"
               aria-label="Ver Carrinho de Resgates"

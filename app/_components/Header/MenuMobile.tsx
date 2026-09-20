@@ -47,17 +47,22 @@ export default function MenuMobile({ rotas, usuario }: MenuMobileProps) {
                 {rota.label}
               </NavLink>
             ))}
-            
+
             <NavLink href="/sobre-nos" variant="mobile" onClick={fecharMenu}>
               Sobre Nós
             </NavLink>
-            
-            {usuario && (
-              <BotaoLogout className="block w-full py-2 text-[24px] font-display font-extrabold text-paper hover:text-amber transition-colors text-left">
+
+            {usuario ? (
+              <BotaoLogout className="block w-full py-2 text-[24px] font-display font-extrabold text-coral hover:text-red-500 transition-colors text-left">
                 Sair da Conta
               </BotaoLogout>
+            ) : (
+              <NavLink href="/login" variant="mobile" onClick={fecharMenu}>
+                Entrar
+              </NavLink>
             )}
           </nav>
+
         </div>
       )}
     </div>

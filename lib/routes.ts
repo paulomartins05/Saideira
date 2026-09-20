@@ -13,6 +13,5 @@ export const getHeaderRoutes = (role?: string | null) => {
   return [
     ...rotasComuns,
     { label: "Ofertas", path: "/resgates" },
-    { label: "Cadastre seu Restaurante", path: "/contato" }
   ];
 };

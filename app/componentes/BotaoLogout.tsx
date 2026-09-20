@@ -14,14 +14,16 @@ export default function BotaoLogout({ className, children }: { className?: strin
           router.push("/login");
           router.refresh()
         }
-    }});
+      }
+    });
   }
   return (
-      <button 
-        onClick={handleSair} 
-        className={className || "block w-full px-3 py-2.5 text-[13.5px] text-night hover:bg-line/30 rounded-xl transition-colors font-bold text-center"}
-      >
-        {children || "Sair da Conta"}
-      </button>
-    );
+    <button
+      onClick={handleSair}
+      className={className || "block w-full px-3 py-2.5 text-[13.5px] text-coral hover:bg-coral/10 hover:text-red-500 rounded-xl transition-colors font-bold text-center"}
+    >
+      {children || "Sair da Conta"}
+    </button>
+
+  );
 }
