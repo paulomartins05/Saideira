@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { History, PackageCheck, TrendingDown } from "lucide-react";
+import { History, PackageCheck, TrendingUp } from "lucide-react";
 import { BotaoAvaliar } from "@/app/componentes/BotaoAvaliar";
 
 export default async function HistoricoResgates({ userId }: { userId: string }) {
@@ -42,7 +42,7 @@ export default async function HistoricoResgates({ userId }: { userId: string }) 
                 </div>
 
                 <div className="bg-amber text-night rounded-[20px] p-6 flex flex-col items-center justify-center text-center">
-                    <TrendingDown className="w-6 h-6 text-night/50 mb-3" />
+                    <TrendingUp className="w-6 h-6 text-night/50 mb-3" />
                     <span className="font-display font-extrabold text-[32px] mb-1 leading-none">
                         <span className="text-xl">R$</span> {valorEconomizado.toFixed(2).replace('.', ',')}
                     </span>
