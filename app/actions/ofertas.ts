@@ -1,12 +1,12 @@
 "use server";
 
-import { success, z } from "zod"
+import { z } from "zod"
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { uploadImagemProduto, uploadMultiplasImagens } from "./upload";
+import { uploadMultiplasImagens } from "./upload";
 
 const ofertaSchema = z.object({
   titulo: z.string().min(3, "Precisa de 3 caracteres"),
@@ -45,8 +45,8 @@ export async function criarOferta(formData: FormData) {
     precoOriginal: parseFloat((formData.get("precoOriginal") as string).replace(",", ".")),
     precoResgate: parseFloat((formData.get("precoResgate") as string).replace(",", ".")),
     quantidade: parseInt(formData.get("quantidade") as string),
-    dataValidade: new Date(formData.get("dataValidade") as string),
     peso: parseFloat((formData.get("peso") as string).replace(",", ".")),
+    dataValidade: new Date(formData.get("dataValidade") as string),
   }
 
 
@@ -224,7 +224,7 @@ export async function editarOferta(formData: FormData) {
 
 
   if (arquivosValidos.length > 0) {
-    if ((urlsFinais.length + arquivosValidos.length) > 3) {
+    if ((arquivosValidos.length) > 3) {
       return {
         success: false,
         erroGeral: "Você só pode enviar no máximo 3 imagens"
@@ -232,7 +232,7 @@ export async function editarOferta(formData: FormData) {
     }
     const novasUrls = await uploadMultiplasImagens(arquivosValidos);
 
-    urlsFinais = [...urlsFinais, ...novasUrls]
+    urlsFinais = novasUrls
   }
 
   await prisma.oferta.update({
@@ -246,6 +246,7 @@ export async function editarOferta(formData: FormData) {
       precoOriginal: validacao.data.precoOriginal,
       precoResgate: validacao.data.precoResgate,
       quantidade: validacao.data.quantidade,
+      peso: validacao.data.peso,
       dataValidade: validacao.data.dataValidade,
       imagemUrl: urlsFinais,
     }
