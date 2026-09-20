@@ -7,7 +7,6 @@ import { Suspense } from "react";
 import HeroSection from "@/app/_components/hero-section";
 import ExploreLanches from "@/app/_components/ExploreLanches";
 import ResgatesDisponiveis from "@/app/_components/ResgatesDisponiveis";
-import Footer from "@/app/_components/footer";
 import { CategoriasSkeleton, ResgatesSkeleton } from "@/app/_components/skeletons";
 
 export const revalidate = 60;
