@@ -6,6 +6,7 @@ import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import FormOferta from "@/app/componentes/FormOferta";
 import { ChevronRight } from "lucide-react";
+import SubmitButton from "@/app/componentes/SubmitButton";
 
 export default async function EditarProduto({
     params
@@ -56,9 +57,9 @@ export default async function EditarProduto({
                                     const { excluirOferta } = await import("@/app/actions/ofertas");
                                     await excluirOferta(oferta.id);
                                 }}>
-                                    <button type="submit" className="w-full bg-coral hover:bg-[#d64a38] text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-colors text-[13.5px]">
+                                    <SubmitButton className="w-full bg-coral hover:bg-[#d64a38] text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-colors text-[13.5px]">
                                         Excluir Oferta
-                                    </button>
+                                    </SubmitButton>
                                 </form>
                             </div>
                         </div>
