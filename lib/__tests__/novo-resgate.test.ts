@@ -10,7 +10,16 @@ vi.mock('@/lib/prisma', () => ({
         }
     }
 }));
-
+vi.mock('next/headers', () => ({
+    headers: vi.fn(async () => new Headers()),
+}));
+vi.mock('@/lib/auth', () => ({
+    auth: {
+        api: {
+            getSession: vi.fn(async () => null),
+        }
+    }
+}));
 
 describe('Salvando Oferta', () => {
     it('deve chamar o banco de dados para salvar a coxinha', async () => {

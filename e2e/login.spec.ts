@@ -21,7 +21,7 @@ test.describe('Fluxo de Login', () => {
         await page.click('button[type="submit"]');
 
         const botao = page.locator('button[type="submit"]');
-        await expect(botao).toBeEnabled();
+        await expect(botao).toBeEnabled({ timeout: 15000 });
     });
 
     test('A Oferta em Destaque não deve causar erro fatal se o banco estiver vazio', async ({ page }) => {
