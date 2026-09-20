@@ -23,7 +23,8 @@ export default async function VisãoGeral({ usuarioId }: { usuarioId: string }) 
     const pedidosPendentes = await prisma.resgate.findMany({
         where: {
             oferta: {
-                vendedorId: usuarioId
+                vendedorId: usuarioId,
+                dataValidade: { gt: new Date() }
             },
             status: "PENDENTE"
         },
@@ -32,7 +33,7 @@ export default async function VisãoGeral({ usuarioId }: { usuarioId: string }) 
             oferta: true
         },
         orderBy: {
-            createdAt: "asc"
+            createdAt: "desc"
         }
     })
 
@@ -76,18 +77,20 @@ export default async function VisãoGeral({ usuarioId }: { usuarioId: string }) 
                         ) : (
                             pedidosPendentes.map(pedido => (
                                 <div key={pedido.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-paper rounded-xl border border-line">
-                                    <div>
-                                        <p className="font-bold text-[14px]">{pedido.user.name}</p>
-                                        <p className="text-[12px] text-muted font-medium">
+                                    <div className="min-w-0 flex-1">
+                                        <p className="font-bold text-[14px] truncate">{pedido.user.name}</p>
+                                        <p className="text-[12px] text-muted font-medium truncate">
                                             {pedido.oferta.titulo} • {pedido.createdAt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                                         </p>
                                     </div>
                                     {pedido.bloqueadoAte && pedido.bloqueadoAte > new Date() ? (
-                                        <div className="bg-coral/10 text-coral px-3 py-1.5 rounded-lg border border-coral/20 text-[11px] font-bold text-center">
+                                        <div className="bg-coral/10 text-coral px-3 py-1.5 rounded-lg border border-coral/20 text-[11px] font-bold text-center shrink-0">
                                             Bloqueado.<br />Tente em {Math.ceil((pedido.bloqueadoAte.getTime() - new Date().getTime()) / 60000)} min.
                                         </div>
                                     ) : (
-                                        <FormValidarResgate resgateId={pedido.id} />
+                                        <div className="shrink-0">
+                                            <FormValidarResgate resgateId={pedido.id} />
+                                        </div>
                                     )}
                                 </div>
                             ))
