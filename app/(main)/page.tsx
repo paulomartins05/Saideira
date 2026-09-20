@@ -35,7 +35,6 @@ export default function Home() {
           </Suspense>
         </div>
       </main>
-      <Footer />
     </div>
   );
 }
