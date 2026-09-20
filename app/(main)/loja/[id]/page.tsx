@@ -74,8 +74,12 @@ export default async function LojaParceiroPage({ params }: LojaPageProps) {
                 <section className="bg-night text-paper pt-16 pb-20 px-6 relative border-b-4 border-amber">
                     <div className="max-w-6xl mx-auto relative z-10 flex flex-col md:flex-row items-center md:items-start gap-6">
 
-                        <div className="w-24 h-24 rounded-2xl bg-amber text-night flex items-center justify-center font-display font-extrabold text-4xl shadow-lg border-4 border-white/10 shrink-0">
-                            {loja.name.charAt(0).toUpperCase()}
+                        <div className="w-24 h-24 rounded-2xl bg-amber text-night flex items-center justify-center font-display font-extrabold text-4xl shadow-lg border-4 border-white/10 shrink-0 overflow-hidden relative">
+                            {loja.image ? (
+                                <img src={loja.image} alt={`Foto de ${loja.name}`} className="w-full h-full object-cover" />
+                            ) : (
+                                loja.name.charAt(0).toUpperCase()
+                            )}
                         </div>
 
                         <div className="text-center md:text-left flex-1">

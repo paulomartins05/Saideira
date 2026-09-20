@@ -23,10 +23,11 @@ interface DetalhesProps {
   usuarioId?: string;
   estoqueDisponivel: number;
   distanciaFormatada?: string | null;
+  imagemParceiro?: string | null;
 }
 
 export default function ProdutoDetalhes({
-  nome, loja, localizacao, descricao, precoOriginal, precoAtual, tempoPostagem, ofertaId, usuarioId, estoqueDisponivel, parceiroId, distanciaFormatada
+  nome, loja, localizacao, descricao, precoOriginal, precoAtual, tempoPostagem, ofertaId, usuarioId, estoqueDisponivel, parceiroId, distanciaFormatada, imagemParceiro
 }: DetalhesProps) {
 
   const router = useRouter()
@@ -83,8 +84,12 @@ export default function ProdutoDetalhes({
       </h1>
 
       <div className="flex items-center gap-3 mb-6 bg-paper p-3 rounded-xl border border-line w-fit pr-6">
-        <div className="w-10 h-10 rounded-full bg-night flex items-center justify-center text-amber">
-          <Store className="w-5 h-5" />
+        <div className="w-10 h-10 rounded-full bg-night flex items-center justify-center text-amber overflow-hidden shrink-0 border border-line">
+          {imagemParceiro ? (
+            <img src={imagemParceiro} alt={`Logo de ${loja}`} className="w-full h-full object-cover" />
+          ) : (
+            <Store className="w-5 h-5" />
+          )}
         </div>
         <div>
           <p className="text-[11px] font-bold text-muted uppercase tracking-wider mb-0.5">Vendido por</p>

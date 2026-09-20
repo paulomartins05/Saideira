@@ -104,6 +104,7 @@ export default async function PaginaProdutoUnico({
                 parceiroId={produto.vendedorId}
                 nome={produto.titulo}
                 loja={nomeDaLoja}
+                imagemParceiro={produto.vendedor.image}
                 localizacao={produto.localizacao}
                 descricao={produto.descricao}
                 precoOriginal={Number(produto.precoOriginal)}
