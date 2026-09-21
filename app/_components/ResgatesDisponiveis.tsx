@@ -24,7 +24,7 @@ export default async function ResgatesDisponiveis() {
           Fechando <span className="text-amber-dark">agora</span>
         </h2>
         <p className="text-[13px] text-muted mb-4 mt-1">
-          Ordenado por quem vence primeiro — não por quem paga mais
+          Ordenado por quem vence primeiro
         </p>
 
         {ofertas.length === 0 ? (

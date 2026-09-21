@@ -3,7 +3,10 @@ import { notFound } from "next/navigation";
 import CardProduto from "@/app/componentes/CardProduto";
 import { Star, MapPin, Store } from "lucide-react";
 import { calcularTempoPostagem } from "@/lib/utils";
-import { cache } from "react";
+import { cache, Suspense } from "react"
+import { ListaOfertasLoja } from "@/app/componentes/ListaOfertasLoja";
+import { LoadingSpinner } from "@/app/componentes/LoadingSpinner";
+
 
 export const revalidate = 60
 
@@ -17,20 +20,13 @@ const getLojaCached = cache(async (id: string) => {
     return await prisma.user.findUnique({
         where: { id: id, role: "PARCEIRO" },
         include: {
-            ofertas: {
-                where: {
-                    ativo: true,
-                    quantidade: { gt: 0 },
-                    dataValidade: { gt: new Date() }
-                },
-                orderBy: { createdAt: 'desc' }
-            },
             avaliacoesRecebidas: {
                 select: { nota: true }
             }
         }
     });
 });
+
 
 
 export async function generateMetadata({ params }: LojaPageProps) {
@@ -112,31 +108,12 @@ export default async function LojaParceiroPage({ params }: LojaPageProps) {
                     <div className="lg:col-span-2">
                         <h2 className="font-display text-2xl font-extrabold mb-8 flex items-center gap-2">
                             Ofertas Disponíveis Hoje
-                            <span className="bg-amber/20 text-amber-dark text-sm px-3 py-1 rounded-full">
-                                {loja.ofertas.length}
-                            </span>
                         </h2>
 
-                        {loja.ofertas.length === 0 ? (
-                            <div className="bg-white p-10 rounded-3xl text-center border border-line shadow-sm">
-                                <p className="text-muted text-lg">Poxa, todos os produtos dessa loja já foram resgatados hoje!</p>
-                            </div>
-                        ) : (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                {loja.ofertas.map((oferta) => (
-                                    <CardProduto
-                                        key={oferta.id}
-                                        id={oferta.id}
-                                        nome={oferta.titulo}
-                                        descricao={oferta.descricao}
-                                        preco={oferta.precoResgate}
-                                        tempoPostagem={calcularTempoPostagem(oferta.createdAt)}
-                                        imagemUrl={oferta.imagemUrl.length > 0 ? oferta.imagemUrl[0] : ""}
-                                        quantidade={oferta.quantidade}
-                                    />
-                                ))}
-                            </div>
-                        )}
+                        <Suspense fallback={<LoadingSpinner />}>
+                            <ListaOfertasLoja idLoja={idResolvido} />
+                        </Suspense>
+
                     </div>
 
                     <aside>
