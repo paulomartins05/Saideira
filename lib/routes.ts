@@ -10,8 +10,14 @@ export const getHeaderRoutes = (role?: string | null) => {
     ];
   }
 
-  return [
+  const rotasUsuario = [
     ...rotasComuns,
     { label: "Ofertas", path: "/resgates" },
   ];
+
+  if (!role) {
+    rotasUsuario.push({ label: "Sobre Nós", path: "/sobre-nos" });
+  }
+
+  return rotasUsuario;
 };
