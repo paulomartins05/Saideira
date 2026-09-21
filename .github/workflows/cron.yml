@@ -11,4 +11,4 @@ jobs:
     steps:
       - name: Ping Cron Endpoint
         run: |
-          curl -X GET "https://salgado-salvo.vercel.app/cron" -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}"
+          curl -X GET "https://saideira-mu.vercel.app/cron" -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}"
