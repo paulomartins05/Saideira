@@ -1,8 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
-import CardProduto from "@/app/componentes/CardProduto";
 import { Star, MapPin, Store } from "lucide-react";
-import { calcularTempoPostagem } from "@/lib/utils";
 import { cache, Suspense } from "react"
 import { ListaOfertasLoja } from "@/app/componentes/ListaOfertasLoja";
 import { LoadingSpinner } from "@/app/componentes/LoadingSpinner";
