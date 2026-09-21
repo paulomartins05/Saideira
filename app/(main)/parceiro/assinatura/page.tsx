@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { Check, CheckCircle, XCircle, AlertTriangle } from "lucide-react";
-import BotaoSubmit from "@/app/componentes/BotaoSubmit";
+import SubmitButton from "@/app/componentes/SubmitButton";
 
 type Props = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
@@ -103,11 +103,12 @@ export default async function AssinaturaPage(props: Props) {
 
                   {!isActive ? (
                     <form action="/api/assinatura" method="POST">
-                      <BotaoSubmit
-                        texto="Assinar com Mercado Pago"
-                        textoCarregando="Redirecionando..."
+                      <SubmitButton
+                        loadingText="Redirecionando..."
                         className="w-full bg-amber hover:bg-amber-dark text-night font-bold text-[15px] py-4 rounded-xl transition-all shadow-lg shadow-amber/20"
-                      />
+                      >
+                        Assinar com Mercado Pago
+                      </SubmitButton>
                     </form>
                   ) : (
                     <div className="w-full bg-green-500/10 border border-green-500/30 text-green-400 font-bold text-[15px] py-4 rounded-xl text-center">
@@ -141,11 +142,12 @@ export default async function AssinaturaPage(props: Props) {
                 {isActive && (
                   <div>
                     <form action="/api/assinatura/cancelar" method="POST">
-                      <BotaoSubmit
-                        texto="Cancelar assinatura"
-                        textoCarregando="Cancelando..."
+                      <SubmitButton
+                        loadingText="Cancelando..."
                         className="px-6 py-3 border border-coral/30 text-coral hover:bg-coral/10 font-bold rounded-xl text-[14px] transition-colors"
-                      />
+                      >
+                        Cancelar assinatura
+                      </SubmitButton>
                     </form>
                   </div>
                 )}
