@@ -10,10 +10,28 @@ on:
       - main
 
 jobs:
-  test:
-    name: Lint, Testes e Build
+  lint:
+    name: Lint
     runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
 
+      - name: Configurar Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Linting
+        run: npm run lint
+
+  test:
+    name: Testes Unitários
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout do código
         uses: actions/checkout@v4
@@ -30,11 +48,27 @@ jobs:
       - name: Gerar Prisma Client
         run: npx prisma generate
 
-      - name: Linting
-        run: npm run lint
-
       - name: Testes Unitários (Vitest)
         run: npx vitest run
+
+  build:
+    name: Build da Aplicação
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Gerar Prisma Client
+        run: npx prisma generate
 
       - name: Build da Aplicação
         run: npm run build
@@ -43,6 +77,7 @@ jobs:
           # Adicione as variáveis de ambiente necessárias para o build do Next.js
           # DATABASE_URL: ${{ secrets.DATABASE_URL }}
           # BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
+
 
   e2e:
     name: Testes E2E (Playwright)
@@ -56,7 +91,7 @@ jobs:
           POSTGRES_PASSWORD: test_password
           POSTGRES_DB: saideira_test
         options: >-
-          --health-cmd pg_isready
+          --health-cmd "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
