@@ -27,7 +27,7 @@ O projeto foi construído utilizando as tecnologias mais modernas do ecossistema
 - **[Better-Auth](https://better-auth.com/)**: Solução completa e moderna de autenticação para controle de sessões, login, registro e recuperação de senha.
 
 ### Integrações & Ferramentas Essenciais
-- **[Mercado Pago](https://www.mercadopago.com.br/developers)**: Integração nativa para pagamentos seguros na finalização do resgate.
+- **[Mercado Pago](https://www.mercadopago.com.br/developers)**: Integração nativa para pagamentos seguros em assinatura para vendedores.
 - **[Cloudinary](https://cloudinary.com/)**: Gerenciamento, otimização e armazenamento de imagens das ofertas e perfis.
 - **[Leaflet](https://leafletjs.com/) (`react-leaflet`)**: Renderização de mapas dinâmicos e cálculo de distância entre o consumidor e o estabelecimento.
 - **[Resend](https://resend.com/)**: Envio de e-mails transacionais (como recuperação de senhas e recibos de compra).
