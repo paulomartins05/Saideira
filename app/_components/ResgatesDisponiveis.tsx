@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { OfertaCard } from "../componentes/ui/OfertaCard";
-import { calcularTempoPostagem } from "../../lib/utils";
 import { prisma } from "@/lib/prisma"
 
 export default async function ResgatesDisponiveis() {
