@@ -27,7 +27,7 @@ O projeto foi construído utilizando as tecnologias mais modernas do ecossistema
 - **[Better-Auth](https://better-auth.com/)**: Solução completa e moderna de autenticação para controle de sessões, login, registro e recuperação de senha.
 
 ### Integrações & Ferramentas Essenciais
-- **[Mercado Pago](https://www.mercadopago.com.br/developers)**: Integração nativa para pagamentos seguros em assinatura para vendedores.
+- **[Mercado Pago](https://www.mercadopago.com.br/developers)**: Integração nativa para pagamentos seguros da assinatura mensal dos vendedores/estabelecimentos.
 - **[Cloudinary](https://cloudinary.com/)**: Gerenciamento, otimização e armazenamento de imagens das ofertas e perfis.
 - **[Leaflet](https://leafletjs.com/) (`react-leaflet`)**: Renderização de mapas dinâmicos e cálculo de distância entre o consumidor e o estabelecimento.
 - **[Resend](https://resend.com/)**: Envio de e-mails transacionais (como recuperação de senhas e recibos de compra).
@@ -39,14 +39,14 @@ O projeto foi construído utilizando as tecnologias mais modernas do ecossistema
 ### Para os Consumidores
 - **Busca por Proximidade**: Encontre ofertas disponíveis baseadas na sua localização usando o mapa integrado.
 - **Categorização Inteligente**: Filtre resgates por Restaurantes, Padarias, Mercados ou Docerias.
-- **Carrinho e Checkout Ágil**: Adicione múltiplos itens e finalize sua compra com segurança via Mercado Pago.
+- **Carrinho de Resgates**: Adicione múltiplos itens, reserve com um clique e pague diretamente no estabelecimento físico na retirada.
 - **Gatilhos de Urgência**: Contagem regressiva visual para produtos próximos do vencimento ("Fechando agora").
 - **Gerenciamento de Perfil**: Controle de dados, histórico de resgates e endereços.
 
 ### Para os Parceiros (Estabelecimentos)
 - **Painel de Controle (Dashboard)**: Visão geral das vendas, itens resgatados e faturamento.
 - **Gestão de Ofertas ("Resgates")**: Criação ágil de anúncios de excedentes, incluindo upload de fotos via Cloudinary, definição de estoque, preços e prazos de validade.
-- **Assinatura Premium**: Possibilidade de impulsionar ofertas para que apareçam no topo das buscas dos consumidores.
+- **Assinatura Premium via Mercado Pago**: Possibilidade de o parceiro pagar uma assinatura mensal para colocar suas ofertas em destaque no topo das buscas do aplicativo.
 - **Validação de Código**: Sistema seguro para validar presencialmente o código do resgate quando o cliente for retirar o pedido.
 
 ---
