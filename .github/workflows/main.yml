@@ -121,6 +121,11 @@ jobs:
         env:
           DATABASE_URL: postgresql://test_user:test_password@localhost:5432/saideira_test?schema=public
 
+      - name: Build Next.js
+        run: npm run build
+        env:
+          DATABASE_URL: postgresql://test_user:test_password@localhost:5432/saideira_test?schema=public
+
       - name: Rodar Testes E2E
         run: npx playwright test
         env:
