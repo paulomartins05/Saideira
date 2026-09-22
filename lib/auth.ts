@@ -64,6 +64,11 @@ export const auth = betterAuth({
         required: false,
         input: true
       },
+      tipoNegocio: {
+        type: "string",
+        required: false,
+        input: true
+      },
       localizacao: {
         type: "string",
         required: false,

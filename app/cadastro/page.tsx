@@ -123,6 +123,7 @@ export default function CadastroPage() {
         image: fotoUrlCloudinary, telefone: data.telefone,
         role: tipoConta === "parceiro" ? "PARCEIRO" : "CONSUMIDOR",
         cnpj: tipoConta === "parceiro" ? data.cnpj : undefined,
+        tipoNegocio: tipoConta === "parceiro" ? data.tipoNegocio : undefined,
         cep: tipoConta === "parceiro" ? data.cep : undefined, 
         rua: tipoConta === "parceiro" ? data.rua : undefined, 
         numero: tipoConta === "parceiro" ? data.numero : undefined, 
