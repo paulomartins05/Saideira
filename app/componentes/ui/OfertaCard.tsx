@@ -16,15 +16,22 @@ export function OfertaCard({ loja, titulo, descricao, precoAntigo, precoNovo, te
     return (
         <article className={`relative z-10 bg-night border border-line p-5 rounded-[20px] w-full shadow-2xl transition-all hover:-translate-y-1 hover:shadow-amber/5 h-full flex flex-col ${isPremium ? 'border-amber ring-1 ring-amber/20' : ''}`}>
             
-            <div className="flex items-center justify-between mb-3 min-h-[16px]">
-                <div className="text-[11px] font-bold tracking-widest uppercase text-amber truncate pr-2">
+            <div className="flex items-center justify-between gap-2 mb-3 min-h-[16px]">
+                <div className="flex-1 min-w-0 text-[11px] font-bold tracking-widest uppercase text-amber">
                     {isPremium ? (
-                        <span className="flex items-center gap-1"><Check className="w-3 h-3" /> Oferta em Destaque</span>
+                        <div className="flex items-center gap-1 truncate">
+                            <Check className="w-3 h-3 shrink-0" /> 
+                            <span className="truncate">Oferta em Destaque</span>
+                        </div>
                     ) : (
-                        loja
+                        <div className="truncate">{loja}</div>
                     )}
                 </div>
-                {isPremium && <div className="text-[10px] text-muted truncate max-w-[40%]">{loja}</div>}
+                {isPremium && (
+                    <div className="text-[10px] text-muted truncate shrink-0 max-w-[45%] text-right">
+                        {loja}
+                    </div>
+                )}
             </div>
 
             <div className="aspect-video bg-line rounded-lg mb-4 flex items-center justify-center text-muted text-sm overflow-hidden relative">
