@@ -51,7 +51,7 @@ export default async function Header() {
               </Link>
             )}
           </div>
-          {usuario && usuario.role !== "PARCEIRO" && (
+          {usuario && usuario.role !== "PARCEIRO" && usuario.role !== "ADMIN" && (
             <Link
               href="/carrinho"
               aria-label="Ver Carrinho de Resgates"

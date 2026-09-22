@@ -31,6 +31,7 @@ export default async function AdminPage() {
     cidade: parceiro.cidade || "",
     estado: parceiro.estado || "",
     cep: parceiro.cep || "Sem CEP",
+    image: parceiro.image || null,
   });
 
   const parceirosPendentesFormatados = parceirosPendentesPrisma.map(mapParceiro);

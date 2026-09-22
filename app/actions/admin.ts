@@ -32,7 +32,8 @@ export async function buscarParceirosPendentes() {
             bairro: true,
             cidade: true,
             estado: true,
-            cep: true
+            cep: true,
+            image: true
         }
     })
 
@@ -132,7 +133,8 @@ export async function buscarParceirosAtivos() {
             bairro: true,
             cidade: true,
             estado: true,
-            cep: true
+            cep: true,
+            image: true
         }
     })
 

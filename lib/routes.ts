@@ -10,6 +10,14 @@ export const getHeaderRoutes = (role?: string | null) => {
     ];
   }
 
+  if (role === "ADMIN") {
+    return [
+      ...rotasComuns,
+      { label: "Ofertas", path: "/resgates" },
+      { label: "Admin", path: "/admin" }
+    ];
+  }
+
   const rotasUsuario = [
     ...rotasComuns,
     { label: "Ofertas", path: "/resgates" },

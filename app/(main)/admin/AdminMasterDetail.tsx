@@ -19,6 +19,7 @@ interface ParceiroPendente {
     cidade: string;
     estado: string;
     cep: string;
+    image: string | null;
 }
 
 export default function AdminMasterDetail({ parceirosPendentes, parceirosAtivos }: { parceirosPendentes: ParceiroPendente[], parceirosAtivos: ParceiroPendente[] }) {
@@ -158,8 +159,12 @@ export default function AdminMasterDetail({ parceirosPendentes, parceirosAtivos 
 
                         <div className="bg-card rounded-[2rem] border border-line p-6 md:p-8 shadow-sm">
                             <div className="flex items-center gap-4 mb-8">
-                                <div className="w-16 h-16 bg-night text-paper rounded-2xl flex items-center justify-center shrink-0">
-                                    <Store className="w-8 h-8" />
+                                <div className="w-16 h-16 bg-night text-paper rounded-2xl flex items-center justify-center shrink-0 overflow-hidden">
+                                    {selectedUser.image ? (
+                                        <img src={selectedUser.image} alt={selectedUser.name} className="w-full h-full object-cover" />
+                                    ) : (
+                                        <Store className="w-8 h-8" />
+                                    )}
                                 </div>
                                 <div>
                                     <h1 className="font-display text-2xl font-bold text-night">{selectedUser.name}</h1>
