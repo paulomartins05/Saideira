@@ -72,9 +72,7 @@ export default async function ListaOfertas({
     ORDER BY
       CASE 
         WHEN o."dataValidade" <= NOW() + INTERVAL '2 hours' THEN 0
-        WHEN o."dataValidade" <= NOW() + INTERVAL '6 hours' THEN 1
-        WHEN o."dataValidade" <= NOW() + INTERVAL '12 hours' THEN 2
-        ELSE 3
+        ELSE 1
       END ASC,
       CASE 
         WHEN a.status = 'ATIVA' THEN 0
@@ -90,10 +88,8 @@ export default async function ListaOfertas({
     const isPremium = p.assinaturaStatus === "ATIVA";
     const tempoRestanteHoras = (new Date(p.dataValidade).getTime() - agora) / (1000 * 60 * 60);
 
-    let faixaUrgencia = 3;
+    let faixaUrgencia = 1;
     if (tempoRestanteHoras <= 2) faixaUrgencia = 0;
-    else if (tempoRestanteHoras <= 6) faixaUrgencia = 1;
-    else if (tempoRestanteHoras <= 12) faixaUrgencia = 2;
 
     const diffMs = new Date(p.dataValidade).getTime() - agora;
     const diffMins = Math.max(1, Math.floor(diffMs / 60000));

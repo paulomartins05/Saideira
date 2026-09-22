@@ -4,17 +4,34 @@ import { calcularTempoPostagem } from "../../lib/utils";
 import { prisma } from "@/lib/prisma"
 
 export default async function ResgatesDisponiveis() {
-  const ofertas = await prisma.oferta.findMany({
-    take: 8,
-    orderBy: {
-      dataValidade: "asc"
-    },
-    where: {
-      dataValidade: { gt: new Date() },
-      quantidade: { gt: 0 },
-      ativo: true,
-    }
-  });
+  const ofertas = await prisma.$queryRaw<any[]>`
+    SELECT 
+      o.id,
+      o.titulo,
+      o."precoOriginal",
+      o."precoResgate",
+      o.localizacao,
+      o."imagemUrl",
+      o."dataValidade",
+      a.status as "assinaturaStatus"
+    FROM "Oferta" o
+    JOIN "User" u ON o."vendedorId" = u.id
+    LEFT JOIN "Assinatura" a ON u.id = a."parceiroId"
+    WHERE o.ativo = true 
+      AND o.quantidade > 0 
+      AND o."dataValidade" > NOW()
+    ORDER BY
+      CASE 
+        WHEN o."dataValidade" <= NOW() + INTERVAL '2 hours' THEN 0
+        ELSE 1
+      END ASC,
+      CASE 
+        WHEN a.status = 'ATIVA' THEN 0
+        ELSE 1
+      END ASC,
+      o."dataValidade" ASC
+    LIMIT 8
+  `;
 
   return (
     <section className="pb-10">
@@ -45,11 +62,11 @@ export default async function ResgatesDisponiveis() {
                   <OfertaCard
                     loja={oferta.localizacao || "Loja Parceira"}
                     titulo={oferta.titulo}
-                    precoAntigo={`R$ ${oferta.precoOriginal.toFixed(2).replace('.', ',')}`}
-                    precoNovo={`R$ ${oferta.precoResgate.toFixed(2).replace('.', ',')}`}
+                    precoAntigo={`R$ ${Number(oferta.precoOriginal).toFixed(2).replace('.', ',')}`}
+                    precoNovo={`R$ ${Number(oferta.precoResgate).toFixed(2).replace('.', ',')}`}
                     tempoRestante={tempoFormatado}
-                    isPremium={diffMins < 30}
-                    imagemUrl={oferta.imagemUrl.length > 0 ? oferta.imagemUrl[0] : ""}
+                    isPremium={oferta.assinaturaStatus === 'ATIVA'}
+                    imagemUrl={oferta.imagemUrl && oferta.imagemUrl.length > 0 ? oferta.imagemUrl[0] : ""}
                   />
                 </Link>
               );
