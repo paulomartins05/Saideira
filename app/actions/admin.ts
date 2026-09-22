@@ -155,6 +155,12 @@ export async function revogarParceiro(usuarioId: string) {
             role: "CONSUMIDOR"
         }
     })
+
+    await prisma.oferta.updateMany({
+        where: { vendedorId: usuarioId },
+        data: { ativo: false }
+    })
+
     revalidatePath('/admin')
 
 }
