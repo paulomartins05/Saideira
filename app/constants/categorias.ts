@@ -4,6 +4,7 @@ export const CATEGORIAS_POR_NEGOCIO = {
     { id: "Marmita", label: "Marmita" },
     { id: "Sobremesa", label: "Sobremesa" },
     { id: "Bebida", label: "Bebida" },
+    { id: "Outros", label: "Outros" },
   ],
   PADARIA: [
     { id: "Pães", label: "Pães" },
@@ -11,7 +12,7 @@ export const CATEGORIAS_POR_NEGOCIO = {
     { id: "Bolos", label: "Bolos" },
     { id: "Tortas", label: "Tortas" },
     { id: "Doces", label: "Doces" },
-    { id: "Padaria própria", label: "Padaria" },
+    { id: "Outros", label: "Outros" },
   ],
   MERCADO: [
     { id: "Hortifruti", label: "Hortifruti" },
@@ -19,15 +20,16 @@ export const CATEGORIAS_POR_NEGOCIO = {
     { id: "Mercearia", label: "Mercearia" },
     { id: "Assados", label: "Assados" },
     { id: "Bebida", label: "Bebida" },
+    { id: "Outros", label: "Outros" },
   ],
   DOCERIA: [
     { id: "Doces finos", label: "Doces Finos" },
     { id: "Bolos", label: "Bolos" },
     { id: "Sobremesa", label: "Sobremesa" },
     { id: "Bebida", label: "Bebida" },
+    { id: "Outros", label: "Outros" },
   ],
   OUTRO: [
     { id: "Diversos", label: "Diversos" },
-    { id: "Outros", label: "Outros" },
   ]
 };
