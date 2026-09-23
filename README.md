@@ -1,10 +1,12 @@
-# 🥐 Saideira (Salgado Salvo)
+# 🥐 Saideira
 
-> A última rodada do dia, por um preço menor. Compre excedentes perto de você.
+[![Pipeline CI/CD](https://github.com/paulomartins05/Saideira/actions/workflows/main.yml/badge.svg)](https://github.com/paulomartins05/Saideira/actions/workflows/main.yml)
 
-O **Saideira** é uma plataforma inovadora que conecta estabelecimentos alimentícios (restaurantes, padarias, mercados e docerias) com consumidores locais. O objetivo principal é **combater o desperdício de alimentos** permitindo que os parceiros vendam seus excedentes de produção no fim do dia (a "saideira") com descontos significativos. 
+> A última rodada do dia, por um preço menor. Compre excedentes perto de você e ajude a salvar o planeta! 🌍💚
 
-Além de ajudar o meio ambiente, os parceiros recuperam o custo de produção e os consumidores têm acesso a refeições de qualidade por uma fração do preço.
+O **Saideira** é uma plataforma revolucionária que conecta estabelecimentos alimentícios (restaurantes, padarias, mercados e docerias) com consumidores locais de forma rápida e inteligente. Nosso grande propósito é **combater o desperdício de alimentos no mundo**, permitindo que os parceiros vendam seus excedentes de produção no fim do dia (a famosa "saideira") com descontos simplesmente imbatíveis! 🚀
+
+Além de ajudar o meio ambiente reduzindo o lixo orgânico, os parceiros recuperam totalmente seu custo de produção e os consumidores têm acesso a refeições deliciosas e de altíssima qualidade por uma fração do preço. É o modelo perfeito onde todo mundo ganha! 🎉
 
 ---
 
@@ -73,8 +75,8 @@ Durante o desenvolvimento, priorizamos as melhores práticas da engenharia de so
 
 1. **Clone o repositório**
    ```bash
-   git clone https://github.com/seu-usuario/salgado-salvo.git
-   cd salgado-salvo
+   git clone https://github.com/paulomartins05/Saideira.git
+   cd Saideira
    ```
 
 2. **Instale as dependências**
