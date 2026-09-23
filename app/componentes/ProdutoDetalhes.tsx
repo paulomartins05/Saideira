@@ -7,6 +7,8 @@ import { getMediaParceiro } from "@/app/actions/avaliacoes";
 import { criarResgate } from "@/app/actions/resgate";
 import { Clock, MapPin, ShoppingCart, Star, Store, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { chamarActionSegura } from "@/lib/chamarActionSegura";
+
 
 
 
@@ -60,12 +62,12 @@ export default function ProdutoDetalhes({
 
     setIsSubmitting(true);
 
-
-    try {
-      await criarResgate(usuarioId, ofertaId, quantidade);
+    const resultado = await chamarActionSegura(
+      criarResgate(usuarioId, ofertaId, quantidade)
+    );
+    if (resultado) {
       router.push("/carrinho");
-    } catch (error) {
-      console.error("Erro ao resgatar:", error);
+    } else {
       setIsSubmitting(false);
     }
   }
