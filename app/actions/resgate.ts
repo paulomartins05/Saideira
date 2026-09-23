@@ -9,6 +9,18 @@ import { notificarParceiroNovoResgate } from "@/lib/emails"
 
 export async function criarResgate(userId: string, ofertaId: string, quantidadePedida: number = 1) {
 
+  const reqHeaders = await headers()
+  const session = await auth.api.getSession({
+    headers: reqHeaders
+  })
+
+  if (session?.user.role === "PARCEIRO") {
+    throw new Error("Contas de Parceiro não podem realizar resgates. Use uma conta de Consumidor.");
+  }
+
+
+
+
   if (quantidadePedida <= 0) {
     throw new Error("A quantidade pedioda deve ser de pelo menos 1 item")
   }
