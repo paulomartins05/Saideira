@@ -10,6 +10,7 @@ import Link from "next/link";
 
 
 
+
 interface DetalhesProps {
   parceiroId: string;
   nome: string;
@@ -49,13 +50,16 @@ export default function ProdutoDetalhes({
     else { setErroEstoque(`Temos apenas ${estoqueDisponivel} itens em estoque no momento!`); }
   }
 
-  const handleResgatar = async () => {
+  const handleResgatar = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+
     if (!usuarioId) {
       router.push("/login");
       return;
     }
 
     setIsSubmitting(true);
+
 
     try {
       await criarResgate(usuarioId, ofertaId, quantidade);
@@ -158,17 +162,17 @@ export default function ProdutoDetalhes({
               <button type="button" onClick={aumentar} className="text-muted hover:text-night text-2xl font-bold transition-colors">+</button>
             </div>
 
-            <form action={handleResgatar} className="flex-1 w-full">
+            <form onSubmit={handleResgatar} className="flex-1 w-full">
               <Button
                 type="submit"
                 variant="primary"
-                isLoading={isSubmitting}
-                className={`w-full h-full min-h-[3.5rem] flex justify-center items-center gap-2 bg-amber text-night font-bold rounded-2xl shadow-lg shadow-amber/20 transition-all text-base md:text-lg hover:bg-amber-dark`}
+                disabled={isSubmitting}
+                className={`w-full h-full min-h-[3.5rem] flex justify-center items-center gap-2 bg-amber text-night font-bold rounded-2xl shadow-lg shadow-amber/20 transition-all text-base md:text-lg hover:bg-amber-dark ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
               >
                 {!usuarioId ? (
                   "Faça Login para Resgatar"
                 ) : isSubmitting ? (
-                  "Processando..."
+                  <><Loader2 className="w-[1.2em] h-[1.2em] inline-block animate-spin" /> Processando...</>
                 ) : (
                   <><ShoppingCart className="w-[1.2em] h-[1.2em] inline-block align-text-bottom" /> Resgatar {quantidade > 1 ? `${quantidade} itens` : ''}</>
                 )}
