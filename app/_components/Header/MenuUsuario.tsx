@@ -58,13 +58,23 @@ export default function MenuUsuario({ usuario }: MenuUsuarioProps) {
               <p className="text-[12px] text-muted truncate">{usuario.email}</p>
             </div>
 
-            <Link
-              href={usuario.role === "PARCEIRO" ? "/parceiro/perfil" : "/perfil"}
-              onClick={() => setMenuAberto(false)}
-              className="block w-full px-3 py-2.5 text-[13.5px] text-night hover:bg-line/30 rounded-xl transition-colors font-bold text-center"
-            >
-              Meu Perfil
-            </Link>
+            {usuario.role === "PARCEIRO" ? (
+              <Link
+                href={`/loja/${usuario.id}`}
+                onClick={() => setMenuAberto(false)}
+                className="block w-full px-3 py-2.5 text-[13.5px] text-night hover:bg-line/30 rounded-xl transition-colors font-bold text-center"
+              >
+                Minha Loja
+              </Link>
+            ) : (
+              <Link
+                href="/perfil"
+                onClick={() => setMenuAberto(false)}
+                className="block w-full px-3 py-2.5 text-[13.5px] text-night hover:bg-line/30 rounded-xl transition-colors font-bold text-center"
+              >
+                Meu Perfil
+              </Link>
+            )}
 
             <Link
               href="/sobre-nos"

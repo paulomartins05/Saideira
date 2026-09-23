@@ -54,9 +54,15 @@ export default function MenuMobile({ rotas, usuario }: MenuMobileProps) {
 
             {usuario ? (
               <>
-                <NavLink href={usuario.role === "PARCEIRO" ? "/parceiro/perfil" : "/perfil"} variant="mobile" onClick={fecharMenu}>
-                  Meu Perfil
-                </NavLink>
+                {usuario.role === "PARCEIRO" ? (
+                  <NavLink href={`/loja/${usuario.id}`} variant="mobile" onClick={fecharMenu}>
+                    Minha Loja
+                  </NavLink>
+                ) : (
+                  <NavLink href="/perfil" variant="mobile" onClick={fecharMenu}>
+                    Meu Perfil
+                  </NavLink>
+                )}
                 <BotaoLogout className="!px-0 !py-0 !justify-start h-auto font-inter text-sm md:text-base font-medium transition-all duration-200 text-coral hover:text-red-500 text-left w-full bg-transparent shadow-none hover:bg-transparent">
                   Sair da Conta
                 </BotaoLogout>
