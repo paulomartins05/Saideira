@@ -157,10 +157,10 @@ export async function validarResgate(resgateId: string, pinDigitado: string) {
     });
 
     if (novasTentativas >= maxTentativas) {
-      throw new Error(`PIN incorreto. Resgate bloqueado por ${tempoBloqueioMinutos} minutos por excesso de tentativas.`);
+      return { success: false, mensagem: (`PIN incorreto. Resgate bloqueado por ${tempoBloqueioMinutos} minutos por excesso de tentativas.`) }
     } else {
       const tentativasRestantes = maxTentativas - novasTentativas;
-      throw new Error(`PIN Incorreto. Você tem mais ${tentativasRestantes} tentativa(s).`);
+      return { success: false, mensagem: (`PIN Incorreto. Você tem mais ${tentativasRestantes} tentativa(s).`) }
     }
   }
   await prisma.resgate.update({

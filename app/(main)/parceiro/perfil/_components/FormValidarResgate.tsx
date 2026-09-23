@@ -13,8 +13,13 @@ export default function FormValidarResgate({ resgateId }: { resgateId: string })
 
         startTransition(async () => {
             try {
-                await validarResgate(resgateId, pin);
-                appToast.sucesso("Tudo Certo!", "Resgate validado com sucesso.");
+                const resultado = await validarResgate(resgateId, pin);
+                if (resultado.success === false) {
+                    appToast.erro("Atenção", resultado.mensagem)
+                }
+                else {
+                    appToast.sucesso("Tudo Certo!", "Resgate validado com sucesso.");
+                }
             } catch (error: any) {
                 appToast.erro("PIN Inválido", error.message || "Erro ao validar.");
             }
