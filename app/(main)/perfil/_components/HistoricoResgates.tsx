@@ -61,18 +61,18 @@ export default async function HistoricoResgates({ userId }: { userId: string }) 
                         <p className="text-[13.5px] text-muted text-center py-6">Você ainda não realizou nenhum resgate.</p>
                     ) : (
                         historicoPedidos.map((resgate) => (
-                            <div key={resgate.id} className="flex justify-between items-center py-4 border-b border-line last:border-0 last:pb-0">
+                            <div key={resgate.id} className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 sm:gap-0 py-4 border-b border-line last:border-0 last:pb-0">
                                 <div>
                                     <p className="font-bold text-[14px] text-night mb-0.5">{resgate.oferta.titulo}</p>
                                     <p className="text-[12px] text-muted">{resgate.oferta.vendedor?.name || "Loja Parceira"}</p>
                                 </div>
-                                <div className="text-right">
+                                <div className="flex flex-col items-start sm:items-end text-left sm:text-right">
                                     <p className={`text-[12px] font-bold uppercase tracking-wide mb-0.5 ${resgate.status === "PENDENTE" ? "text-amber-dark" : "text-green-600"}`}>
                                         {resgate.status}
                                     </p>
 
                                     {resgate.status === "PENDENTE" && (
-                                        <div className="bg-amber/10 border border-amber/30 rounded-lg px-3 py-2 my-2 inline-block text-center">
+                                        <div className="bg-amber/10 border border-amber/30 rounded-lg px-3 py-2 my-2 inline-block text-center self-start sm:self-auto">
                                             <p className="text-[10px] text-amber-dark uppercase font-bold tracking-wider mb-0.5">Código de Retirada</p>
                                             <p className="text-xl font-display font-extrabold text-night tracking-[0.2em]">{resgate.codigoPin}</p>
                                         </div>
@@ -83,7 +83,9 @@ export default async function HistoricoResgates({ userId }: { userId: string }) 
                                     </p>
 
                                     {resgate.status === "RETIRADO" && !resgate.avaliacao && (
-                                        <BotaoAvaliar resgateId={resgate.id} />
+                                        <div className="mt-2 w-full sm:w-auto">
+                                            <BotaoAvaliar resgateId={resgate.id} />
+                                        </div>
                                     )}
                                     {resgate.avaliacao && (
                                         <p className="text-[11px] text-green-600 font-bold mt-1">Avaliado com {resgate.avaliacao.nota} ⭐</p>

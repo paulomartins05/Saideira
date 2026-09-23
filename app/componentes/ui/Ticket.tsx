@@ -4,7 +4,7 @@ import { Utensils, MapPin, Clock, X, Store, Star, Phone, CheckCircle2, XCircle, 
 import { toast } from "sonner";
 import Image from "next/image";
 import { useState } from "react";
-
+import { ModalAvaliacao } from "../ModalAvaliacao";
 
 
 export interface TicketProps {
@@ -24,6 +24,7 @@ export function Ticket({ id, titulo, loja, codigoPin, status, imageUrl, endereco
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isCancelling, setIsCancelling] = useState(false);
     const [cancelError, setCancelError] = useState("");
+    const [isAvaliacaoOpen, setIsAvaliacaoOpen] = useState(false);
 
     const isPendente = status === "PENDENTE";
     const isRetirado = status === "RETIRADO";
@@ -73,7 +74,7 @@ export function Ticket({ id, titulo, loja, codigoPin, status, imageUrl, endereco
         <>
             <div
                 onClick={() => setIsModalOpen(true)}
-                className={`flex items-stretch border rounded-2xl mb-4 relative overflow-hidden transition-all duration-300 cursor-pointer text-left focus:outline-none focus:ring-2 focus:ring-amber ${isPendente ? "bg-card border-line shadow-sm hover:shadow-md hover:border-amber/50" : "bg-paper border-line-dark opacity-75 hover:opacity-100"}`}
+                className={`flex items-stretch border rounded-2xl mb-4 relative overflow-hidden transition-all duration-300 cursor-pointer text-left focus:outline-none focus:ring-2 focus:ring-amber ${isPendente ? "bg-card border-line shadow-sm hover:shadow-md hover:border-amber/50" : "bg-card border-line shadow-sm opacity-60 hover:opacity-80 hover:border-amber/50"}`}
             >
                 <div className="flex-1 flex items-center gap-4 p-5 min-w-0">
                     <div className="w-14 h-14 rounded-xl bg-paper border border-line flex items-center justify-center shrink-0 overflow-hidden relative">
@@ -83,12 +84,12 @@ export function Ticket({ id, titulo, loja, codigoPin, status, imageUrl, endereco
                             <Utensils className="w-6 h-6 text-muted" />
                         )}
                     </div>
-                    <div className="flex flex-col justify-center">
+                    <div className="flex flex-col justify-center min-w-0 flex-1">
                         <h4 className="m-0 font-display font-bold text-base text-night truncate leading-tight mb-1">{titulo}</h4>
-                        <p className="m-0 text-xs text-muted flex items-center gap-1.5">
+                        <p className="m-0 text-xs text-muted flex items-center gap-1.5 truncate">
                             <span className="truncate max-w-[120px] md:max-w-[200px]">{loja}</span>
-                            <span>·</span>
-                            <span className={isPendente ? "text-amber-dark font-bold tracking-wide" : "text-success font-bold tracking-wide"}>{status}</span>
+                            <span className="shrink-0">·</span>
+                            <span className={`shrink-0 ${isPendente ? "text-amber-dark font-bold tracking-wide" : "text-success font-bold tracking-wide"}`}>{status}</span>
                         </p>
                     </div>
                 </div>
@@ -98,25 +99,23 @@ export function Ticket({ id, titulo, loja, codigoPin, status, imageUrl, endereco
                     <div className="absolute bottom-0 -left-[12px] w-6 h-6 bg-paper rounded-full translate-y-1/2 shadow-inner"></div>
                 </div>
 
-                <div className={`flex flex-col items-center justify-center py-4 px-6 min-w-[120px] md:min-w-[140px] shrink-0 ${isPendente ? "bg-night text-amber" : "bg-line text-muted"}`}>
+                <div className="flex flex-col items-center justify-center py-4 px-6 min-w-[120px] md:min-w-[140px] shrink-0 bg-night text-amber">
                     <span className="text-[9px] md:text-[10px] tracking-widest mb-1.5 opacity-80 font-semibold uppercase">
-                        {isPendente ? "Código PIN" : "Ver Detalhes"}
+                        Código PIN
                     </span>
 
-                    {isPendente && (
-                        <div className="flex gap-[2px] items-end justify-center w-full h-6 mb-2.5 opacity-90">
-                            <div className="w-1 h-full bg-current"></div>
-                            <div className="w-[2px] h-full bg-current"></div>
-                            <div className="w-1.5 h-full bg-current"></div>
-                            <div className="w-[2px] h-4 bg-current"></div>
-                            <div className="w-1 h-full bg-current"></div>
-                            <div className="w-[2px] h-5 bg-current"></div>
-                            <div className="w-2 h-full bg-current"></div>
-                            <div className="w-[2px] h-full bg-current"></div>
-                            <div className="w-1.5 h-4 bg-current"></div>
-                            <div className="w-1 h-full bg-current"></div>
-                        </div>
-                    )}
+                    <div className="flex gap-[2px] items-end justify-center w-full h-6 mb-2.5 opacity-90">
+                        <div className="w-1 h-full bg-current"></div>
+                        <div className="w-[2px] h-full bg-current"></div>
+                        <div className="w-1.5 h-full bg-current"></div>
+                        <div className="w-[2px] h-4 bg-current"></div>
+                        <div className="w-1 h-full bg-current"></div>
+                        <div className="w-[2px] h-5 bg-current"></div>
+                        <div className="w-2 h-full bg-current"></div>
+                        <div className="w-[2px] h-full bg-current"></div>
+                        <div className="w-1.5 h-4 bg-current"></div>
+                        <div className="w-1 h-full bg-current"></div>
+                    </div>
 
                     <span className={`font-display text-2xl md:text-3xl font-extrabold tracking-widest leading-none ${isPendente ? "" : "line-through opacity-50"}`}>
                         {codigoPin}
@@ -226,12 +225,15 @@ export function Ticket({ id, titulo, loja, codigoPin, status, imageUrl, endereco
                             )}
 
                             {isRetirado && (
-                                <button
-                                    className="w-full flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm bg-success text-white hover:bg-success/90 transition-colors shadow-sm"
-                                    onClick={() => alert("O sistema de avaliações será implementado na próxima fase!")}
-                                >
-                                    <Star className="w-4 h-4 fill-current" /> Avaliar Pedido
-                                </button>
+                                <>
+                                    <button
+                                        className="w-full flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm bg-success text-white hover:bg-success/90 transition-colors shadow-sm"
+                                        onClick={() => setIsAvaliacaoOpen(true)}
+                                    >
+                                        <Star className="w-4 h-4 fill-current" /> Avaliar Pedido
+                                    </button>
+                                    <ModalAvaliacao isOpen={isAvaliacaoOpen} onClose={() => setIsAvaliacaoOpen(false)} resgateId={id} />
+                                </>
                             )}
 
                             {podeCancelar && (
