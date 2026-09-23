@@ -205,6 +205,7 @@ export async function editarOferta(formData: FormData) {
     precoOriginal: parseFloat((formData.get("precoOriginal") as string).replace(",", ".")),
     precoResgate: parseFloat((formData.get("precoResgate") as string).replace(",", ".")),
     quantidade: parseInt(formData.get("quantidade") as string, 10),
+    peso: parseFloat((formData.get("peso") as string).replace(",", ".")),
     dataValidade: new Date(formData.get("dataValidade") as string),
   }
 
@@ -254,7 +255,7 @@ export async function editarOferta(formData: FormData) {
 
 
   revalidatePath("/parceiro/perfil")
-  redirect("/parceiro/perfil?aba=produtos")
+  return { success: true }
 }
 
 export async function excluirOferta(id: string) {

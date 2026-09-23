@@ -148,10 +148,18 @@ export default function FormOferta({ ofertaInicial }: FormOfertaProps) {
 
             if (ofertaInicial) {
                 serverData.append("id", ofertaInicial.id);
-                await editarOferta(serverData);
+                const resultado = await editarOferta(serverData);
+                if (resultado && resultado.success === false) {
+                    appToast.erro("Erro ao editar", "Verifique se todos os campos estão corretos.");
+                    return;
+                }
                 appToast.sucesso("Oferta Atualizada!", `As alterações foram salvas.`);
             } else {
-                await criarOferta(serverData);
+                const resultado = await criarOferta(serverData);
+                if (resultado && resultado.success === false) {
+                    appToast.erro("Erro ao publicar", "Verifique se todos os campos estão corretos.");
+                    return;
+                }
                 appToast.sucesso("Oferta Publicada!", `A oferta "${data.nome}" foi publicada.`);
             }
 
