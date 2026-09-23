@@ -51,8 +51,11 @@ export default function FormNovoResgate() {
 
     let descontoPercentual = 0;
     if (precoOriginalWatch && precoResgateWatch) {
-        const original = parseFloat(String(precoOriginalWatch).replace(/\./g, "").replace(",", "."));
-        const resgate = parseFloat(String(precoResgateWatch).replace(/\./g, "").replace(",", "."));
+        const originalLimpo = String(precoOriginalWatch).replace(/\D/g, "");
+        const resgateLimpo = String(precoResgateWatch).replace(/\D/g, "");
+        const original = Number(originalLimpo) / 100;
+        const resgate = Number(resgateLimpo) / 100;
+        
         if (original > 0 && resgate > 0 && original > resgate) {
             descontoPercentual = Math.round(((original - resgate) / original) * 100);
         }
