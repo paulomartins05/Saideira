@@ -27,6 +27,11 @@ export async function atualizarPerfilUsuario(formData: FormData) {
 
     const rua = formData.get("rua") as string | null;
     const numero = formData.get("numero") as string | null;
+    const cep = formData.get("cep") as string | null;
+    const bairro = formData.get("bairro") as string | null;
+    const cidade = formData.get("cidade") as string | null;
+    const estado = formData.get("estado") as string | null;
+    const tipoNegocio = formData.get("tipoNegocio") as "RESTAURANTE" | "PADARIA" | "MERCADO" | "DOCERIA" | "OUTRO" | null;
 
     let novaImagemUrl = undefined
     if (imagem && imagem.size > 0) {
@@ -75,7 +80,12 @@ export async function atualizarPerfilUsuario(formData: FormData) {
             ...(cnpj && { cnpj }),
             ...(localizacao && { localizacao }),
             ...(rua && { rua }),
-            ...(numero && { numero })
+            ...(numero && { numero }),
+            ...(cep && { cep }),
+            ...(bairro && { bairro }),
+            ...(cidade && { cidade }),
+            ...(estado && { estado }),
+            ...(tipoNegocio && { tipoNegocio })
         }
     })
 

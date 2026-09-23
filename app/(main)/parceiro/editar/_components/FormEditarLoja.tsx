@@ -15,8 +15,13 @@ const editarLojaSchema = z.object({
   email: z.string().email("E-mail inválido."),
   telefone: z.string().min(10, "Telefone muito curto."),
   cnpj: z.string().optional(),
+  cep: z.string().optional(),
   rua: z.string().optional(),
   numero: z.string().optional(),
+  bairro: z.string().optional(),
+  cidade: z.string().optional(),
+  estado: z.string().optional(),
+  tipoNegocio: z.enum(["RESTAURANTE", "PADARIA", "MERCADO", "DOCERIA", "OUTRO"]).optional(),
 });
 
 type EditarLojaInputs = z.infer<typeof editarLojaSchema>;
@@ -31,17 +36,44 @@ export default function FormEditarLoja({ usuario }: { usuario: any }) {
   const [imagemFile, setImagemFile] = useState<File | null>(null);
   const [imagemPreview, setImagemPreview] = useState<string | null>(usuario.image || null);
 
-  const { register, handleSubmit, setError, clearErrors, formState: { errors, isSubmitting } } = useForm<EditarLojaInputs>({
+  const { register, handleSubmit, setError, clearErrors, setValue, watch, formState: { errors, isSubmitting } } = useForm<EditarLojaInputs>({
     resolver: zodResolver(editarLojaSchema),
     defaultValues: {
       nome: usuario.name || "",
       email: usuario.email || "",
       telefone: usuario.telefone || "",
       cnpj: usuario.cnpj || "",
+      cep: usuario.cep || "",
       rua: usuario.rua || "",
       numero: usuario.numero || "",
+      bairro: usuario.bairro || "",
+      cidade: usuario.cidade || "",
+      estado: usuario.estado || "",
+      tipoNegocio: usuario.tipoNegocio || "",
     }
   });
+
+  const handleBuscarCep = async () => {
+    const cepAtual = watch("cep");
+    if (!cepAtual) return;
+    const cepLimpo = cepAtual.replace(/\D/g, "");
+    if (cepLimpo.length !== 8) return;
+    try {
+      const res = await fetch(`https://viacep.com.br/ws/${cepLimpo}/json/`);
+      const data = await res.json();
+      if (data.erro) {
+        appToast.erro("CEP Inválido", "Verifique o número e tente novamente.");
+        return;
+      }
+      setValue("rua", data.logradouro, { shouldValidate: true });
+      setValue("bairro", data.bairro, { shouldValidate: true });
+      setValue("cidade", data.localidade, { shouldValidate: true });
+      setValue("estado", data.uf, { shouldValidate: true });
+      appToast.sucesso("Endereço encontrado!", "Preenchemos os campos para você.");
+    } catch (e) {
+      appToast.erro("Erro de conexão", "Falha ao buscar o CEP no ViaCEP.");
+    }
+  };
 
   const validarCnpjAoVivo = async (cnpjDigitado: string) => {
     const cnpjLimpo = cnpjDigitado.replace(/\D/g, "");
@@ -71,13 +103,19 @@ export default function FormEditarLoja({ usuario }: { usuario: any }) {
       formData.append("email", data.email);
       formData.append("telefone", data.telefone);
       if (data.cnpj) formData.append("cnpj", data.cnpj);
+      if (data.cep) formData.append("cep", data.cep);
       if (data.rua) formData.append("rua", data.rua);
       if (data.numero) formData.append("numero", data.numero);
+      if (data.bairro) formData.append("bairro", data.bairro);
+      if (data.cidade) formData.append("cidade", data.cidade);
+      if (data.estado) formData.append("estado", data.estado);
+      if (data.tipoNegocio) formData.append("tipoNegocio", data.tipoNegocio);
       if (imagemFile) formData.append("imagem", imagemFile);
 
       await atualizarPerfilUsuario(formData);
       appToast.sucesso("Perfil Atualizado!", "Os dados da sua loja foram salvos com sucesso.");
       router.refresh();
+      router.push("/parceiro/perfil");
     } catch (error: any) {
       appToast.erro("Erro ao atualizar", error.message || "Tente novamente mais tarde.");
     }
@@ -139,14 +177,52 @@ export default function FormEditarLoja({ usuario }: { usuario: any }) {
         />
       </FormGroup>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <FormGroup label="Rua" error={errors.rua?.message}>
-          <input type="text" className={inputClass} {...register("rua")} />
-        </FormGroup>
+      <FormGroup label="Categoria do Estabelecimento" error={errors.tipoNegocio?.message}>
+        <select className={inputClass} {...register("tipoNegocio")}>
+          <option value="">Selecione uma categoria...</option>
+          <option value="RESTAURANTE">Restaurante</option>
+          <option value="PADARIA">Padaria</option>
+          <option value="MERCADO">Mercado</option>
+          <option value="DOCERIA">Doceria / Confeitaria</option>
+          <option value="OUTRO">Outro</option>
+        </select>
+      </FormGroup>
 
-        <FormGroup label="Número" error={errors.numero?.message}>
-          <input type="text" className={inputClass} {...register("numero")} />
-        </FormGroup>
+      <div className="flex flex-col gap-6 pt-4 border-t border-line">
+        <h3 className="font-display font-bold text-night text-lg">Endereço Completo</h3>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-end">
+          <FormGroup label="CEP" error={errors.cep?.message}>
+            <input type="text" placeholder="00000-000" className={inputClass} 
+              {...register("cep", { 
+                onChange: (e) => e.target.value = e.target.value.replace(/\D/g, "").replace(/^(\d{5})(\d)/, "$1-$2").slice(0, 9),
+                onBlur: () => handleBuscarCep()
+              })} />
+          </FormGroup>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="md:col-span-2">
+            <FormGroup label="Rua / Logradouro" error={errors.rua?.message}>
+              <input type="text" className={inputClass} {...register("rua")} />
+            </FormGroup>
+          </div>
+          <FormGroup label="Número" error={errors.numero?.message}>
+            <input type="text" className={inputClass} {...register("numero")} />
+          </FormGroup>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <FormGroup label="Bairro" error={errors.bairro?.message}>
+            <input type="text" className={inputClass} {...register("bairro")} />
+          </FormGroup>
+          <FormGroup label="Cidade" error={errors.cidade?.message}>
+            <input type="text" className={inputClass} {...register("cidade")} />
+          </FormGroup>
+          <FormGroup label="Estado (UF)" error={errors.estado?.message}>
+            <input type="text" placeholder="SP" maxLength={2} className={`${inputClass} uppercase`} {...register("estado")} />
+          </FormGroup>
+        </div>
       </div>
 
       <button type="submit" disabled={isSubmitting} className={`mt-2 bg-amber hover:bg-amber-dark text-night font-bold py-4 rounded-xl w-full transition-all ${isSubmitting ? "opacity-50" : ""}`}>
