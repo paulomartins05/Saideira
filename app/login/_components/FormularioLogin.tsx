@@ -29,7 +29,13 @@ export default function FormularioLogin() {
             rememberMe: data.lembrarMe,
         });
         if (error) {
-            appToast.loginError(error.message);
+            let mensagemAmigavel = "Verifique suas credenciais e tente novamente.";
+            if (error.message?.toLowerCase().includes("invalid email or password")) {
+                mensagemAmigavel = "O e-mail ou a senha estão incorretos. Tente novamente.";
+            } else if (error.message) {
+                mensagemAmigavel = error.message;
+            }
+            appToast.loginError(mensagemAmigavel);
             return;
         }
         appToast.loginSuccess();

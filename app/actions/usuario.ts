@@ -125,7 +125,7 @@ export async function alterarSenha(formData: FormData) {
         })
     } catch (error) {
         console.error("Erro ao trocar senha")
-        throw new Error("Erro ao trocar senha")
+        throw new Error("Não conseguimos alterar sua senha. Verifique se a senha atual está correta e tente de novo!")
     }
 
     revalidatePath("/perfil")
