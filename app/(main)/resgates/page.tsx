@@ -7,12 +7,28 @@ import ListaOfertas from "./_components/ListaOfertas";
 export default async function PaginaTodosResgates({
   searchParams,
 }: {
-  searchParams: Promise<{ categoria?: string; pagina?: string; busca?: string }>
+  searchParams: Promise<{ categoria?: string; pagina?: string; busca?: string; tipoNegocio?: string; subCategoria?: string }>
 }) {
   const params = await searchParams;
-  const categoriaAtiva = params.categoria || "Todos";
+  
+  let categoriaAtiva = params.categoria;
+
+  if (!categoriaAtiva && params.tipoNegocio) {
+    const mapToCategoria: Record<string, string> = {
+      "RESTAURANTE": "Restaurantes",
+      "PADARIA": "Padarias",
+      "MERCADO": "Mercados",
+      "DOCERIA": "Docerias",
+      "OUTRO": "Outros"
+    };
+    categoriaAtiva = mapToCategoria[params.tipoNegocio] || "Todos";
+  } else if (!categoriaAtiva) {
+    categoriaAtiva = "Todos";
+  }
+
   const paginaAtual = Number(params.pagina) || 1;
   const textoDaBusca = params.busca || "";
+  const subCategoriaAtiva = params.subCategoria || "";
 
   return (
     <div className="bg-paper min-h-screen flex flex-col font-inter">
@@ -29,7 +45,7 @@ export default async function PaginaTodosResgates({
           <FiltroCategorias categoriaAtiva={categoriaAtiva} buscaAtual={textoDaBusca} />
 
           <Suspense
-            key={`${categoriaAtiva}-${paginaAtual}-${textoDaBusca}`}
+            key={`${categoriaAtiva}-${subCategoriaAtiva}-${paginaAtual}-${textoDaBusca}`}
             fallback={
               <div className="py-24 flex flex-col items-center justify-center gap-3">
                 <Loader2 className="w-8 h-8 text-amber animate-spin" />
@@ -39,6 +55,7 @@ export default async function PaginaTodosResgates({
           >
             <ListaOfertas
               categoriaAtiva={categoriaAtiva}
+              subCategoriaAtiva={subCategoriaAtiva}
               paginaAtual={paginaAtual}
               textoDaBusca={textoDaBusca}
             />

@@ -23,17 +23,33 @@ interface ProdutoRaw {
 
 export default async function ListaOfertas({
   categoriaAtiva,
+  subCategoriaAtiva,
   paginaAtual,
   textoDaBusca
 }: {
   categoriaAtiva: string;
+  subCategoriaAtiva: string;
   paginaAtual: number;
   textoDaBusca: string;
 }) {
   const itensPorPagina = 10;
 
-  const categoriaFilter = categoriaAtiva !== "Todos"
-    ? Prisma.sql`AND o.categoria = ${categoriaAtiva}`
+  const mapTipoNegocio: Record<string, string> = {
+    "Restaurantes": "RESTAURANTE",
+    "Padarias": "PADARIA",
+    "Mercados": "MERCADO",
+    "Docerias": "DOCERIA",
+    "Outros": "OUTRO"
+  };
+
+  const tipoNegocioDb = mapTipoNegocio[categoriaAtiva];
+
+  const categoriaFilter = categoriaAtiva !== "Todos" && tipoNegocioDb
+    ? Prisma.sql`AND u."tipoNegocio" = CAST(${tipoNegocioDb} AS "TipoNegocio")`
+    : Prisma.empty;
+
+  const subCategoriaFilter = subCategoriaAtiva
+    ? Prisma.sql`AND o.categoria = ${subCategoriaAtiva}`
     : Prisma.empty;
 
   const searchFilter = textoDaBusca
@@ -43,10 +59,12 @@ export default async function ListaOfertas({
   const countRaw = await prisma.$queryRaw<{ count: bigint }[]>`
     SELECT COUNT(o.id) as count
     FROM "Oferta" o
+    JOIN "User" u ON o."vendedorId" = u.id
     WHERE o.ativo = true 
       AND o.quantidade > 0 
       AND o."dataValidade" > NOW()
       ${categoriaFilter}
+      ${subCategoriaFilter}
       ${searchFilter}
   `;
 
@@ -68,6 +86,7 @@ export default async function ListaOfertas({
       AND o.quantidade > 0 
       AND o."dataValidade" > NOW()
       ${categoriaFilter}
+      ${subCategoriaFilter}
       ${searchFilter}
     ORDER BY
       CASE 

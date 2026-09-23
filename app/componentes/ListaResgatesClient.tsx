@@ -32,7 +32,7 @@ export default function ListaResgatesClient({ produtos }: { produtos: ProdutoPro
 
     const formData = new FormData(e.currentTarget);
     const termo = formData.get("busca") as string;
-    const categoria = formData.get("categoria") as string;
+    const subCategoria = formData.get("subCategoria") as string;
 
     const params = new URLSearchParams(searchParams);
 
@@ -42,10 +42,10 @@ export default function ListaResgatesClient({ produtos }: { produtos: ProdutoPro
       params.delete("busca");
     }
 
-    if (categoria && categoria !== "") {
-      params.set("categoria", categoria);
+    if (subCategoria && subCategoria !== "") {
+      params.set("subCategoria", subCategoria);
     } else {
-      params.delete("categoria");
+      params.delete("subCategoria");
     }
 
     params.set("pagina", "1");
@@ -76,8 +76,8 @@ export default function ListaResgatesClient({ produtos }: { produtos: ProdutoPro
           </div>
 
           <select
-            name="categoria"
-            defaultValue={searchParams.get("categoria")?.toString() || ""}
+            name="subCategoria"
+            defaultValue={searchParams.get("subCategoria")?.toString() || ""}
             className="bg-paper border border-line rounded-xl py-2.5 px-3 text-[14px] text-night focus:outline-none focus:border-amber focus:ring-1 focus:ring-amber transition-colors shadow-sm cursor-pointer max-w-[160px] truncate"
             onChange={(e) => {
               const form = e.target.form;
