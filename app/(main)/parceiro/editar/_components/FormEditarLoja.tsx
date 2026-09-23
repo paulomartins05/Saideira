@@ -21,12 +21,17 @@ const editarLojaSchema = z.object({
 
 type EditarLojaInputs = z.infer<typeof editarLojaSchema>;
 
+const formatarCNPJ = (v: string) => {
+  v = v.replace(/\D/g, "");
+  return v.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d)/, "$1.$2.$3/$4-$5").slice(0, 18);
+};
+
 export default function FormEditarLoja({ usuario }: { usuario: any }) {
   const router = useRouter();
   const [imagemFile, setImagemFile] = useState<File | null>(null);
   const [imagemPreview, setImagemPreview] = useState<string | null>(usuario.image || null);
 
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<EditarLojaInputs>({
+  const { register, handleSubmit, setError, clearErrors, formState: { errors, isSubmitting } } = useForm<EditarLojaInputs>({
     resolver: zodResolver(editarLojaSchema),
     defaultValues: {
       nome: usuario.name || "",
@@ -37,6 +42,27 @@ export default function FormEditarLoja({ usuario }: { usuario: any }) {
       numero: usuario.numero || "",
     }
   });
+
+  const validarCnpjAoVivo = async (cnpjDigitado: string) => {
+    const cnpjLimpo = cnpjDigitado.replace(/\D/g, "");
+    if (cnpjLimpo.length !== 14) return;
+    
+    try {
+      const res = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${cnpjLimpo}`);
+      if (!res.ok) {
+        setError("cnpj", { type: "manual", message: "CNPJ não encontrado na Receita Federal" });
+        return;
+      }
+      const data = await res.json();
+      if (data.descricao_situacao_cadastral !== "ATIVA") {
+        setError("cnpj", { type: "manual", message: `CNPJ inativo (Situação: ${data.descricao_situacao_cadastral})` });
+        return;
+      }
+      clearErrors("cnpj");
+    } catch (error) {
+      console.error("Erro ao validar CNPJ", error);
+    }
+  };
 
   const onSubmit = async (data: EditarLojaInputs) => {
     try {
@@ -103,7 +129,14 @@ export default function FormEditarLoja({ usuario }: { usuario: any }) {
       </div>
 
       <FormGroup label="CNPJ" error={errors.cnpj?.message}>
-        <input type="text" className={inputClass} {...register("cnpj")} />
+        <input 
+          type="text" 
+          className={inputClass} 
+          {...register("cnpj", {
+            onChange: (e) => e.target.value = formatarCNPJ(e.target.value),
+            onBlur: (e) => validarCnpjAoVivo(e.target.value)
+          })} 
+        />
       </FormGroup>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
