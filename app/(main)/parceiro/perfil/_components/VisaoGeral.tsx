@@ -15,7 +15,8 @@ export default async function VisãoGeral({ usuarioId }: { usuarioId: string }) 
         where: {
             vendedorId: usuarioId,
             quantidade: { gt: 0 },
-            dataValidade: { gt: new Date() }
+            dataValidade: { gt: new Date() },
+            deletedAt: null
         },
         orderBy: { createdAt: "desc" }
     })

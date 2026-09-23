@@ -276,8 +276,12 @@ export async function excluirOferta(id: string) {
     throw new Error("Oferta não encontrada ou sem permissão.")
   }
 
-  await prisma.oferta.delete({
-    where: { id }
+  await prisma.oferta.update({
+    where: { id },
+    data: {
+      deletedAt: new Date(),
+      ativo: false
+    }
   })
 
   revalidatePath("/parceiro/perfil")
