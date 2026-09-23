@@ -76,6 +76,6 @@ jobs:
           NEXT_TELEMETRY_DISABLED: 1
           # DATABASE_URL: ${{ secrets.DATABASE_URL }}
           # BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
-
+## Nada não 
 
 
