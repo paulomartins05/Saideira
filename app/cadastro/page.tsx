@@ -70,7 +70,7 @@ export default function CadastroPage() {
   const validarCnpjAoVivo = async (cnpjDigitado: string) => {
     const cnpjLimpo = cnpjDigitado.replace(/\D/g, "");
     if (cnpjLimpo.length !== 14) return;
-    
+
     try {
       const res = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${cnpjLimpo}`);
       if (!res.ok) {
@@ -124,11 +124,11 @@ export default function CadastroPage() {
         role: tipoConta === "parceiro" ? "PARCEIRO" : "CONSUMIDOR",
         cnpj: tipoConta === "parceiro" ? data.cnpj : undefined,
         tipoNegocio: tipoConta === "parceiro" ? data.tipoNegocio : undefined,
-        cep: tipoConta === "parceiro" ? data.cep : undefined, 
-        rua: tipoConta === "parceiro" ? data.rua : undefined, 
-        numero: tipoConta === "parceiro" ? data.numero : undefined, 
+        cep: tipoConta === "parceiro" ? data.cep : undefined,
+        rua: tipoConta === "parceiro" ? data.rua : undefined,
+        numero: tipoConta === "parceiro" ? data.numero : undefined,
         bairro: tipoConta === "parceiro" ? data.bairro : undefined,
-        cidade: tipoConta === "parceiro" ? data.cidade : undefined, 
+        cidade: tipoConta === "parceiro" ? data.cidade : undefined,
         estado: tipoConta === "parceiro" ? data.estado : undefined,
         latitude, longitude,
         callbackURL: "/"
