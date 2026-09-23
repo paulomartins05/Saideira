@@ -103,36 +103,24 @@ export async function validarResgate(resgateId: string, pinDigitado: string) {
   const session = await auth.api.getSession({
     headers: reqHeaders
   })
-
   if (!session || session.user.role !== "PARCEIRO") {
-    throw new Error("Acesso negado. apenas parceiros podem validar resgates")
+    return { success: false, mensagem: "Acesso negado. Apenas parceiros podem validar resgates." }
   }
-
   const resgate = await prisma.resgate.findUnique({
-    where: {
-      id: resgateId
-    },
-    include: {
-      oferta: true
-    }
+    where: { id: resgateId },
+    include: { oferta: true }
   })
-
   if (!resgate) {
-    throw new Error("Resgate não Encontrado")
+    return { success: false, mensagem: "Resgate não encontrado." }
   }
-
   if (resgate.oferta.vendedorId !== session.user.id) {
-    throw new Error("Você não pode validar esse resgate")
+    return { success: false, mensagem: "Você não tem permissão para validar este resgate." }
   }
-
-
   const agora = new Date();
-
   if (resgate.bloqueadoAte && resgate.bloqueadoAte > agora) {
     const minutosRestantes = Math.ceil((resgate.bloqueadoAte.getTime() - agora.getTime()) / 60000);
-    throw new Error(`Este resgate foi bloqueado por segurança. Tente novamente em ${minutosRestantes} minutos. `)
+    return { success: false, mensagem: `Resgate bloqueado por segurança. Tente em ${minutosRestantes} minutos.` }
   }
-
   if (resgate.codigoPin !== pinDigitado) {
     const tempoBloqueioExpirou = resgate.bloqueadoAte !== null && resgate.bloqueadoAte <= agora;
     const novasTentativas = tempoBloqueioExpirou ? 1 : resgate.tentativasPin + 1;
