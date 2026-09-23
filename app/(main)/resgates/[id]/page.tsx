@@ -77,9 +77,11 @@ export default async function PaginaProdutoUnico({
             <div className="font-display text-4xl md:text-5xl font-bold tracking-tighter text-amber drop-shadow-md">
               <CountdownValidade validade={produto.dataValidade} />
             </div>
-            <div className="font-body text-sm md:text-base text-paper/80 uppercase tracking-widest font-semibold">
-              Para encerrar resgates do dia
-            </div>
+            {produto.dataValidade > new Date() && (
+              <div className="font-body text-sm md:text-base text-paper/80 uppercase tracking-widest font-semibold">
+                Para encerrar resgates do dia
+              </div>
+            )}
           </div>
         </Container>
       </div>
