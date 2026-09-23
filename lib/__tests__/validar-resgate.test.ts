@@ -42,9 +42,11 @@ describe('Action: validarResgate', () => {
             oferta: { vendedorId: "999" }
         });
 
-        await expect(validarResgate('resgate-1', '0000'))
-            .rejects
-            .toThrow('Você não pode validar esse resgate');
+        const resultado = await validarResgate('resgate-1', '0000');
+        expect(resultado).toEqual({
+            success: false,
+            mensagem: "Você não tem permissão para validar este resgate."
+        });
 
         expect(prisma.resgate.update).not.toHaveBeenCalled();
     });
