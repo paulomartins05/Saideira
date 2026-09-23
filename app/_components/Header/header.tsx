@@ -39,18 +39,6 @@ export default async function Header() {
         <NavLinks rotas={rotas} />
 
         <div className="flex items-center gap-1.5">
-          <div className="hidden md:block">
-            {usuario ? (
-              <MenuUsuario usuario={usuario} />
-            ) : (
-              <Link
-                href="/login"
-                className="bg-amber hover:bg-amber-dark text-night font-bold px-6 py-2.5 rounded-xl transition-colors focus-visible:ring-2 focus-visible:ring-amber focus-visible:outline-none flex items-center gap-2 text-[14px]"
-              >
-                Entrar
-              </Link>
-            )}
-          </div>
           {usuario && usuario.role !== "PARCEIRO" && usuario.role !== "ADMIN" && (
             <Link
               href="/carrinho"
@@ -68,6 +56,19 @@ export default async function Header() {
               )}
             </Link>
           )}
+
+          <div className="hidden md:block">
+            {usuario ? (
+              <MenuUsuario usuario={usuario} />
+            ) : (
+              <Link
+                href="/login"
+                className="bg-amber hover:bg-amber-dark text-night font-bold px-6 py-2.5 rounded-xl transition-colors focus-visible:ring-2 focus-visible:ring-amber focus-visible:outline-none flex items-center gap-2 text-[14px]"
+              >
+                Entrar
+              </Link>
+            )}
+          </div>
 
           <MenuMobile rotas={rotas} usuario={usuario} />
         </div>
