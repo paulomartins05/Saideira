@@ -157,8 +157,10 @@ export async function validarResgate(resgateId: string, pinDigitado: string) {
     });
 
     if (novasTentativas >= maxTentativas) {
+      revalidatePath("/parceiro/perfil");
       return { success: false, mensagem: (`PIN incorreto. Resgate bloqueado por ${tempoBloqueioMinutos} minutos por excesso de tentativas.`) }
     } else {
+      revalidatePath("/parceiro/perfil");
       const tentativasRestantes = maxTentativas - novasTentativas;
       return { success: false, mensagem: (`PIN Incorreto. Você tem mais ${tentativasRestantes} tentativa(s).`) }
     }
