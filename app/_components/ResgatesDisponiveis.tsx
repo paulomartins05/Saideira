@@ -37,7 +37,7 @@ export default async function ResgatesDisponiveis() {
       <div className="max-w-[1160px] mx-auto px-7">
 
         <h2 className="font-display text-[21px] font-extrabold m-0 tracking-[-0.01em] flex items-center gap-2">
-          Fechando <span className="text-amber-dark">agora</span>
+          Ofertas da <span className="text-amber-dark">saideira</span>
         </h2>
         <p className="text-[13px] text-muted mb-4 mt-1">
           Ordenado por quem vence primeiro
