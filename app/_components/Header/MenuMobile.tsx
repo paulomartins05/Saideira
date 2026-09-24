@@ -48,9 +48,6 @@ export default function MenuMobile({ rotas, usuario }: MenuMobileProps) {
               </NavLink>
             ))}
 
-            <NavLink href="/sobre-nos" variant="mobile" onClick={fecharMenu}>
-              Sobre Nós
-            </NavLink>
 
             {usuario ? (
               <>
