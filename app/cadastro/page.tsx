@@ -227,7 +227,15 @@ export default function CadastroPage() {
               <div className="flex items-center gap-2 mt-1">
                 <input
                   type="file" accept="image/*" ref={fileInputRef}
-                  onChange={(e) => setFotoPerfil(e.target.files?.[0] || null)}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file && file.size > 5 * 1024 * 1024) {
+                      appToast.erro("Arquivo muito grande", "A foto deve ter no máximo 5MB.");
+                      e.target.value = "";
+                      return;
+                    }
+                    setFotoPerfil(file || null);
+                  }}
                   className="w-full text-[13px] text-muted file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-[12.5px] file:font-bold file:bg-card file:text-night hover:file:bg-line cursor-pointer border border-line rounded-lg px-2 py-1.5"
                 />
                 {fotoPerfil && (

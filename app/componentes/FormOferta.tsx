@@ -231,6 +231,14 @@ export default function FormOferta({ ofertaInicial }: FormOfertaProps) {
                         <input type="file" accept="image/*" multiple className="hidden" onChange={(e) => {
                             if (e.target.files) {
                                 const files = Array.from(e.target.files).slice(0, 3);
+                                
+                                const temArquivoGrande = files.some(f => f.size > 5 * 1024 * 1024);
+                                if (temArquivoGrande) {
+                                    appToast.erro("Arquivo muito grande", "Cada imagem deve ter no máximo 5MB.");
+                                    e.target.value = "";
+                                    return;
+                                }
+
                                 setImagemFiles(files);
                                 setImagemPreviews(files.map(f => URL.createObjectURL(f)));
                             }

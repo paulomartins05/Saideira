@@ -73,6 +73,13 @@ export default function FormEditarConsumidor({ usuario }: { usuario: any }) {
                         onChange={(e) => {
                             if (e.target.files && e.target.files[0]) {
                                 const file = e.target.files[0];
+
+                                if (file.size > 5 * 1024 * 1024) {
+                                    appToast.erro("Arquivo muito grande", "Sua foto deve ter no máximo 5MB.");
+                                    e.target.value = "";
+                                    return;
+                                }
+
                                 setImagemFile(file);
                                 setImagemPreview(URL.createObjectURL(file));
                             }
