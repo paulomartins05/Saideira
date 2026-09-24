@@ -53,7 +53,7 @@ export default async function AdminPage() {
             <StatsCard
               titulo="Lojas Parceiras"
               valor={metricas.totalParceiros}
-              subtitulo={`${metricas.parceirosInativos} aguardando pagamento`}
+              subtitulo={`${metricas.parceirosInativos} sem assinatura`}
               icone={Store}
             />
             <StatsCard
