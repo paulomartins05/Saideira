@@ -29,7 +29,7 @@ export default async function ResgatesDisponiveis() {
         ELSE 1
       END ASC,
       o."dataValidade" ASC
-    LIMIT 8
+    LIMIT 4
   `;
 
   return (
