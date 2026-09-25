@@ -3,7 +3,7 @@ import { toast } from "sonner";
 export const appToast = {
   loginSuccess: (name?: string) =>
     toast.success("Login efetuado com sucesso", {
-      description: name ? `Bem-vindo de volta, ${name}!` : "Bem-vindo de volta ao Salgado Salvo!",
+      description: name ? `Bem-vindo de volta, ${name}!` : "Bem-vindo de volta ao Saideira!",
     }),
   loginError: (message?: string) =>
     toast.error("Erro ao fazer login", {

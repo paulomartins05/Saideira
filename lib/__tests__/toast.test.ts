@@ -49,7 +49,7 @@ describe('Notificações Globais (appToast)', () => {
         appToast.loginSuccess();
 
         expect(toast.success).toHaveBeenCalledWith('Login efetuado com sucesso', {
-            description: 'Bem-vindo de volta ao Salgado Salvo!',
+            description: 'Bem-vindo de volta ao Saideira!',
         });
     });
 });
