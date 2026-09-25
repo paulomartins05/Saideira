@@ -40,6 +40,7 @@ export default function FormularioLogin() {
         }
         appToast.loginSuccess();
         router.push(callbackUrl);
+        router.refresh();
     };
 
     const inputClass = "w-full bg-paper border border-line rounded-lg px-4 py-3 text-[13.5px] text-night focus:outline-none focus:border-night transition-colors placeholder:text-muted";
