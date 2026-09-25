@@ -50,7 +50,7 @@ export default async function EditarProduto({
 
                         <div className="max-w-3xl mx-auto w-full p-6 rounded-[20px] border border-coral/30 bg-[#FFF5F5] relative overflow-hidden">
                             <div className="relative z-10">
-                                <h3 className="font-display font-bold text-lg text-coral mb-2">Zona de Perigo</h3>
+                                <h3 className="font-display font-bold text-lg text-coral mb-2">Perigo</h3>
                                 <p className="text-[13px] text-night/80 mb-5 font-medium leading-relaxed">Ao excluir esta oferta, ela será permanentemente removida. Resgates já gerados continuarão válidos. Esta ação é irreversível.</p>
                                 <form action={async () => {
                                     "use server";
